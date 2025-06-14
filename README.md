@@ -25,12 +25,12 @@ git clone https://github.com/YOUR_USERNAME/internship-tracker.git
 cd internship-tracker
 🔁 Replace YOUR_USERNAME with your GitHub username.
 
-2. (Optional but Recommended) Create a Virtual Environment
+### 2. (Optional but Recommended) Create a Virtual Environment
 python -m venv venv
 source venv/bin/activate     # macOS/Linux
 venv\Scripts\activate        # Windows
 
-3. Install Requirements
+### 3. Install Requirements
 Make sure you're inside the project folder where requirements.txt is located:
 pip install -r requirements.txt
 
@@ -40,16 +40,23 @@ pip install -r requirements.txt
 
 For a faster setup, run one of the provided scripts:
 
-### 🔹 On Mac/Linux:
+#### 🔹 On Mac/Linux
+
 ./setup.sh
-###🔹 On Windows:
+
+#### 🔹 On Windows
+
 setup.bat
 This will:
+
 - Create a virtual environment
 - Activate it
 - Install all required packages
 
-4. Run the App
+---
+
+### 4. Run the App
+
 python app.py
 Visit http://127.0.0.1:5000 in your browser.
 
