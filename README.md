@@ -30,9 +30,24 @@ python -m venv venv
 source venv/bin/activate     # macOS/Linux
 venv\Scripts\activate        # Windows
 
-4. Install Requirements
+3. Install Requirements
 Make sure you're inside the project folder where requirements.txt is located:
 pip install -r requirements.txt
+
+---
+
+### 💻 Quick Setup (Optional Script)
+
+For a faster setup, run one of the provided scripts:
+
+### 🔹 On Mac/Linux:
+./setup.sh
+###🔹 On Windows:
+setup.bat
+This will:
+- Create a virtual environment
+- Activate it
+- Install all required packages
 
 4. Run the App
 python app.py
