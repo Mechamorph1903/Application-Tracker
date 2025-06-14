@@ -1,0 +1,28 @@
+internship-tracker/
+│
+├── app.py                   ← Main Flask app
+├── models.py                ← Your database models (Internship class, etc.)
+├── requirements.txt         ← Package list
+├── README.md                ← Project guide
+├── setup.sh                 ← Mac/Linux setup
+├── setup.bat                ← Windows setup
+│
+├── templates/               ← HTML files rendered by Flask (Jinja)
+│   ├── layout.html          ← Base template
+│   ├── home.html            ← Homepage or internship list
+│   └── add.html             ← Internship submission form
+│
+├── static/                  ← CSS, JS, or images (optional)
+│   └── style.css            ← Basic styling
+│
+└── internships.db           ← SQLite DB (auto-generated after first run)
+
+
+
+File/Folder_____|____Purpose_____________________________________________________|
+app.py			|	Starts the Flask server, defines routes						 |
+models.py		|	Defines the database structure (e.g. Internship class)		 |
+templates/		|	Contains HTML (Jinja templates) for frontend views			 |
+static/			|	(Optional) Holds CSS, JavaScript, and images				 |
+internships.db	|	SQLite file that stores data, auto-created by SQLAlchemy	 |
+_________________________________________________________________________________
