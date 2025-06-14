@@ -47,6 +47,7 @@ For a faster setup, run one of the provided scripts:
 #### 🔹 On Windows
 
 setup.bat
+
 This will:
 
 - Create a virtual environment
@@ -60,18 +61,34 @@ This will:
 python app.py
 Visit http://127.0.0.1:5000 in your browser.
 
-📁 Folder Structure (Base Version)
+---
+
+### 📁 Folder Structure (Base Version)
+
 application-tracker/
+
 │
+
 ├── app.py
+
 ├── models.py
+
 ├── requirements.txt
+
 ├── README.md
+
 ├── templates/
+
 │   └── home.html
+
 ├── static/
+
 │   └── style.css
+
 └── internships.db  # auto-created after running
+
+---
+
 💡 Contributing
 Pull requests and improvements are welcome — keep it beginner-friendly and clear for others who want to learn Flask!
 
