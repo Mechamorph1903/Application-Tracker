@@ -38,7 +38,7 @@ pip install -r requirements.txt
 
 ### 💻 Quick Setup (Optional Script)
 
-For a faster setup, run one of the provided scripts:
+For a faster setup, run one of the provided scripts in the path of the project👂🏾:
 
 #### 🔹 On Mac/Linux
 
