@@ -65,27 +65,20 @@ Visit http://127.0.0.1:5000 in your browser.
 
 ### 📁 Folder Structure (Base Version)
 
-application-tracker/
-
+application_tracker/
+├── app/
+│   ├── __init__.py ← App factory (creates and configures Flask)
+│   ├── models.py ← User & Internship database models
+│   ├── routes.py ← (Optional) for organizing API routes
+│   ├── templates/ ← HTML templates (Jinja2) — optional
+│   └── static/ ← CSS, JS, or images — optional
 │
-
-├── app.py
-
-├── models.py
-
-├── requirements.txt
-
-├── README.md
-
-├── templates/
-
-│   └── home.html
-
-├── static/
-
-│   └── style.css
-
-└── internships.db  # auto-created after running
+├── internships.db ← Local SQLite database (auto-created)
+├── run.py ← Entry point for running the app
+├── requirements.txt ← All project dependencies
+├── LICENSE ← Apache 2.0 license
+├── NOTICE ← Acknowledgments or third-party notices
+├── README.md ← Project overview, setup instructions
 
 ---
 

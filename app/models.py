@@ -11,6 +11,7 @@ class User(db.Model, UserMixin): # User model for managing user data
 	email = db.Column(db.String(150), nullable=False)  # email for the user
 	password_hash = db.Column(db.String(256), nullable=False) # Hashed password for security
 	is_admin = db.Column(db.Boolean, default=False) # Flag to indicate if the user is an admin
+	profile_picture = db.Column(db.String(150), default='default.jpg') # Path to the user's profile picture
 
 	internships = db.relationship('Internship', backref='user', lazy=True) # One-to-many relationship with Internship model
 
