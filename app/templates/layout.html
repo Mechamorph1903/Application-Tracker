@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}InternIn{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header>
+        <h1>Welcome, Tinubu</h1>
+        <nav>
+            <ul>
+                <li><a href="">Home</a></li>
+                <li><a href="">Applications</a></li>
+                <li><a href="">Schedule</a></li>
+                <li><a href="">Friends</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        <!-- everything else in each page will be featured here -->
+        {% endblock %}
+    </main>
+</body>
+
+<footer>
+    <p>A Tinubu Special &trade;</p>
+</footer>
+
+</html>
