@@ -1,0 +1,48 @@
+<!-- app/templates/register.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+   <div>
+    <div class="tab" onclick="switchTab('login')">Login</div>
+    <div class="tab active" onclick="switchTab('register')">Register</div>
+  </div>
+
+    <div class="form-container">
+      <!--Login-->
+      <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm" class="active">
+        <h2>Login</h2>
+        <input type="email" name="email" placeholder="Email" required><br><br>
+        <input type="password" name="password" placeholder="Password" required><br><br>
+        <button type="submit">Login</button>
+      </form>
+
+      <!--Register-->
+      <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+        <label>Username:</label><br>
+        <input type="text" name="username" required title="Enter your username" placeholder="Username"><br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required title="Enter your email address" placeholder="Email address"><br><br>
+
+        <label>Password:</label><br>
+        <input type="password" name="password" required title="Enter your password" placeholder="Password"><br><br>
+
+        <button type="submit">Register</button>
+    </form>
+    </div>    <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
+</body>
+</html>

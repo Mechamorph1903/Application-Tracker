@@ -1,0 +1,39 @@
+body {
+	font-family: sans-serif;
+	padding: 40px;
+	background: #f4f4f4;
+}
+
+.tab {
+	display: inline-block;
+	margin-right: 10px;
+	padding: 10px 20px;
+	cursor: pointer;
+	background: #ddd;
+	border-radius: 5px 5px 0 0;
+}
+
+.tab.active {
+	background: #fff;
+	border-bottom: 2px solid white;
+}
+
+.form-container {
+	background: #fff;
+	padding: 20px;
+	border-radius: 0 5px 5px 5px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+form {
+	display: none;
+}
+
+form.active {
+	display: block;
+}
+
+.flash {
+	color: red;
+	margin-bottom: 10px;
+}
