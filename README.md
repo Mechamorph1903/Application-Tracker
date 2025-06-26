@@ -56,6 +56,26 @@ This will:
 
 ---
 
+🔹 Activate Virtual Environment (if you have an exisating one):
+
+Make sure you're in the project folder, then run:
+
+✅ On Windows (Command Prompt):
+
+- venv\Scripts\activate
+
+✅ On Windows (PowerShell):
+
+- .\venv\Scripts\Activate.ps1
+
+✅ On Mac/Linux:
+
+- source venv/bin/activate
+
+After activation, you should see the virtual environment name (like (venv)) at the beginning of your terminal line.
+
+
+
 ### 4. Run the App
 
 python app.py
