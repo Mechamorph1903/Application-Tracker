@@ -11,14 +11,13 @@ def register():
 		username = request.form.get('username')
 		email = request.form.get('email')
 		password = request.form.get('password')
-
 		if not username or not email or not password:
 			flash('Please fill out all fields.', 'danger')
-			return redirect(url_for('auth.register'))
+			return redirect(url_for('auth.register') + '?tab=register')
 		
 		if User.query.filter_by(email=email).first():
 			flash('Email already registered. Please log in.', 'danger')
-			return redirect(url_for('auth.register'))
+			return redirect(url_for('auth.register') + '?tab=login')
 		
 		new_user = User(username=username, email=email)
 		new_user.set_password(password)
@@ -27,31 +26,26 @@ def register():
 		db.session.commit() # Commit the session to save the user to the database
 
 		login_user(new_user) # Log in the user after registration
-
 		flash('Registration successful! You are now logged in.')
 		import os
 		print("DB Path:", os.path.abspath("internships.db"))
 
 		return redirect(url_for('auth.register'))  # Later change this to go to dashboard
-	tab = request.args.get('tab', 'register')
-	return render_template('register.html', tab=tab)  # Render the registration form with the specified tab	
-
-@auth.route('/login', methods=['GET', 'POST'])
-def login():
-	if request.method == 'POST':
-		email = request.form.get('email')
-		password = request.form.get('password')
-
-		currentUser = User.query.filter_by(email=email).first()  # Find user by email
-
-		if currentUser and currentUser.check_password(password):
-			login_user(currentUser)
-			flash('Login successful!', 'success')
-			return redirect(url_for('auth.register', tab = 'login'))  # Redirect to ddashboard page later
-		else:
-			flash('Invalid email or password.', 'danger')
-			return redirect(url_for('auth.register', tab ='login'))  # Redirect to login tab
 	
-	# GET request - show login form
-	tab = request.args.get('tab', 'login')
-	return render_template('register.html', tab=tab)
+	tab = request.args.get('tab', 'register')
+	return render_template('register.html', tab=tab)  # Render the registration form with the specified tab
+
+@auth.route('/login', methods=['POST'])
+def login():
+	email = request.form.get('email')
+	password = request.form.get('password')
+
+	currentUser = User.query.filter_by(email=email).first()  # Find user by email
+
+	if currentUser and currentUser.check_password(password):
+		login_user(currentUser)
+		flash('Login successful!', 'success')
+		return redirect(url_for('auth.register'))  # Redirect to main page (will show register tab by default)
+	else:
+		flash('Invalid email or password.', 'danger')
+		return redirect(url_for('auth.register') + '?tab=login')  # Stay on login tab

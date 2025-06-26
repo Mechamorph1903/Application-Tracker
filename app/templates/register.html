@@ -9,16 +9,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
+  <div class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
           <div class="flash {{ category }}">{{ message }}</div>
         {% endfor %}
       {% endif %}
-    {% endwith %}
-   <div>
-    <div class="tab" onclick="switchTab('login')">Login</div>
-    <div class="tab active" onclick="switchTab('register')">Register</div>
+    {% endwith %}   <div class="tabs-container">
+    <div class="tab" data-tab="login" onclick="switchTab('login')">Login</div>
+    <div class="tab active" data-tab="register" onclick="switchTab('register')">Register</div>
   </div>
 
     <div class="form-container">
@@ -32,6 +32,7 @@
 
       <!--Register-->
       <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+        <h2>Register</h2>
         <label>Username:</label><br>
         <input type="text" name="username" required title="Enter your username" placeholder="Username"><br><br>
 
@@ -43,6 +44,7 @@
 
         <button type="submit">Register</button>
     </form>
+    </div>
     </div>    <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
 </body>
 </html>
