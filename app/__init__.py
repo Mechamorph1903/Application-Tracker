@@ -1,9 +1,12 @@
-# “This folder is a package — and you can import from it.”
+# "This folder is a package — and you can import from it."
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_required
+from flask_login import LoginManager, login_required, current_user
 from .models import db, User
 from .auth.routes import auth
+from .profile.routes import userprofile
+from .settings.routes import settings
+
 import os
 
 def create_app():
@@ -34,15 +37,38 @@ def create_app():
 	# ⬇️ Import and register the blueprint
 	
 	app.register_blueprint(auth, url_prefix='/auth')  # Register the auth blueprint with a URL prefix
-	
+	app.register_blueprint(userprofile, url_prefix='/profile')  # Register the user profile blueprint with a URL prefix
+	app.register_blueprint(settings)  # Register the settings blueprint without prefix
+
 	@app.route('/')
 	def landing():
 		return render_template('landing.html')
+	
 	@app.route('/home')
 	@app.route('/dashboard')
 	@login_required
 	def home():
 		return render_template('home.html')
+	
+	@app.route('/calendar')
+	@login_required
+	def calendar():
+		return render_template('calendar.html')
+	
+	@app.route('/applications')
+	@login_required
+	def applications():
+		return render_template('applications.html')
+	
+	@app.route('/friends')
+	@login_required
+	def friends():
+		return render_template('friends.html')
+	
+	@app.route('/profile')
+	@login_required
+	def profile():
+		return render_template('profile.html', user=current_user)
 
 	return app
 # This function creates and configures the Flask application

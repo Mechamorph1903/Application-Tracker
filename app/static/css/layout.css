@@ -151,11 +151,15 @@ body {
 .profile-btn.primary {
     background: linear-gradient(135deg, #7c3aed, #a855f7);
     color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
 }
 
 .profile-btn.primary:hover {
     background: linear-gradient(135deg, #6d28d9, #9333ea);
-    transform: translateY(-2px);
+    color: white;
+    scale: 1.05;
 }
 
 .profile-btn.secondary {
@@ -163,6 +167,8 @@ body {
     color: #cbb6da;
     border: 1px solid rgba(124, 58, 237, 0.3);
     transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
 }
 
 .profile-btn.secondary:hover {
