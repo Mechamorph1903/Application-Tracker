@@ -1,5 +1,5 @@
 # “This folder is a package — and you can import from it.”
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from .models import db, User
@@ -36,7 +36,10 @@ def create_app():
 	
 	app.register_blueprint(auth, url_prefix='/auth')  # Register the auth blueprint with a URL prefix
 
-	
+	# Add a simple route to test the layout
+	@app.route('/')
+	def home():
+		return render_template('layout.html')
 
 	return app
 # This function creates and configures the Flask application
