@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}InternIn{% endblock %}</title>
+    <link rel="stylesheet" href="/app/static/style.css">
+    <!--use href="{{ url_for('static', filename='style.css') }}" to find the CSS file with Jinja templating-->
+    <!--use href="/app/static/style.css" if you want to render the HTML page and CSS only (live server)-->
+</head>
+
+<body>
+    <div class="page-header">
+        <h1 class="page-title welcome-title">Welcome, Tinubu</h1>
+    </div>
+    <nav class="nav-bar">
+        <!--for the below, the href is temporarily empty. it should contain a link to the respective pages-->
+        <a href="" class="nav-item">Home</a>
+        <a href="" class="nav-item">Schedule</a>
+        <a href="" class="nav-item">Friends</a>
+        <a href="" class="nav-item">Applications</a>
+    </nav>
+
+    <main>
+        {% block content %}
+        <!-- everything else in each page will be featured here -->
+        {% endblock %}
+    </main>
+</body>
+
+<footer>
+    <div class="page-footer">
+        <p class="trademark">A Tinubu Special &trade;</p>
+    </div>
+</footer>
+
+</html>
