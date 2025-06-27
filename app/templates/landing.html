@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to InternIn</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>InternIn</h1>
+        <p>Your Personal Internship Tracking Hub</p>
+        
+        <div class="buttons">
+            <a href="{{ url_for('auth.register') }}" class="btn">Get Started</a>
+            <a href="{{ url_for('auth.register') }}?tab=login" class="btn">Sign In</a>
+        </div>
+    </div>
+</body>
+</html>

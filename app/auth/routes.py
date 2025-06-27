@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint
-from flask_login import login_user
+from flask_login import login_user, logout_user
 from app.models import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -24,13 +24,12 @@ def register():
 
 		db.session.add(new_user) # Add the new user to the session
 		db.session.commit() # Commit the session to save the user to the database
-
 		login_user(new_user) # Log in the user after registration
 		flash('Registration successful! You are now logged in.')
 		import os
 		print("DB Path:", os.path.abspath("internships.db"))
 
-		return redirect(url_for('auth.register'))  # Later change this to go to dashboard
+		return redirect(url_for('home'))  # Redirect to dashboard after registration
 	
 	tab = request.args.get('tab', 'register')
 	return render_template('register.html', tab=tab)  # Render the registration form with the specified tab
@@ -41,11 +40,17 @@ def login():
 	password = request.form.get('password')
 
 	currentUser = User.query.filter_by(email=email).first()  # Find user by email
-
 	if currentUser and currentUser.check_password(password):
 		login_user(currentUser)
 		flash('Login successful!', 'success')
-		return redirect(url_for('auth.register'))  # Redirect to main page (will show register tab by default)
+		return redirect(url_for('home'))  # Redirect to dashboard after login
 	else:
 		flash('Invalid email or password.', 'danger')
 		return redirect(url_for('auth.register') + '?tab=login')  # Stay on login tab
+	
+
+@auth.route('/logout')
+def logout():
+	logout_user()
+	flash('You have been logged out.', 'info')
+	return redirect(url_for('landing'))  # Redirect to landing page after logout

@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}Home - InternIn{% endblock %}
+
+{% block content %}
+<!-- Your home page content goes here -->
+ <div class="dashboard">
+    <h2>Dashboard</h2>
+	<h2>Hi, {{ current_user.username }}</h2>
+    
+    <!-- Quick stats section -->
+    <div class="stats-grid">
+        <!-- Add 3-4 stat cards here -->
+    </div>
+
+	<!-- Daily Motivation/Fun Fact -->
+	<div class="daily-message">
+		<h3>💪 Daily Motivation</h3>
+		<p>"Your future self will thank you for every application you submit today!"</p>
+	</div>
+		
+    <!-- Recent activity section -->
+    <div class="recent-activity">
+        <h3>Recent Activity</h3>
+        <ul>
+			<li>Applied to Meta 4 days ago..;</li>
+			<li>Applied to JP Morgan Chase 65 days ago..;</li>
+			<li>Applied to Wells Fargo 120 days ago..;</li>
+		</ul>
+    </div>
+    
+    <!-- Quick actions -->
+    <div class="quick-actions">
+        <!-- Add some action buttons -->
+		 <button>Add Application</button>
+		 <button>View Calendar</button>
+		 <button>Schedule Interview</button>
+		 <button>Search Applications</button>
+		 <button>Set Goals</button>
+		 <button> View Analytics</button>
+
+    </div>
+</div>
+{% endblock %}

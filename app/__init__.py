@@ -1,7 +1,7 @@
 # “This folder is a package — and you can import from it.”
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required
 from .models import db, User
 from .auth.routes import auth
 import os
@@ -19,9 +19,8 @@ def create_app():
 
 	# Initialize extensions
 	db.init_app(app)
-
 	login_manager = LoginManager()
-	login_manager.login_view = 'auth.register'  # Redirect to login page if not authenticated
+	login_manager.login_view = 'landing'  # Redirect to landing page if not authenticated
 	login_manager.init_app(app)
 
 	@login_manager.user_loader
@@ -35,11 +34,15 @@ def create_app():
 	# ⬇️ Import and register the blueprint
 	
 	app.register_blueprint(auth, url_prefix='/auth')  # Register the auth blueprint with a URL prefix
-
-	# Add a simple route to test the layout
+	
 	@app.route('/')
+	def landing():
+		return render_template('landing.html')
+	@app.route('/home')
+	@app.route('/dashboard')
+	@login_required
 	def home():
-		return render_template('layout.html')
+		return render_template('home.html')
 
 	return app
 # This function creates and configures the Flask application
