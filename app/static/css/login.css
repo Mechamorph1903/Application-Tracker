@@ -70,7 +70,7 @@ form.active {
 }
 
 @keyframes slideInForm {
-	from {
+	from { /*the range of motion for the animation*/
 		opacity: 0;
 		transform: translateX(30px);
 	}
