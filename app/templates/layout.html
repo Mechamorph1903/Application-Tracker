@@ -46,10 +46,10 @@
             </div>
         </div>
     </div>    <nav class="nav-bar">
-        <a href="{{ url_for('home') }}" class="nav-item active" id="homeBtn">Home</a>
-        <a href="{{ url_for('calendar') }}" class="nav-item" id="calendarBtn">Calendar</a>
-        <a href="{{ url_for('friends') }}" class="nav-item" id="friendsBtn">Friends</a>
-        <a href="{{ url_for('applications') }}" class="nav-item" id="applicationsBtn">Applications</a>
+        <a href="{{ url_for('home') }}" class="nav-item {% if request.endpoint == 'home' %}active{% endif %}" id="homeBtn">Home</a>
+        <a href="{{ url_for('calendar') }}" class="nav-item {% if request.endpoint == 'calendar' %}active{% endif %}" id="calendarBtn">Calendar</a>
+        <a href="{{ url_for('friends') }}" class="nav-item {% if request.endpoint == 'friends' %}active{% endif %}" id="friendsBtn">Friends</a>
+        <a href="{{ url_for('applications') }}" class="nav-item {% if request.endpoint == 'applications' %}active{% endif %}" id="applicationsBtn">Applications</a>
     </nav>
 
     <main>
