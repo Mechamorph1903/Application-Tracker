@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Profile - InternIn{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+</head>
+<body>
+    <div class="profile-container">
+        <!-- Cover Image Section -->
+        <div class="cover-section">
+            <div class="cover-overlay"></div>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-info">
+                <div class="profile-picture"></div>
+                <div class="profile-details">
+                    <h1 class="profile-name">Sarah Johnson</h1>
+                    <div class="online-status">
+                        <div class="status-indicator"></div>
+                        <span>Online now</span>
+                    </div>
+                    <div class="university">
+                        Stanford University - Computer Science
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            @sarahjohnson
+                        </a>
+                        <a href="#" class="social-link">
+                            sarah-johnson
+                        </a>
+                        <a href="#" class="social-link">
+                            sarahj-dev
+                        </a>
+                        <a href="#" class="social-link">
+                            @sarah.codes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="left-column">
+                <!-- Activity Section -->
+                <div class="section">
+                    <h2 class="section-title">
+                        Recent Applications
+                    </h2>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Software Engineer Intern - Google</div>
+                            <div class="activity-details">Applied 2 days ago • Mountain View, CA</div>
+                        </div>
+                        <div class="activity-status status-pending">Pending</div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Frontend Developer - Meta</div>
+                            <div class="activity-details">Applied 1 week ago • Menlo Park, CA</div>
+                        </div>
+                        <div class="activity-status status-approved">Interview Scheduled</div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Full Stack Developer - Stripe</div>
+                            <div class="activity-details">Applied 2 weeks ago • San Francisco, CA</div>
+                        </div>
+                        <div class="activity-status status-rejected">Not Selected</div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">iOS Developer - Apple</div>
+                            <div class="activity-details">Applied 3 weeks ago • Cupertino, CA</div>
+                        </div>
+                        <div class="activity-status status-pending">Under Review</div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Data Engineer - Netflix</div>
+                            <div class="activity-details">Applied 1 month ago • Los Gatos, CA</div>
+                        </div>
+                        <div class="activity-status status-approved">Offer Received</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <!-- Stats Section -->
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Application Stats
+                    </h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">24</div>
+                            <div class="stat-label">Total Applications</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Interviews</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">3</div>
+                            <div class="stat-label">Offers</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">67%</div>
+                            <div class="stat-label">Response Rate</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar Heatmap -->
+                <div class="section">
+                    <h2 class="section-title">
+                        Activity Calendar
+                    </h2>
+                    <div class="heatmap-container">
+                        <div class="heatmap-header">
+                            <span>Application activity over the past year</span>
+                        </div>
+                        <div class="heatmap-grid">
+                        </div>
+                        <div class="heatmap-legend">
+                            <span>Less</span>
+                            <div class="legend-item">
+                                <div class="heatmap-cell"></div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="heatmap-cell level-1"></div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="heatmap-cell level-2"></div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="heatmap-cell level-3"></div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="heatmap-cell level-4"></div>
+                            </div>
+                            <span>More</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
