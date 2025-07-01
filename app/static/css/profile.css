@@ -107,6 +107,12 @@
             margin-top: 20px;
         }
 
+        .social-icon{
+            width: 1,5rem;
+            height: 1.5rem;
+            filter: brightness(0) invert(1);
+        }
+
         .social-link {
             display: flex;
             align-items: center;
