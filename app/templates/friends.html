@@ -1,1 +1,124 @@
-	<!-- friends page - implement your own UI here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Friends | InternIn</title>
+  <link rel="stylesheet" href="../static/css/friends.css">
+</head>
+
+<script>
+  document.getElementById('friend-search').addEventListener('input', function(e) {
+    let filter = e.target.value.toLowerCase();
+    document.querySelectorAll('.friend-card').forEach(function(card) {
+      let text = card.textContent.toLowerCase();
+      card.style.display = text.includes(filter) ? '' : 'none';
+    });
+  });
+</script>
+
+
+<body>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="navbar-logo">InternIn</div>
+    <div class="navbar-links">
+      <a href="home.html">Home</a>
+      <a href="calendar.html">Calendar</a>
+      <a href="friends.html" class="active">Friends</a>
+      <a href="applications.html">Applications</a>
+    </div>
+    <div class="navbar-user">
+      <img src="https://ui-avatars.com/api/?name=Elon+Musk" alt="User Avatar" class="avatar">
+      <span class="username">Elonmusk</span>
+    </div>
+  </div>
+  
+  <!-- FRIENDS GRID -->
+  <div class="friends-container">
+    <h1 class="page-title">Friends</h1>
+	
+	
+	<div class="friends-search-bar">
+		<input type="text" id="friend-search" placeholder="Search friends by name, school, or status..." autocomplete="off">
+		<button class="add-friend-btn">+ Add Friend</button>
+    </div>
+
+    <div class="friends-grid">
+
+      <!-- Friend Card 1 (Online) -->
+      <div class="friend-card online">
+        <div class="friend-main">
+          <img src="https://ui-avatars.com/api/?name=Mike+Chen" alt="Mike Chen" class="friend-avatar">
+          <div class="friend-info">
+            <div class="friend-name-status">
+              <div class="friend-name">Mike Chen</div>
+              <span class="friend-status online-dot">Online</span>
+            </div>
+            <div class="friend-school">Stanford University</div>
+            <div class="friend-mutual">2 mutual friends</div>
+          </div>
+          <div class="privacy-badge public">Public</div>
+        </div>
+        <div class="friend-activity">Applied to Meta 3h ago</div>
+        <hr class="card-separator">
+        <div class="friend-stats-row">
+          <div class="stat-block">
+            <div class="stat-number">10</div>
+            <div class="stat-label">Applications</div>
+          </div>
+          <div class="vertical-separator"></div>
+          <div class="stat-block">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Interviews</div>
+          </div>
+          <div class="vertical-separator"></div>
+          <div class="stat-block">
+            <div class="stat-number">1</div>
+            <div class="stat-label">Offers</div>
+          </div>
+        </div>
+        <a class="profile-btn" href="profile.html?user=mikechen">View Profile</a>
+      </div>
+
+      <!-- Friend Card 2 (Offline) -->
+      <div class="friend-card offline">
+        <div class="friend-main">
+          <img src="https://ui-avatars.com/api/?name=Sarah+Johnson" alt="Sarah Johnson" class="friend-avatar">
+          <div class="friend-info">
+            <div class="friend-name-status">
+              <div class="friend-name">Sarah Johnson</div>
+              <span class="friend-status offline-dot">Offline</span>
+            </div>
+            <div class="friend-school">MIT</div>
+            <div class="friend-mutual">3 mutual friends</div>
+          </div>
+          <div class="privacy-badge private">Private</div>
+        </div>
+        <div class="friend-activity">Got offer at Stripe</div>
+        <hr class="card-separator">
+        <div class="friend-stats-row">
+          <div class="stat-block">
+            <div class="stat-number">7</div>
+            <div class="stat-label">Applications</div>
+          </div>
+          <div class="vertical-separator"></div>
+          <div class="stat-block">
+            <div class="stat-number">2</div>
+            <div class="stat-label">Interviews</div>
+          </div>
+          <div class="vertical-separator"></div>
+          <div class="stat-block">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Offers</div>
+          </div>
+        </div>
+        <a class="profile-btn" href="profile.html?user=sarahjohnson">View Profile</a>
+      </div>
+
+      <!-- More friend cards can be added in the same format! -->
+
+    </div>
+  </div>
+</body>
+</html>
