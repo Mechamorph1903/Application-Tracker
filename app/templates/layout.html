@@ -1,4 +1,4 @@
-<!--
+{# 
 =====================================================================================
   layout.html (Sitewide Base Template) - Updated by Elyon Aganah, July 2025
 
@@ -22,6 +22,13 @@
     • This base template is now the only file that controls page-wide layout, color, and navigation.
     • All child pages just {% extends "layout.html" %} and fill in {% block content %}.
 
+   Error Encountered & Solution:
+  -------------------------------
+    • ISSUE: Putting an HTML comment at the top of a Jinja template with `{% block %}` tags caused a 
+      "TemplateSyntaxError: Unexpected end of template..." (Jinja thought the block was never closed).
+    • FIX: Use Jinja-safe comments `{# ... #}` for all block comments in templates! 
+      Do NOT use raw HTML comments at the very top if they wrap any `{% ... %}`.
+
   Notes for Future Contributors:
   -----------------------------
     • Do not edit navigation or page container markup in individual pages—update here instead!
@@ -30,8 +37,7 @@
     • If you add more nav links, just copy one of the <a> tags and adjust the url_for route.
     • All new pages should extend layout.html to maintain consistent design.
 =====================================================================================
--->
-
+#}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -64,6 +70,10 @@
     <!-- Each page's content will be inserted here -->
     {% endblock %}
   </main>
+    <footer>
+        <p class="trademark" style="color: #fff; background: #f00;">A Tinubu Special &trade;</p>
+    </footer>
+
   {% block extra_js %}{% endblock %}
 </body>
 </html>
