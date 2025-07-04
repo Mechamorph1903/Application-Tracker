@@ -21,6 +21,34 @@
     <div class="navbar-user">
       <img src="https://ui-avatars.com/api/?name={{ current_user.username | urlencode }}" alt="User Avatar" class="avatar">
       <span class="username">{{ current_user.username }}</span>
+      <div class="profile-card">
+                <div class="profile-card-header">
+                    <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Picture" class="profile-card-avatar">
+                    <div class="profile-card-info">
+                        <h3 class="profile-card-name">{{ current_user.username }}</h3>
+                        <p class="profile-card-email">{{ current_user.email }}</p>
+                    </div>
+                </div>
+                <div class="profile-card-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Applications</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Interviews</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1</span>
+                        <span class="stat-label">Offers</span>
+                    </div>
+                </div>
+                <div class="profile-card-actions">
+                    <a href="{{ url_for('profile') }}" class="profile-btn primary">View Profile</a>
+                    <a href="{{ url_for('settings.settings_page') }}" class="profile-btn secondary">Settings</a>
+                    <button class="profile-btn logout" onclick="logout()">Logout</button>
+                </div>
+            </div>
     </div>
   </div>
 
