@@ -5,18 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}InternIn{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
-    <!--use href="{{ url_for('static', filename='style.css') }}" to find the CSS file with Jinja templating-->
-    <!--use href="/app/static/style.css" if you want to render the HTML page and CSS only (live server)-->
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
-    <div class="page-header">
-        <h1 class="page-title welcome-title">InternIn</h1>        <div class="profile-container" id="profile">
-            <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Picture" class="profile-picture">
-            <span class="profile-name">{{ current_user.username }}</span>
-            
-            <!-- Profile Card that appears on hover -->
-            <div class="profile-card">
+  <!-- NAVBAR (GLOBAL) -->
+  <div class="navbar">
+    <div class="navbar-logo">InternIn</div>
+    <div class="navbar-links">
+      <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+      <a href="{{ url_for('calendar') }}" class="{% if request.endpoint == 'calendar' %}active{% endif %}">Calendar</a>
+      <a href="{{ url_for('friends') }}" class="{% if request.endpoint == 'friends' %}active{% endif %}">Friends</a>
+      <a href="{{ url_for('applications') }}" class="{% if request.endpoint == 'applications' %}active{% endif %}">Applications</a>
+    </div>
+    <div class="navbar-user">
+      <img src="https://ui-avatars.com/api/?name={{ current_user.username | urlencode }}" alt="User Avatar" class="avatar">
+      <span class="username">{{ current_user.username }}</span>
+      <div class="profile-card">
                 <div class="profile-card-header">
                     <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Picture" class="profile-card-avatar">
                     <div class="profile-card-info">
@@ -44,20 +49,16 @@
                     <button class="profile-btn logout" onclick="logout()">Logout</button>
                 </div>
             </div>
-        </div>
-    </div>    <nav class="nav-bar">
-        <a href="{{ url_for('home') }}" class="nav-item {% if request.endpoint == 'home' %}active{% endif %}" id="homeBtn">Home</a>
-        <a href="{{ url_for('calendar') }}" class="nav-item {% if request.endpoint == 'calendar' %}active{% endif %}" id="calendarBtn">Calendar</a>
-        <a href="{{ url_for('friends') }}" class="nav-item {% if request.endpoint == 'friends' %}active{% endif %}" id="friendsBtn">Friends</a>
-        <a href="{{ url_for('applications') }}" class="nav-item {% if request.endpoint == 'applications' %}active{% endif %}" id="applicationsBtn">Applications</a>
-    </nav>
+    </div>
+  </div>
 
-    <main>
-        {% block content %}
-        <!-- everything else in each page will be featured here -->
-        {% endblock %}
-    </main>
-    <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+  <main>
+    {% block content %}
+    <!-- Each page's content will be inserted here -->
+    {% endblock %}
+  </main>
+
+  {% block extra_js %}{% endblock %}
 </body>
 
 <footer>

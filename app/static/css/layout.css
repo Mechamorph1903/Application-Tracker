@@ -1,17 +1,71 @@
+/* ---- GLOBAL SITEWIDE STYLES ---- */
 body {
-  margin: 100;
-  font-family: 'Segue UI', Roboto, sans-serif;
-  color: #ffffff;
-  background:linear-gradient(#1c052c 5%, #4c18bc 100%);
+  margin: 0;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  background: linear-gradient(to bottom, #2d044d 0%, #432d7c 100%);
+  color: #fff;
   min-height: 100vh;
 }
 
-.welcome-title {
-    background: linear-gradient(135deg, #a855f7, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-align: center;
+/* NAVBAR */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to right, #20003a 0%, #432d7c 100%);
+  padding: 0 32px;
+  height: 70px;
+  box-shadow: 0 4px 20px 0 rgba(30, 0, 51, 0.15);
+}
+
+.navbar-logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #e04aff;
+  letter-spacing: 1px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 40px;
+}
+
+.navbar-links a {
+  color: #f5e8ff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 8px 20px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.navbar-links a.active,
+.navbar-links a:hover {
+  background: #a259ff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #a259ff;
+  object-fit: cover;
+  background: #fff;
+}
+
+.username {
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .profile-container {
@@ -66,7 +120,7 @@ body {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-.profile-container:hover .profile-card {
+.navbar-user:hover .profile-card {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -190,74 +244,168 @@ body {
     scale: 1.05;
 }
 
-.nav-bar {
-    display: flex;
-    justify-content: space-evenly;
-    gap: 10px;
-    padding: 8px;
-    background: rgba(76, 24, 188, 0.055);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 32px;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.5s;
-    color: #cbb6da;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 20px;
-    white-space: nowrap;
-}
-
-.nav-item:hover {
-    background: #374151;
-    color: white;
-}
-
-.nav-item:target,
-.nav-item.active {
-    background: #7c3aed;
-    color: white;
-}
-
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
 .page-title {
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 8px;
+  font-size: 2.3rem;
+  font-weight: bold;
+  margin-bottom: 32px;
+  letter-spacing: 0.5px;
+  color: #e0b3ff;
+  text-align: left;
 }
 
-.page-footer{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
-
+/* Buttons (global style, can be used sitewide) */
+.profile-btn,
+.add-friend-btn {
+  padding: 10px 24px;
+  border-radius: 16px;
+  background: transparent;
+  color: #b993fd;
+  border: 1.7px solid #b993fd;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  display: inline-block;
 }
-.trademark{
-    font-size: 20px;
-    font-weight: bold;
-    background:linear-gradient(135deg, #5398cd, #c1def2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-align: center;
+.profile-btn:hover,
+.add-friend-btn:hover {
+  background: #b993fd;
+  color: #3b1366;
+  box-shadow: 0 0 8px 2px #b993fd44;
 }
 
+/* Input fields (sitewide style) */
+input[type="text"] {
+  width: 320px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  background: #34205d;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 0 2px 10px rgba(50,20,60,0.08);
+}
+/* ===== APPLICATIONS PAGE STYLES =====
+   I (Elyon) added these rules to unify the Applications page styling with the new sitewide look, 
+   while making sure my teammate's original card layout and action button ("some icon here") are 
+   preserved at the bottom-right of each application card. */
+
+.applications-container {
+  max-width: 1200px;
+  margin: 48px auto 0 auto;
+  padding: 0 24px;
+}
+
+.applications-list {
+  margin-bottom: 24px;
+}
+
+.application-card {
+  background: linear-gradient(135deg, #4f2d7f 70%, #302044 100%);
+  border-radius: 20px;
+  box-shadow: 0 6px 28px rgba(46, 16, 87, 0.18);
+  padding: 28px 24px 48px 24px; /* Extra padding for button space */
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+  position: relative;
+  min-height: 200px;
+}
+
+.application-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 7px;
+}
+.application-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffe3fa;
+}
+.status-badge {
+  padding: 4px 14px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #fff;
+  margin-left: 12px;
+}
+.status-badge.gray { background: #868d96; }
+.status-badge.purple { background: #a259ff; }
+.status-badge.red { background: #fd6c81; }
+.status-badge.cyan { background: #31f28c; }
+.position {
+  color: #d4caf3;
+  font-weight: 500;
+  font-size: 1.09rem;
+  margin-bottom: 6px;
+}
+.application-details {
+  display: flex;
+  gap: 18px;
+  color: #b2acf8;
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+.application-dates {
+  display: flex;
+  gap: 24px;
+  font-size: 0.99rem;
+  color: #aebbff;
+  margin-bottom: 8px;
+}
+.deadline { color: #fb923c; }
+.followup { color: #31f28c; }
+.status-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+  background: #868d96;
+}
+.status-indicator.gray { background: #868d96; }
+.status-indicator.purple { background: #a259ff; }
+.status-indicator.red { background: #fd6c81; }
+.status-indicator.cyan { background: #31f28c; }
+
+.external-link {
+  position: absolute;
+  bottom: 20px;
+  right: 32px;
+  background: transparent;
+  color: #b993fd;
+  border: 1.5px solid #b993fd;
+  border-radius: 12px;
+  padding: 8px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  font-size: 1.01rem;
+  margin-top: 10px;
+  text-decoration: none;
+}
+.external-link:hover {
+  background: #b993fd;
+  color: #3b1366;
+}
+
+@media (max-width: 600px) {
+  .external-link {
+    position: static;
+    width: 100%;
+    margin: 12px 0 0 0;
+  }
+  .application-card {
+    padding-bottom: 24px;
+    min-height: unset;
+  }
+}
