@@ -50,6 +50,8 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+  cursor: pointer;
 }
 
 .avatar {
@@ -64,6 +66,182 @@ body {
 .username {
   font-size: 1rem;
   font-weight: 500;
+}
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 12px;
+    position: relative; /* Important for positioning the card */
+    cursor: pointer;
+}
+
+.profile-picture {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid #7c3aed;
+    transition: all 0.3s ease;
+}
+
+.profile-picture:hover {
+    transform: scale(1.1);
+    border-color: #a855f7;
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+}
+
+.profile-name {
+    margin-top: 8px;
+    font-weight: 600;
+    color: #cbb6da;
+}
+
+/* Profile Card Styles */
+.profile-card {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 280px;    
+    background: rgba(30, 30, 30, 0.95);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-user:hover .profile-card {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.profile-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-card-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #7c3aed;
+    margin-right: 15px;
+}
+
+.profile-card-info {
+    flex: 1;
+}
+
+.profile-card-name {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.profile-card-email {
+    margin: 0;
+    font-size: 14px;
+    color: #cbb6da;
+}
+
+.profile-card-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 15px 0;
+    border-top: 1px solid rgba(124, 58, 237, 0.2);
+    border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.stat-item {
+    text-align: center;
+    flex: 1;
+}
+
+.stat-number {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #7c3aed;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #cbb6da;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.profile-btn.primary {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+}
+
+.profile-btn.primary:hover {
+    background: linear-gradient(135deg, #6d28d9, #9333ea);
+    color: white;
+    scale: 1.05;
+}
+
+.profile-btn.secondary {
+    background: rgba(124, 58, 237, 0.2);
+    color: #cbb6da;
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+}
+
+.profile-btn.secondary:hover {
+    background: rgba(124, 58, 237, 0.3);
+    color: white;
+    scale: 1.05;
+}
+
+.profile-btn.logout {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    transition: all 0.3s ease;
+}
+
+.profile-btn.logout:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: white;
+    scale: 1.05;
 }
 
 .page-title {
