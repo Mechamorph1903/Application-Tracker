@@ -334,11 +334,10 @@ class UserSettings(db.Model):
 	
 	# Display & Theme Settings
 	theme = db.Column(db.String(20), default='light')  # light, dark, auto
-	dashboard_layout = db.Column(db.String(20), default='grid')  # grid, list, compact
+	dashboard_layout = db.Column(db.String(20), default='grid')  # grid, list, compact (for a later time)
 	items_per_page = db.Column(db.Integer, default=10)
 	
 	# Privacy Settings
-	default_internship_visibility = db.Column(db.String(20), default='friends')  # public, friends, private
 	profile_visibility = db.Column(db.String(20), default='friends')  # public, friends, private
 	show_application_stats = db.Column(db.Boolean, default=True)
 	
@@ -346,6 +345,7 @@ class UserSettings(db.Model):
 	email_notifications = db.Column(db.Boolean, default=True)
 	friend_request_notifications = db.Column(db.Boolean, default=True)
 	application_reminders = db.Column(db.Boolean, default=True)
+	online_assessment_reminders = db.Column(db.Boolean, default=True)
 	interview_reminders = db.Column(db.Boolean, default=True)
 	
 	# Application Tracking Settings
