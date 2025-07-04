@@ -409,3 +409,12 @@ input[type="text"] {
     min-height: unset;
   }
 }
+
+.footer-link{
+    color: #b993fd;
+    text-decoration: none;
+    transition: color 0.18s;
+}
+.footer-link:hover{
+    color:white;
+}
