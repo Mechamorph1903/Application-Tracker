@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 
 {% block title %}Applications - InternIn{% endblock %}
+{% block head %}
+    <!-- Include your applications-specific CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/applications.css') }}">
+{% endblock %}
 
 {% block content %}
 <div class="applications-list">

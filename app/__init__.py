@@ -1,4 +1,5 @@
 # "This folder is a package — and you can import from it."
+import datetime
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
@@ -6,6 +7,7 @@ from .models import db, User
 from .auth.routes import auth
 from .profile.routes import userprofile
 from .settings.routes import settings
+from .internships.routes import internships
 
 import os
 
@@ -39,6 +41,7 @@ def create_app():
 	app.register_blueprint(auth, url_prefix='/auth')  # Register the auth blueprint with a URL prefix
 	app.register_blueprint(userprofile, url_prefix='/profile')  # Register the user profile blueprint with a URL prefix
 	app.register_blueprint(settings)  # Register the settings blueprint without prefix
+	app.register_blueprint(internships, url_prefix='/internships')  # Register the internships blueprint
 
 	@app.route('/')
 	def landing():
@@ -58,7 +61,15 @@ def create_app():
 	@app.route('/applications')
 	@login_required
 	def applications():
-		return render_template('applications.html')
+		# Use helper methods for smart filtering
+		urgent_internships = [i for i in current_user.internships if i.get_next_action()]
+		overdue_count = sum(1 for i in current_user.internships if i.is_overdue())
+		accepted_count = sum(1 for i in current_user.internships if i.application_status.lower() == 'accepted')
+		
+		return render_template('applications.html', 
+							 urgent_internships=urgent_internships,
+							 overdue_count=overdue_count,
+							 accepted_count=accepted_count)
 	
 	@app.route('/friends')
 	@login_required
@@ -69,6 +80,20 @@ def create_app():
 	@login_required
 	def profile():
 		return render_template('profile.html', user=current_user)
+	
+	@app.route('/credits')
+	def credits():
+		"""Render the credits page with attributions"""
+		return render_template('credits.html')
+	
+
+	# user statuses
+	@app.before_request
+	def track_user_activity():
+		"""Update user's last_seen on every request"""
+		if current_user.is_authenticated:
+			current_user.last_seen = datetime.datetime.now(datetime.timezone.utc)
+			db.session.commit()  # Commit the changes to the database
 
 	return app
 # This function creates and configures the Flask application
