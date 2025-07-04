@@ -1,0 +1,13 @@
+<!-- Redirect to new internships add page -->
+<script>
+window.location.href = "{{ url_for('internships.add_internship') }}";
+</script>
+
+<!-- Fallback message -->
+<div class="container mt-4">
+    <div class="alert alert-info">
+        <h4>Redirecting...</h4>
+        <p>You're being redirected to the new add internship page.</p>
+        <p>If you're not redirected automatically, <a href="{{ url_for('internships.add_internship') }}">click here</a>.</p>
+    </div>
+</div>

@@ -33,6 +33,17 @@
       <!--Register-->
       <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
         <h2>Sign Up!</h2>
+
+        <div class="name-container">
+          <div><label>First Name:</label><br>
+          <input type="text" name="First Name" required title="Enter your first name" placeholder="Trump"><br><br></div>
+
+          <div>
+            <label>Last Name:</label><br>
+          <input type="text" name="Last Name" required title="Enter your last name" placeholder="Tinubu"><br><br>
+          </div>
+        </div>
+
         <label>Username:</label><br>
         <input type="text" name="username" required title="Enter your username" placeholder="Username"><br><br>
 

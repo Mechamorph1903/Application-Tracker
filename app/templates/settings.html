@@ -1,0 +1,72 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <title>Settings - InternIn</title>
+</head>
+<body>
+	<nav>
+		<div><a href="javascript:history.back()">
+			<img src="{{ url_for('static', filename='images/back-white.png') }}" alt="Back">
+		</a></div>
+
+		<div class="settings-tabs">
+		<div class="tab active">User Settings</div>
+		<div class="tab">App Settings</div>
+		</div>
+	</nav>
+    <!-- User Settings Tab -->
+<section class="settings-section">
+        <div class="section-header">
+            <h3>Personal Information</h3>
+            <button class="edit-btn" onclick="toggleEdit('personal-info')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <!-- Display Mode -->
+        <div class="display-mode" id="personal-info-display">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>First Name:</label>
+                    <span>{{ current_user.firstName or 'Not set' }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Last Name:</label>
+                    <span>{{ current_user.lastName or 'Not set' }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Email:</label>
+                    <span>{{ current_user.email }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Phone:</label>
+                    <span>{{ current_user.phone or 'Not set' }}</span>
+                </div>
+                <div class="info-item full-width">
+                    <label>Bio:</label>
+                    <span>{{ current_user.bio or 'Tell us about yourself...' }}</span>
+                </div>
+            </div>
+        </div>
+
+<!-- App Settings Tab -->
+<div class="tab-content" id="app-settings">
+    <section class="settings-section">
+        <h3>Appearance</h3>
+        <!-- theme, dashboard_layout, items_per_page -->
+    </section>
+    
+    <section class="settings-section">
+        <h3>Notifications</h3>
+        <!-- email_notifications, application_reminders, etc. -->
+    </section>
+    
+    <section class="settings-section">
+        <h3>Application Tracking</h3>
+        <!-- default_application_status, auto_archive_rejected -->
+    </section>
+</div>
+</body>
+</html>

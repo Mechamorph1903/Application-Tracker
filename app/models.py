@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy # Import SQLAlchemy for  ORM functionality
-from datetime import date, datetime # Import date for timestamping and datetime
+from datetime import date, datetime, timezone # Import date for timestamping and datetime
 from flask_login import UserMixin	# Import UserMixin for user management
 from werkzeug.security import generate_password_hash, check_password_hash # Import generate_password_hash for password hashing and check_password_hash for password verification
 
@@ -7,20 +7,30 @@ db = SQLAlchemy()  # Initialize the SQLAlchemy object
 
 class User(db.Model, UserMixin): # User model for managing user data
 	id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each user
+	firstName = db.Column(db.String(100), nullable=False)  # First name of the user
+	lastName = db.Column(db.String(100), nullable=False)  # Last name of the user
 	username = db.Column(db.String(150), nullable=False, unique=True)  # Username must be unique
 	email = db.Column(db.String(150), nullable=False)  # email for the user
 	password_hash = db.Column(db.String(256), nullable=False) # Hashed password for security
 	is_admin = db.Column(db.Boolean, default=False) # Flag to indicate if the user is an admin
 	profile_picture = db.Column(db.String(150), default='default.jpg') # Path to the user's profile picture
 	
-	# New contact fields for friends to see
+	# contact fields for friends to see
 	phone = db.Column(db.String(20)) # Phone number for contact
-	linkedin = db.Column(db.String(200)) # LinkedIn profile URL
+	social_media = db.Column(db.JSON, default=lambda: []) # Social media profile URLs
 	bio = db.Column(db.Text) # Personal bio/description
 	school = db.Column(db.String(100)) # University/school name
+	year = db.Column(db.String(100)) # Graduation year
 	major = db.Column(db.String(100)) # Field of study
-	created_at = db.Column(db.DateTime, default=datetime.utcnow) # When user registered
-
+	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # When user registered
+	
+	# Online status tracking
+	online_status = db.Column(db.String(20), default='offline')  # online, offline, away, busy
+	last_seen = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))  # When user was last active
+	status_message = db.Column(db.String(100))  # Custom status message like "Looking for internships"
+	
+	# Relationships
+	settings = db.relationship('UserSettings', backref='user', uselist=False, lazy=True)
 	internships = db.relationship('Internship', backref='user', lazy=True) # One-to-many relationship with Internship model
 
 	def set_password(self, password):
@@ -31,6 +41,37 @@ class User(db.Model, UserMixin): # User model for managing user data
 	
 	def __repr__(self):
 		return f'<User {self.username}>'
+	
+	# Helper methods for onlibne status tracking
+	def set_online_status(self, status):
+		"""Update User's Online Status"""
+		valid_statuses = ['online', 'offline', 'away', 'busy']
+		if status in valid_statuses:
+			self.online_status = status
+			db.session.commit()
+		else:
+			raise ValueError(f"Invalid status: {status}. Must be one of {valid_statuses}")
+
+	def is_recently_active(self, minutes=5):
+		"""Check if user was active within the last N minutes"""
+		if self.last_seen:
+			time_diff = datetime.now(timezone.utc) - self.last_seen
+			return time_diff.total_seconds() < (minutes * 60)
+		return False
+
+	def get_actual_status(self):
+		"""Get real online status based on activity - manual status is not overridden"""
+		if self.is_recently_active():
+			return self.online_status  # Use their set status
+		else:
+			return 'offline'  # Override to offline if inactive
+		
+
+
+
+
+
+	# User settings management
 	
 	def create_user_settings(self):
 		"""Create default settings for this user if they don't exist"""
@@ -131,12 +172,18 @@ class Internship(db.Model): # Internship model for managing internship applicati
 	position = db.Column(db.String(100), nullable=False) # Position title for the internship
 	application_status = db.Column(db.String(50), nullable=False, default='Applied') # Status of the application (e.g., Applied, Interviewing, Offered, Rejected)
 	application_link = db.Column(db.String(200)) # Link to the internship application (if applicable)
-	applictaion_description = db.Column(db.Text) # Description of the internship position
+	application_description = db.Column(db.Text) # Description of the internship position
 	applied_date = db.Column(db.Date, default=date.today) # Date when the application was submitted
 	status_change_date = db.Column(db.Date, default=date.today) # Date when the application status was last changed
 	notes = db.Column(db.Text) # Additional notes about the internship application
 	visibility = db.Column(db.String(20), default='friends') # Visibility: 'public', 'friends', 'private'
-	
+	location = db.Column(db.String(200))  # City, State or Remote # Location of the internship (if applicable)
+	# Interview and follow-up tracking
+	interview_date = db.Column(db.DateTime)  # Scheduled interview date/time
+	follow_up_date = db.Column(db.DateTime)  # When to follow up
+	deadline_date = db.Column(db.DateTime)   # Application deadline
+	next_action_date = db.Column(db.DateTime)  # Generic next action reminder
+	next_action_type = db.Column(db.String(50))  # "follow_up", "interview", "decision", etc.
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # Foreign key linking to the User model
 
 	def to_dict(self):
@@ -149,6 +196,106 @@ class Internship(db.Model): # Internship model for managing internship applicati
 			"status_change_date": self.status_change_date.strftime('%Y-%m-%d'),
 			"notes": self.notes
 		}
+	
+	def get_next_action(self):
+		"""Get the most urgent upcoming action for this internship"""
+		# Check for the next scheduled action in priority order
+		actions = []
+		
+		# Add interview if scheduled and in future
+		if self.interview_date and self.interview_date > datetime.now(timezone.utc):
+			actions.append({
+				'date': self.interview_date,
+				'type': 'interview',
+				'description': f'Interview at {self.company_name}',
+				'priority': 1  # Highest priority
+			})
+		
+		# Add follow-up if scheduled and in future
+		if self.follow_up_date and self.follow_up_date > datetime.now(timezone.utc):
+			actions.append({
+				'date': self.follow_up_date,
+				'type': 'follow_up',
+				'description': f'Follow up with {self.company_name}',
+				'priority': 2
+			})
+		
+		# Add deadline if in future
+		if self.deadline_date and self.deadline_date > datetime.now(timezone.utc):
+			actions.append({
+				'date': self.deadline_date,
+				'type': 'deadline',
+				'description': f'Application deadline for {self.company_name}',
+				'priority': 1  # High priority
+			})
+		
+		# Add custom next action if set
+		if self.next_action_date and self.next_action_date > datetime.now(timezone.utc):
+			actions.append({
+				'date': self.next_action_date,
+				'type': self.next_action_type or 'reminder',
+				'description': self._get_action_description(),
+				'priority': 3
+			})
+		
+		# Return the most urgent action (earliest date, then by priority)
+		if actions:
+			return min(actions, key=lambda x: (x['date'], x['priority']))
+		
+		return None
+	
+	def is_overdue(self):
+		"""Check if any action is overdue (past due date)"""
+		overdue_actions = []
+		
+		# Check each date field for overdue items
+		now = datetime.now(timezone.utc)
+		
+		if self.interview_date and self.interview_date < now:
+			overdue_actions.append('interview')
+		if self.follow_up_date and self.follow_up_date < now:
+			overdue_actions.append('follow_up')
+		if self.deadline_date and self.deadline_date < now:
+			overdue_actions.append('deadline')
+		if self.next_action_date and self.next_action_date < now:
+			overdue_actions.append(self.next_action_type or 'action')
+		
+		return len(overdue_actions) > 0
+	
+	def days_until_next_action(self):
+		"""Get days until next action (negative if overdue)"""
+		next_action = self.get_next_action()
+		if next_action:
+			time_diff = next_action['date'] - datetime.now(timezone.utc)
+			return time_diff.days
+		return None
+	
+	def get_status_color(self):
+		"""Get color code for application status (useful for UI)"""
+		status_colors = {
+			'applied': '#007bff',      # Blue
+			'interviewing': '#ffc107', # Yellow
+			'offered': '#28a745',      # Green
+			'rejected': '#dc3545',     # Red
+			'accepted': '#28a745',     # Green
+			'withdrawn': '#6c757d'     # Gray
+		}
+		return status_colors.get(self.application_status.lower(), '#6c757d')
+	
+	def _get_action_description(self):
+		"""Generate description for custom action types"""
+		if self.next_action_type:
+			action_descriptions = {
+				'follow_up': f'Follow up on application at {self.company_name}',
+				'interview': f'Interview at {self.company_name}',
+				'decision': f'Decision deadline for {self.company_name}',
+				'thank_you': f'Send thank you note to {self.company_name}',
+				'research': f'Research {self.company_name} before interview',
+				'portfolio': f'Prepare portfolio for {self.company_name}',
+				'references': f'Contact references for {self.company_name}'
+			}
+			return action_descriptions.get(self.next_action_type, f'{self.next_action_type.title()} for {self.company_name}')
+		return f'Action needed for {self.company_name}'
 
 class FriendRequest(db.Model):
 	"""Model for storing friend requests between users"""
@@ -156,8 +303,8 @@ class FriendRequest(db.Model):
 	sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	status = db.Column(db.String(20), default='pending')  # pending, accepted, declined
-	created_at = db.Column(db.DateTime, default=datetime.utcnow)
-	updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+	updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 	
 	# Relationships
 	sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_requests')
@@ -169,13 +316,13 @@ class FriendRequest(db.Model):
 	def accept(self):
 		"""Accept this friend request"""
 		self.status = 'accepted'
-		self.updated_at = datetime.utcnow()
+		self.updated_at = datetime.now(timezone.utc)
 		db.session.commit()
 	
 	def decline(self):
 		"""Decline this friend request"""
 		self.status = 'declined'
-		self.updated_at = datetime.utcnow()
+		self.updated_at = datetime.now(timezone.utc)
 		db.session.commit()
 
 	def __repr__(self):
@@ -192,6 +339,7 @@ class UserSettings(db.Model):
 	
 	# Privacy Settings
 	default_internship_visibility = db.Column(db.String(20), default='friends')  # public, friends, private
+	profile_visibility = db.Column(db.String(20), default='friends')  # public, friends, private
 	show_application_stats = db.Column(db.Boolean, default=True)
 	
 	# Notification Settings
@@ -219,11 +367,8 @@ class UserSettings(db.Model):
 	login_notifications = db.Column(db.Boolean, default=False)
 	
 	# Created/Updated timestamps
-	created_at = db.Column(db.DateTime, default=datetime.utcnow)
-	updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-	
-	# Relationship
-	user = db.relationship('User', backref=db.backref('settings', uselist=False))
+	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+	updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 	
 	def __repr__(self):
 		return f'<UserSettings for {self.user.username}>'
@@ -240,7 +385,7 @@ class UserSettings(db.Model):
 		"""Update a single setting"""
 		if hasattr(self, setting_name):
 			setattr(self, setting_name, value)
-			self.updated_at = datetime.utcnow()
+			self.updated_at = datetime.now(timezone.utc)
 			db.session.commit()
 			return True
 		return False

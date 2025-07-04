@@ -11,6 +11,18 @@
         <!-- Cover Image Section -->
         <div class="cover-section">
             <div class="cover-overlay"></div>
+            <div class="back-button">
+                <a href="javascript:history.back()">
+			        <img src="{{ url_for('static', filename='images/back-white.png') }}" alt="Back" id="back-button">
+		        </a> 
+            </div>
+            <div class="settings">
+                <a href="{{ url_for('settings.settings_page') }}" class="settings-link">
+                    <img src="{{ url_for('static', filename='images/settings.png') }}" alt="Settings Icon" class="settings-icon">
+                     <i class="settings-text">Settings</i>
+                </a>
+               
+            </div>
         </div>
 
         <!-- Profile Header -->
@@ -18,13 +30,15 @@
             <div class="profile-info">
                 <div class="profile-picture"></div>
                 <div class="profile-details">
-                    <h1 class="profile-name">Sarah Johnson</h1>
+                    <h1 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h1>
                     <div class="online-status">
                         <div class="status-indicator"></div>
                         <span>Online now</span>
                     </div>
-                    <div class="university">
-                        Stanford University - Computer Science
+                    <div class="school-info">
+                        <div id="school">School: {{ user.school }}</div>
+                        <div id="year">Class: {{ user.year }}</div>
+                        <div id="major">Major: {{ user.major }}</div>
                     </div>
                     <div class="social-links">
                         <a href="#" class="social-link">

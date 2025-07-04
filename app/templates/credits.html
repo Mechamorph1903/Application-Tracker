@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credits & Attribution - InternIn</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/credits.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="credits-header">
+        <div class="container">
+            <div class="back-navigation">
+                <a href="javascript:history.back()" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </a>
+            </div>
+            <div class="header-content">
+                <h1 class="page-title">
+                    <i class="fas fa-heart"></i>
+                    Credits & Attribution
+                </h1>
+                <p class="page-subtitle">Acknowledging the amazing resources that made InternIn possible</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="credits-main">
+        <div class="container">
+            
+            <!-- Icons Section -->
+            <section class="credits-section">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-icons"></i>
+                        Icons & Graphics
+                    </h2>
+                    <p>Beautiful icons that enhance our user interface</p>
+                </div>
+                
+                <div class="credits-grid">
+                    <!-- Icon Credit Item -->
+                    <div class="credit-item">
+                        <div class="credit-preview">
+                            <img src="{{ url_for('static', filename='images/settings.png') }}" alt="Settings Icon" class="preview-icon">
+                        </div>
+                        <div class="credit-info">
+                            <h3>Settings Icons</h3>
+                            <p class="credit-description">Clean and modern settings icons for the application interface</p>
+                            <div class="credit-details">
+                                <span class="credit-author">
+                                    <i class="fas fa-user"></i>
+                                    Created by <strong>srip</strong>
+                                </span>
+                                <a href="https://www.flaticon.com/free-icons/settings" class="credit-source" target="_blank" rel="noopener">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Flaticon
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Back Icon Credit -->
+                    <div class="credit-item">
+                        <div class="credit-preview">
+                            <img src="{{ url_for('static', filename='images/back-white.png') }}" alt="Back Icon" class="preview-icon">
+                        </div>
+                        <div class="credit-info">
+                            <h3>Back Navigation Icons</h3>
+                            <p class="credit-description">Intuitive navigation icons for seamless user experience</p>
+                            <div class="credit-details">
+                                <span class="credit-author">
+                                    <i class="fas fa-user"></i>
+                                    Created by <strong>Freepik</strong>
+                                </span>
+                                <a href="https://www.flaticon.com/free-icons/back" class="credit-source" target="_blank" rel="noopener">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Flaticon
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- General Freepik Icons -->
+                    <div class="credit-item">
+                        <div class="credit-preview">
+                            <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Icon" class="preview-icon">
+                        </div>
+                        <div class="credit-info">
+                            <h3>Profile & UI Icons</h3>
+                            <p class="credit-description">Comprehensive icon set for user interface elements</p>
+                            <div class="credit-details">
+                                <span class="credit-author">
+                                    <i class="fas fa-user"></i>
+                                    Created by <strong>Freepik</strong>
+                                </span>
+                                <a href="https://www.flaticon.com/" class="credit-source" target="_blank" rel="noopener">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Flaticon
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TEMPLATE FOR NEW ICON CREDITS -->
+                    <!-- 
+                    <div class="credit-item">
+                        <div class="credit-preview">
+                            <img src="{{ url_for('static', filename='images/YOUR_ICON.png') }}" alt="Your Icon" class="preview-icon">
+                        </div>
+                        <div class="credit-info">
+                            <h3>Your Icon Name</h3>
+                            <p class="credit-description">Description of what this icon is used for</p>
+                            <div class="credit-details">
+                                <span class="credit-author">
+                                    <i class="fas fa-user"></i>
+                                    Created by <strong>Author Name</strong>
+                                </span>
+                                <a href="YOUR_SOURCE_URL" class="credit-source" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Source Name
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </section>
+
+            <!-- Fonts Section -->
+            <section class="credits-section">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-font"></i>
+                        Fonts & Typography
+                    </h2>
+                    <p>Typography that enhances readability and user experience</p>
+                </div>
+                
+                <div class="credits-grid">
+                    <!-- Font Credit Item Template -->
+                    <div class="credit-item">
+                        <div class="credit-preview font-preview">
+                            <span class="font-sample">Segoe UI</span>
+                        </div>
+                        <div class="credit-info">
+                            <h3>Segoe UI Font Family</h3>
+                            <p class="credit-description">Primary font for clean, modern interface typography</p>
+                            <div class="credit-details">
+                                <span class="credit-author">
+                                    <i class="fas fa-building"></i>
+                                    Designed by <strong>Microsoft</strong>
+                                </span>
+                                <span class="credit-license">
+                                    <i class="fas fa-certificate"></i>
+                                    System Font
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TEMPLATE FOR NEW FONT CREDITS -->
+                    <!-- 
+                    <div class="credit-item">
+                        <div class="credit-preview font-preview">
+                            <span class="font-sample" style="font-family: 'YOUR_FONT';">Font Name</span>
+                        </div>
+                        <div class="credit-info">
+                            <h3>Your Font Name</h3>
+                            <p class="credit-description">Description of where this font is used</p>
+                            <div class="credit-details">
+                                <span class="credit-author">
+                                    <i class="fas fa-user"></i>
+                                    Designed by <strong>Designer Name</strong>
+                                </span>
+                                <span class="credit-license">
+                                    <i class="fas fa-certificate"></i>
+                                    License Type
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </section>
+
+            <!-- Libraries & Frameworks Section -->
+            <section class="credits-section">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-code"></i>
+                        Libraries & Frameworks
+                    </h2>
+                    <p>Powerful tools and libraries that power InternIn</p>
+                </div>
+                
+                <div class="credits-grid">
+                    <!-- Flask Credit -->
+                    <div class="credit-item">
+                        <div class="credit-preview tech-preview">
+                            <i class="fab fa-python"></i>
+                        </div>
+                        <div class="credit-info">
+                            <h3>Flask Framework</h3>
+                            <p class="credit-description">Lightweight web application framework for Python</p>
+                            <div class="credit-details">
+                                <span class="credit-author">
+                                    <i class="fas fa-users"></i>
+                                    Developed by <strong>Pallets</strong>
+                                </span>
+                                <a href="https://flask.palletsprojects.com/" class="credit-source" target="_blank" rel="noopener">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Official Site
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Font Awesome Credit -->
+                    <div class="credit-item">
+                        <div class="credit-preview tech-preview">
+                            <i class="fab fa-fort-awesome"></i>
+                        </div>
+                        <div class="credit-info">
+                            <h3>Font Awesome</h3>
+                            <p class="credit-description">Icon library for web interface elements</p>
+                            <div class="credit-details">
+                                <span class="credit-author">
+                                    <i class="fas fa-building"></i>
+                                    Created by <strong>Font Awesome Team</strong>
+                                </span>
+                                <a href="https://fontawesome.com/" class="credit-source" target="_blank" rel="noopener">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Font Awesome
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TEMPLATE FOR NEW LIBRARY CREDITS -->
+                    <!-- 
+                    <div class="credit-item">
+                        <div class="credit-preview tech-preview">
+                            <i class="fab fa-YOUR_ICON"></i>
+                        </div>
+                        <div class="credit-info">
+                            <h3>Library/Framework Name</h3>
+                            <p class="credit-description">Description of what this library does</p>
+                            <div class="credit-details">
+                                <span class="credit-author">
+                                    <i class="fas fa-users"></i>
+                                    Developed by <strong>Developer/Company</strong>
+                                </span>
+                                <a href="LIBRARY_URL" class="credit-source" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Official Site
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </section>
+
+            <!-- Inspiration Section -->
+            <section class="credits-section">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-lightbulb"></i>
+                        Inspiration & Resources
+                    </h2>
+                    <p>Sources of inspiration and learning that shaped this project</p>
+                </div>
+                
+                <div class="credits-list">
+                    <!-- TEMPLATE FOR INSPIRATION CREDITS -->
+                    <!-- 
+                    <div class="inspiration-item">
+                        <div class="inspiration-info">
+                            <h3>Resource Name</h3>
+                            <p class="inspiration-description">How this resource inspired or helped the project</p>
+                            <a href="RESOURCE_URL" class="inspiration-link" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                                Visit Resource
+                            </a>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="credits-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-text">
+                    <i class="fas fa-heart"></i>
+                    Made with love for the internship tracking community
+                </p>
+                <p class="footer-trademark">
+                    InternIn &copy; 2025 - A Tinubu Special &trade;
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

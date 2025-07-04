@@ -105,6 +105,12 @@ form input:focus {
 	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.name-container {
+	display: flex;
+	justify-content: space-between;
+	gap: 5px;
+}
+
 form label {
 	display: block;
 	margin-bottom: 8px;
