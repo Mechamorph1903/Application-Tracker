@@ -7,7 +7,7 @@ from .models import db, User
 from .auth.routes import auth
 from .profile.routes import userprofile
 from .settings.routes import settings
-from .internships.routes import internships
+from .applications.routes import applications
 
 import os
 
@@ -41,7 +41,7 @@ def create_app():
 	app.register_blueprint(auth, url_prefix='/auth')  # Register the auth blueprint with a URL prefix
 	app.register_blueprint(userprofile, url_prefix='/profile')  # Register the user profile blueprint with a URL prefix
 	app.register_blueprint(settings)  # Register the settings blueprint without prefix
-	app.register_blueprint(internships, url_prefix='/internships')  # Register the internships blueprint
+	app.register_blueprint(applications, url_prefix='/applications')  # Register the internships blueprint
 
 	@app.route('/')
 	def landing():
@@ -58,18 +58,7 @@ def create_app():
 	def calendar():
 		return render_template('calendar.html')
 	
-	@app.route('/applications')
-	@login_required
-	def applications():
-		# Use helper methods for smart filtering
-		urgent_internships = [i for i in current_user.internships if i.get_next_action()]
-		overdue_count = sum(1 for i in current_user.internships if i.is_overdue())
-		accepted_count = sum(1 for i in current_user.internships if i.application_status.lower() == 'accepted')
-		
-		return render_template('applications.html', 
-							 urgent_internships=urgent_internships,
-							 overdue_count=overdue_count,
-							 accepted_count=accepted_count)
+	
 	
 	@app.route('/friends')
 	@login_required

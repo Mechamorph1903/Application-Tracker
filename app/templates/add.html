@@ -1,13 +1,145 @@
-<!-- Redirect to new internships add page -->
-<script>
-window.location.href = "{{ url_for('internships.add_internship') }}";
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Add Application</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename="css/applications-details.css")}}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+	<header class="top-section">
+		<button id="back-btn">
+			<i class="fa-solid fa-arrow-left"></i><span>Back</span>
+		</button>
 
-<!-- Fallback message -->
-<div class="container mt-4">
-    <div class="alert alert-info">
-        <h4>Redirecting...</h4>
-        <p>You're being redirected to the new add internship page.</p>
-        <p>If you're not redirected automatically, <a href="{{ url_for('internships.add_internship') }}">click here</a>.</p>
-    </div>
-</div>
+		<h1>New Application</h1>
+	</header>
+
+	<main class="add-form">
+		<form method="POST" action="{{ url_for("applications.add_application") }}">
+			  <div class="form-group">
+            <label for="app_name">Name: </label>
+            <input type="text" name="app_name" required placeholder="Future Workforce: Summer 2026" title="Name of Program">
+        </div>
+
+        <div class="form-group">
+            <label for="company">Company: </label>
+            <input name="company" required placeholder="McDonald's" title="Name of Company">
+        </div>
+
+        <div class="form-group">
+            <label for="location">Location: </label>
+            <input name="location" placeholder="Distrito National, Dominican Republic" title="Where is job located?">
+        </div>
+
+        <div class="form-group">
+            <label for="role">Role: </label>
+            <input type="text" name="role" placeholder="Accountant Intern" title="Enter the role or position">
+        </div>
+
+        <div class="form-group">
+            <label for="link">Link:</label>
+            <input type="text" name="link" title="Link to the Application" placeholder="https://jobs.friesinthebag.com">
+        </div>
+
+        <div class="form-group">
+            <label for="applied">Date Applied: </label>
+			<input type="date" name="applied" id="applied" placeholder="Select application date" title="Enter the date you applied" value="{{ today }}">
+        </div>
+
+		<div class="form-group">
+            <label for="description">Job Description: </label>
+            <textarea type="text" name="description" placeholder="We want someone committed to Karens..." title="What is the job about?"></textarea>
+        </div>
+
+		<div class="form-group">
+            <label for="notes">Personal Notes:</label>
+            <textarea type="text" name="notes" placeholder="Should Follow up on 3/20, Call Dumebi tomorrow..." title="Personal Notes"></textarea>
+        </div>
+			 <!-- Contacts Section -->
+            <div class="form-group">
+                <div class="contacts-header">
+                    <label>Contacts:</label>
+                    <button type="button" id="add-contact-btn" class="add-contact-btn">
+                        <i class="fas fa-plus"></i> Add Contact
+                    </button>
+                </div>
+                
+                <!-- Contact Form (Hidden by default) -->
+                <div id="contact-form" class="contact-form hidden">
+                    <div class="contact-form-header">
+                        <h4>Add New Contact</h4>
+                        <button type="button" id="cancel-contact" class="cancel-btn">✕</button>
+                    </div>
+                    
+                    <div class="contact-fields">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="contact-name">Name:</label>
+                                <input type="text" id="contact-name" placeholder="Full Name" required>
+                            </div>
+                            <div class="form-col">
+                                <label for="contact-title">Title:</label>
+                                <input type="text" id="contact-title" placeholder="HR Manager, Recruiter, etc.">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="contact-email">Email:</label>
+                                <input type="email" id="contact-email" placeholder="contact@company.com">
+                            </div>
+                            <div class="form-col">
+                                <label for="contact-phone">Phone:</label>
+                                <input type="tel" id="contact-phone" placeholder="(555) 123-4567">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="contact-linkedin">LinkedIn:</label>
+                                <input type="url" id="contact-linkedin" placeholder="https://linkedin.com/in/username">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact-notes">Notes:</label>
+                            <textarea id="contact-notes" rows="2" placeholder="Additional notes about this contact..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form-actions">
+                        <button type="button" id="save-contact" class="save-contact-btn">
+                            <i class="fas fa-save"></i> Save Contact
+                        </button>
+                    </div>
+                </div>
+				<!-- Contacts List -->
+                <div id="contacts-list" class="contacts-list">
+                    <p class="no-contacts">No contacts added yet.</p>
+                </div>
+            </div>
+
+			<input type="hidden" id="contacts-data" name="contacts" value="[]"> <!--Where contatcs data is stored and sent to flask-->
+
+			<div class="form-group">
+            	<button type="submit">Add Application</button>
+        	</div>
+		</form>
+	</main>
+
+	<div id="pop-up-back">
+		<div id="pop-up">
+			<i class="fa-solid fa-xmark" id="pop-up-cancel"></i>
+			<p id="pop-up-message">hey</p>
+			<div class="pop-up-buttons">
+				<button class="confirmation-buttons" id="yes">Yes</button>
+				<button class="confirmation-buttons" id="no">No</button>
+			</div>
+		</div>
+	</div>
+	
+	<script src="{{ url_for('static', filename="js/applications.js")}}"></script>
+</body>
+</html>

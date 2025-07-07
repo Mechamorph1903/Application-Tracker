@@ -2,14 +2,15 @@
 
 {% block title %}Applications - InternIn{% endblock %}
 {% block head %}
+    {{ super() }}
     <!-- Include your applications-specific CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/applications.css') }}">
-    <!-- Make sure your static folder is named 'static' and is at 'app/static/css/applications.css' -->
 {% endblock %}
 
+
 {% block content %}
-<div id="add-app">
-    📝
+<div id="add-app" title="New Application">
+   <a href="{{ url_for('applications.add_application') }}">📝</a>
 </div>
 
 <div class="applications-list">
@@ -38,8 +39,8 @@
             </div>
         </div>
     </div>
-    <button class="external-link">
-        _some icon here_
+    <button class="external-link" title="Application Details" onclick="window.open('https://arsenal.com/careers', '_blank')">
+            <i class="fa-solid fa-up-right-from-square"></i>
     </button>
 </div>
 
@@ -101,7 +102,8 @@
         </div>
     </div>
     <button class="external-link">
-        _some icon here_
+        <i class="fa-solid fa-up-right-from-square"></i>
+        application
     </button>
 </div>
 

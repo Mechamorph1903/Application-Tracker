@@ -168,6 +168,7 @@ class User(db.Model, UserMixin): # User model for managing user data
 
 class Internship(db.Model): # Internship model for managing internship applications
 	id = db.Column(db.Integer, primary_key=True) # Unique identifier for each internship application
+	job_name = db.Column(db.String(250), nullable=False)
 	company_name = db.Column(db.String(100), nullable=False) # Name of the company offering the internship
 	position = db.Column(db.String(100), nullable=False) # Position title for the internship
 	application_status = db.Column(db.String(50), nullable=False, default='Applied') # Status of the application (e.g., Applied, Interviewing, Offered, Rejected)
@@ -178,97 +179,25 @@ class Internship(db.Model): # Internship model for managing internship applicati
 	notes = db.Column(db.Text) # Additional notes about the internship application
 	visibility = db.Column(db.String(20), default='friends') # Visibility: 'public', 'friends', 'private'
 	location = db.Column(db.String(200))  # City, State or Remote # Location of the internship (if applicable)
+	contacts = db.Column(db.JSON, default=list)  # List of contacts: [{"name": "Recruiter Name", "details": "recruiter@email.com, 555-1234, LinkedIn"}]
 	# Interview and follow-up tracking
 	interview_date = db.Column(db.DateTime)  # Scheduled interview date/time
 	follow_up_date = db.Column(db.DateTime)  # When to follow up
 	deadline_date = db.Column(db.DateTime)   # Application deadline
-	next_action_date = db.Column(db.DateTime)  # Generic next action reminder
-	next_action_type = db.Column(db.String(50))  # "follow_up", "interview", "decision", etc.
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # Foreign key linking to the User model
 
 	def to_dict(self):
 		return {
 			"id": self.id,
+			"job_name": self.job_name,
 			"company_name": self.company_name,
 			"position": self.position,
+			"description": self.application_description,
 			"application_status": self.application_status,
 			"applied_date": self.applied_date.strftime('%Y-%m-%d'),
 			"status_change_date": self.status_change_date.strftime('%Y-%m-%d'),
 			"notes": self.notes
 		}
-	
-	def get_next_action(self):
-		"""Get the most urgent upcoming action for this internship"""
-		# Check for the next scheduled action in priority order
-		actions = []
-		
-		# Add interview if scheduled and in future
-		if self.interview_date and self.interview_date > datetime.now(timezone.utc):
-			actions.append({
-				'date': self.interview_date,
-				'type': 'interview',
-				'description': f'Interview at {self.company_name}',
-				'priority': 1  # Highest priority
-			})
-		
-		# Add follow-up if scheduled and in future
-		if self.follow_up_date and self.follow_up_date > datetime.now(timezone.utc):
-			actions.append({
-				'date': self.follow_up_date,
-				'type': 'follow_up',
-				'description': f'Follow up with {self.company_name}',
-				'priority': 2
-			})
-		
-		# Add deadline if in future
-		if self.deadline_date and self.deadline_date > datetime.now(timezone.utc):
-			actions.append({
-				'date': self.deadline_date,
-				'type': 'deadline',
-				'description': f'Application deadline for {self.company_name}',
-				'priority': 1  # High priority
-			})
-		
-		# Add custom next action if set
-		if self.next_action_date and self.next_action_date > datetime.now(timezone.utc):
-			actions.append({
-				'date': self.next_action_date,
-				'type': self.next_action_type or 'reminder',
-				'description': self._get_action_description(),
-				'priority': 3
-			})
-		
-		# Return the most urgent action (earliest date, then by priority)
-		if actions:
-			return min(actions, key=lambda x: (x['date'], x['priority']))
-		
-		return None
-	
-	def is_overdue(self):
-		"""Check if any action is overdue (past due date)"""
-		overdue_actions = []
-		
-		# Check each date field for overdue items
-		now = datetime.now(timezone.utc)
-		
-		if self.interview_date and self.interview_date < now:
-			overdue_actions.append('interview')
-		if self.follow_up_date and self.follow_up_date < now:
-			overdue_actions.append('follow_up')
-		if self.deadline_date and self.deadline_date < now:
-			overdue_actions.append('deadline')
-		if self.next_action_date and self.next_action_date < now:
-			overdue_actions.append(self.next_action_type or 'action')
-		
-		return len(overdue_actions) > 0
-	
-	def days_until_next_action(self):
-		"""Get days until next action (negative if overdue)"""
-		next_action = self.get_next_action()
-		if next_action:
-			time_diff = next_action['date'] - datetime.now(timezone.utc)
-			return time_diff.days
-		return None
 	
 	def get_status_color(self):
 		"""Get color code for application status (useful for UI)"""
@@ -281,21 +210,6 @@ class Internship(db.Model): # Internship model for managing internship applicati
 			'withdrawn': '#6c757d'     # Gray
 		}
 		return status_colors.get(self.application_status.lower(), '#6c757d')
-	
-	def _get_action_description(self):
-		"""Generate description for custom action types"""
-		if self.next_action_type:
-			action_descriptions = {
-				'follow_up': f'Follow up on application at {self.company_name}',
-				'interview': f'Interview at {self.company_name}',
-				'decision': f'Decision deadline for {self.company_name}',
-				'thank_you': f'Send thank you note to {self.company_name}',
-				'research': f'Research {self.company_name} before interview',
-				'portfolio': f'Prepare portfolio for {self.company_name}',
-				'references': f'Contact references for {self.company_name}'
-			}
-			return action_descriptions.get(self.next_action_type, f'{self.next_action_type.title()} for {self.company_name}')
-		return f'Action needed for {self.company_name}'
 
 class FriendRequest(db.Model):
 	"""Model for storing friend requests between users"""

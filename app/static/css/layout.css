@@ -394,13 +394,34 @@ input[type="text"] {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background-color: #10b981;
+    background-color: #06f7a61f;
     z-index: 10;
-    width: 50px;
-    height: 50px;
+    width: 60px;           
+    aspect-ratio: 1;   
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+     transition: all 0.3s ease;
 }
+
+#add-app:hover {
+    transform: scale(1.1);
+    background-color: #06f7a63f;
+}
+
+#add-app > a {
+    text-decoration: none;
+    font-size: 1.5rem;
+    color: #06f7a6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
