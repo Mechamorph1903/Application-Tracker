@@ -4,9 +4,14 @@
 {% block head %}
     <!-- Include your applications-specific CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/applications.css') }}">
+    <!-- Make sure your static folder is named 'static' and is at 'app/static/css/applications.css' -->
 {% endblock %}
 
 {% block content %}
+<div id="add-app">
+    📝
+</div>
+
 <div class="applications-list">
     <div class="application-card">
         <div class="status-indicator gray"></div>

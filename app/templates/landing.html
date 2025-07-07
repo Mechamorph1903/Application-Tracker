@@ -11,10 +11,28 @@
         <h1>InternIn</h1>
         <p>Your Personal Internship Tracking Hub</p>
         
-        <div class="buttons">
+        <div class="login-buttons">
             <a href="{{ url_for('auth.register') }}" class="btn">Get Started</a>
             <a href="{{ url_for('auth.register') }}?tab=login" class="btn">Sign In</a>
         </div>
+
+        <section class="info-cards">
+            <form action="">
+                <label for="name1">name</label>
+                <input type="text" name="name1" placeholder="Enter your name" title="Name">
+                <label for="next-action">Next Action</label>
+                <select name="NextAction" id="next-action">
+                    <option value="Interview" selected>Interview</option>
+                    <option value="Online Assessment">Online Assessment</option>
+                    <option value="Follow Up">Follow Up</option>
+                </select>
+            </form>
+            <div class="cards"></div>
+            <div class="cards"></div>
+            <div class="cards"></div>
+            <div class="cards"></div>
+            <div class="cards"></div>
+        </section>
     </div>
 </body>
 </html>
