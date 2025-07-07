@@ -8,54 +8,59 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
+    <!-- Navbar -->
+   <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
-                <h2>InternIn</h2>
+            <div class="navbar-logo">
+                <h2><strong>InternIn</strong></h2>
             </div>
             <div class="nav-links">
                 <a href="#features" class="nav-link">Features</a>
                 <a href="#about" class="nav-link">About</a>
                 <a href="#contact" class="nav-link">Contact</a>
-                <a href="{{ url_for('credits') }}" class="nav-link">Credits</a>
-                <a href="{{ url_for('auth.register') }}?tab=login" class="nav-link login-btn">Sign In</a>
+                <a href="{{ url_for('credits')}}" class="nav-link">Credits</a>
+                <a href="{{ url_for('auth.register') }}?tab=login" class="login-btn nav-link" >Sign In</a>
             </div>
         </div>
-    </nav>
+   </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
+   <!-- Hero Section -->
+   <section class="hero">
         <div class="hero-content">
             <div class="hero-text">
                 <h1 class="hero-title">
                     Track Your <span class="highlight">Internship Journey</span> Like Never Before
                 </h1>
+                
                 <p class="hero-description">
-                    Stay organized, never miss deadlines, and land your dream internship with our comprehensive 
+                     Stay organized, never miss deadlines, and land your dream internship with our comprehensive 
                     tracking platform designed specifically for students and job seekers.
                 </p>
                 <div class="hero-buttons">
+                     <div class="hero-buttons">
                     <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
                         <i class="fas fa-rocket"></i> Get Started Free
                     </a>
                     <a href="#features" class="btn btn-secondary">
                         <i class="fas fa-play"></i> Learn More
                     </a>
+                </div>   
                 </div>
+
                 <div class="hero-stats">
                     <div class="stat">
                         <span class="stat-number">1000+</span>
                         <span class="stat-label">Applications Tracked</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-number">500+</span>
-                        <span class="stat-label">Students Helped</span>
+                        <p class="stat-number">500+</p>
+                        <p class="stat-label">Students Helped</p>
                     </div>
                     <div class="stat">
-                        <span class="stat-number">95%</span>
-                        <span class="stat-label">Success Rate</span>
+                        <p class="stat-number">95%</p>
+                        <p class="stat-label">Success Rate</p>
                     </div>
+                   
                 </div>
             </div>
             <div class="hero-visual">
@@ -73,120 +78,124 @@
                             <div class="card-status green"></div>
                             <h4>Google</h4>
                             <p>Software Engineer Intern</p>
-                            <span class="card-badge accepted">Accepted</span>
+                            <div class="card-badge accepted">Accepted</div>
                         </div>
+                        
                         <div class="preview-card">
                             <div class="card-status blue"></div>
                             <h4>Microsoft</h4>
                             <p>Product Manager Intern</p>
-                            <span class="card-badge interview">Interview</span>
+                            <div class="card-badge interview">Accepted</div>
                         </div>
+
                         <div class="preview-card">
                             <div class="card-status purple"></div>
                             <h4>Apple</h4>
                             <p>Design Intern</p>
-                            <span class="card-badge applied">Applied</span>
+                            <div class="card-badge applied">Accepted</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+   </section>
+   
+   <!-- Features -->
+   <section class="features" id="features">
+        <div class="section-header">
+            <h2>Everything You Need to Land Your Dream Internship</h2>
+            <p>Powerful tools to organize, track, and optimize your Internship Search</p>
+        </div>
 
-    <!-- Features Section -->
-    <section id="features" class="features">
-        <div class="container">
-            <div class="section-header">
-                <h2>Everything You Need to Land Your Dream Internship</h2>
-                <p>Powerful tools to organize, track, and optimize your internship search</p>
+       <div class="container">
+             <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+                <h3>Application Tracking</h3>
+                <p>Keep track of every application with detailed status updates, deadlines, and notes</p>
             </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-clipboard-list"></i>
-                    </div>
-                    <h3>Application Tracking</h3>
-                    <p>Keep track of every application with detailed status updates, deadlines, and notes</p>
+
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fa-solid fa-calendar-days"></i>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <h3>Smart Calendar</h3>
-                    <p>Never miss an interview or deadline with our intelligent calendar system</p>
+                <h3>Smart Calendar <br> (Coming Soon)</h3>
+                <p>Never miss an interview or deadline with our intelligent calendar system</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fa-solid fa-users"></i>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Contact Management</h3>
-                    <p>Store and organize recruiter contacts, interview notes, and follow-up reminders</p>
+                <h3>Contact Management</h3>
+                <p>Store and organize recruiter contacts, interview notes, and follow-up reminders</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fa-solid fa-chart-line"></i>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Progress Analytics</h3>
-                    <p>Visualize your application success rate and identify areas for improvement</p>
+                <h3>Progress Analytics</h3>
+                <p>Visualize your application success rate and identify areas for improvement</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fa-solid fa-bell"></i>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <h3>Smart Reminders</h3>
-                    <p>Get notified about upcoming deadlines, interviews, and follow-ups</p>
+                <h3>Smart Reminders</h3>
+                <p>Get notified about upcoming deadlines, interviews, and follow-ups</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fa-solid fa-share-nodes"></i>     
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-share-alt"></i>
-                    </div>
-                    <h3>Social Features</h3>
-                    <p>Connect with friends, share opportunities, and support each other's journey</p>
-                </div>
+                <h3>Social Features</h3>
+                <p>Connect with friends, share opportunities, and support each other's journey</p>
             </div>
         </div>
-    </section>
+       </div>
+   </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h2>Built by Students, for Students</h2>
-                    <p>
-                        InternIn was created from the frustration of managing dozens of internship applications 
-                        across different platforms. We understand the stress of keeping track of deadlines, 
-                        interview schedules, and application statuses.
-                    </p>
-                    <p>
-                        Our platform is designed to make your internship search organized, efficient, and 
-                        stress-free, so you can focus on what matters most - landing your dream opportunity.
-                    </p>
-                    <div class="about-features">
-                        <div class="about-feature">
-                            <i class="fas fa-check-circle"></i>
-                            <span>100% Free to Use</span>
-                        </div>
-                        <div class="about-feature">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Privacy First</span>
-                        </div>
-                        <div class="about-feature">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Student-Focused</span>
-                        </div>
-                    </div>
+   <!-- Call To Action -->
+   <section class="about" id="about">
+    <div class="container">
+        <div class="about-content">
+            <div class="about-text">
+                <h2>Built by Students, for Students</h2>
+
+            <p>
+                InternIn was created from the frustration of managing dozens of internship applications 
+                            across different platforms. We understand the stress of keeping track of deadlines, 
+                            interview schedules, and application statuses.
+            </p>
+            <p>
+                Our platform is designed to make your internship search organized, efficient, and 
+                            stress-free, so you can focus on what matters most - landing your dream opportunity.
+            </p>
+            <div class="about-features">
+                <div class="about-feature"><i class="fa-solid fa-circle-check"></i></i><span>100% Free To Use</span></div>
+                <div class="about-feature"><i class="fa-solid fa-circle-check"></i></i><span>Privacy First</span></div>
+                <div class="about-feature"><i class="fa-solid fa-circle-check"></i></i><span>Student-Focused</span></div>
+            </div>
+            </div>
+
+            <div class="about-visual">
+                <div class="about-image">
+                    <i class="fa-solid fa-graduation-cap"></i>
                 </div>
-                <div class="about-visual">
-                    <div class="about-image">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                </div>
+                
+
             </div>
         </div>
-    </section>
 
-    <!-- CTA Section -->
+    </div>
+   </section>
+ <!-- CTA Section -->
     <section class="cta">
         <div class="container">
             <div class="cta-content">
