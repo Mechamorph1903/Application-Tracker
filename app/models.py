@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy # Import SQLAlchemy for  ORM functionality
-from datetime import date, datetime # Import date for timestamping and datetime
+from datetime import date, datetime, timezone # Import date for timestamping and datetime
 from flask_login import UserMixin	# Import UserMixin for user management
 from werkzeug.security import generate_password_hash, check_password_hash # Import generate_password_hash for password hashing and check_password_hash for password verification
 
@@ -7,20 +7,30 @@ db = SQLAlchemy()  # Initialize the SQLAlchemy object
 
 class User(db.Model, UserMixin): # User model for managing user data
 	id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each user
+	firstName = db.Column(db.String(100), nullable=False)  # First name of the user
+	lastName = db.Column(db.String(100), nullable=False)  # Last name of the user
 	username = db.Column(db.String(150), nullable=False, unique=True)  # Username must be unique
 	email = db.Column(db.String(150), nullable=False)  # email for the user
 	password_hash = db.Column(db.String(256), nullable=False) # Hashed password for security
 	is_admin = db.Column(db.Boolean, default=False) # Flag to indicate if the user is an admin
 	profile_picture = db.Column(db.String(150), default='default.jpg') # Path to the user's profile picture
 	
-	# New contact fields for friends to see
+	# contact fields for friends to see
 	phone = db.Column(db.String(20)) # Phone number for contact
-	linkedin = db.Column(db.String(200)) # LinkedIn profile URL
+	social_media = db.Column(db.JSON, default=lambda: []) # Social media profile URLs
 	bio = db.Column(db.Text) # Personal bio/description
 	school = db.Column(db.String(100)) # University/school name
+	year = db.Column(db.String(100)) # Graduation year
 	major = db.Column(db.String(100)) # Field of study
-	created_at = db.Column(db.DateTime, default=datetime.utcnow) # When user registered
-
+	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # When user registered
+	
+	# Online status tracking
+	online_status = db.Column(db.String(20), default='offline')  # online, offline, away, busy
+	last_seen = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))  # When user was last active
+	status_message = db.Column(db.String(100))  # Custom status message like "Looking for internships"
+	
+	# Relationships
+	settings = db.relationship('UserSettings', backref='user', uselist=False, lazy=True)
 	internships = db.relationship('Internship', backref='user', lazy=True) # One-to-many relationship with Internship model
 
 	def set_password(self, password):
@@ -31,6 +41,37 @@ class User(db.Model, UserMixin): # User model for managing user data
 	
 	def __repr__(self):
 		return f'<User {self.username}>'
+	
+	# Helper methods for onlibne status tracking
+	def set_online_status(self, status):
+		"""Update User's Online Status"""
+		valid_statuses = ['online', 'offline', 'away', 'busy']
+		if status in valid_statuses:
+			self.online_status = status
+			db.session.commit()
+		else:
+			raise ValueError(f"Invalid status: {status}. Must be one of {valid_statuses}")
+
+	def is_recently_active(self, minutes=5):
+		"""Check if user was active within the last N minutes"""
+		if self.last_seen:
+			time_diff = datetime.now(timezone.utc) - self.last_seen
+			return time_diff.total_seconds() < (minutes * 60)
+		return False
+
+	def get_actual_status(self):
+		"""Get real online status based on activity - manual status is not overridden"""
+		if self.is_recently_active():
+			return self.online_status  # Use their set status
+		else:
+			return 'offline'  # Override to offline if inactive
+		
+
+
+
+
+
+	# User settings management
 	
 	def create_user_settings(self):
 		"""Create default settings for this user if they don't exist"""
@@ -127,28 +168,48 @@ class User(db.Model, UserMixin): # User model for managing user data
 
 class Internship(db.Model): # Internship model for managing internship applications
 	id = db.Column(db.Integer, primary_key=True) # Unique identifier for each internship application
+	job_name = db.Column(db.String(250), nullable=False)
 	company_name = db.Column(db.String(100), nullable=False) # Name of the company offering the internship
 	position = db.Column(db.String(100), nullable=False) # Position title for the internship
 	application_status = db.Column(db.String(50), nullable=False, default='Applied') # Status of the application (e.g., Applied, Interviewing, Offered, Rejected)
 	application_link = db.Column(db.String(200)) # Link to the internship application (if applicable)
-	applictaion_description = db.Column(db.Text) # Description of the internship position
+	application_description = db.Column(db.Text) # Description of the internship position
 	applied_date = db.Column(db.Date, default=date.today) # Date when the application was submitted
 	status_change_date = db.Column(db.Date, default=date.today) # Date when the application status was last changed
 	notes = db.Column(db.Text) # Additional notes about the internship application
 	visibility = db.Column(db.String(20), default='friends') # Visibility: 'public', 'friends', 'private'
-	
+	location = db.Column(db.String(200))  # City, State or Remote # Location of the internship (if applicable)
+	contacts = db.Column(db.JSON, default=list)  # List of contacts: [{"name": "Recruiter Name", "details": "recruiter@email.com, 555-1234, LinkedIn"}]
+	# Interview and follow-up tracking
+	interview_date = db.Column(db.DateTime)  # Scheduled interview date/time
+	follow_up_date = db.Column(db.DateTime)  # When to follow up
+	deadline_date = db.Column(db.DateTime)   # Application deadline
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # Foreign key linking to the User model
 
 	def to_dict(self):
 		return {
 			"id": self.id,
+			"job_name": self.job_name,
 			"company_name": self.company_name,
 			"position": self.position,
+			"description": self.application_description,
 			"application_status": self.application_status,
 			"applied_date": self.applied_date.strftime('%Y-%m-%d'),
 			"status_change_date": self.status_change_date.strftime('%Y-%m-%d'),
 			"notes": self.notes
 		}
+	
+	def get_status_color(self):
+		"""Get color code for application status (useful for UI)"""
+		status_colors = {
+			'applied': '#007bff',      # Blue
+			'interviewing': '#ffc107', # Yellow
+			'offered': '#28a745',      # Green
+			'rejected': '#dc3545',     # Red
+			'accepted': '#28a745',     # Green
+			'withdrawn': '#6c757d'     # Gray
+		}
+		return status_colors.get(self.application_status.lower(), '#6c757d')
 
 class FriendRequest(db.Model):
 	"""Model for storing friend requests between users"""
@@ -156,8 +217,8 @@ class FriendRequest(db.Model):
 	sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	status = db.Column(db.String(20), default='pending')  # pending, accepted, declined
-	created_at = db.Column(db.DateTime, default=datetime.utcnow)
-	updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+	updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 	
 	# Relationships
 	sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_requests')
@@ -169,13 +230,13 @@ class FriendRequest(db.Model):
 	def accept(self):
 		"""Accept this friend request"""
 		self.status = 'accepted'
-		self.updated_at = datetime.utcnow()
+		self.updated_at = datetime.now(timezone.utc)
 		db.session.commit()
 	
 	def decline(self):
 		"""Decline this friend request"""
 		self.status = 'declined'
-		self.updated_at = datetime.utcnow()
+		self.updated_at = datetime.now(timezone.utc)
 		db.session.commit()
 
 	def __repr__(self):
@@ -187,17 +248,18 @@ class UserSettings(db.Model):
 	
 	# Display & Theme Settings
 	theme = db.Column(db.String(20), default='light')  # light, dark, auto
-	dashboard_layout = db.Column(db.String(20), default='grid')  # grid, list, compact
+	dashboard_layout = db.Column(db.String(20), default='grid')  # grid, list, compact (for a later time)
 	items_per_page = db.Column(db.Integer, default=10)
 	
 	# Privacy Settings
-	default_internship_visibility = db.Column(db.String(20), default='friends')  # public, friends, private
+	profile_visibility = db.Column(db.String(20), default='friends')  # public, friends, private
 	show_application_stats = db.Column(db.Boolean, default=True)
 	
 	# Notification Settings
 	email_notifications = db.Column(db.Boolean, default=True)
 	friend_request_notifications = db.Column(db.Boolean, default=True)
 	application_reminders = db.Column(db.Boolean, default=True)
+	online_assessment_reminders = db.Column(db.Boolean, default=True)
 	interview_reminders = db.Column(db.Boolean, default=True)
 	
 	# Application Tracking Settings
@@ -219,11 +281,8 @@ class UserSettings(db.Model):
 	login_notifications = db.Column(db.Boolean, default=False)
 	
 	# Created/Updated timestamps
-	created_at = db.Column(db.DateTime, default=datetime.utcnow)
-	updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-	
-	# Relationship
-	user = db.relationship('User', backref=db.backref('settings', uselist=False))
+	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+	updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 	
 	def __repr__(self):
 		return f'<UserSettings for {self.user.username}>'
@@ -240,7 +299,7 @@ class UserSettings(db.Model):
 		"""Update a single setting"""
 		if hasattr(self, setting_name):
 			setattr(self, setting_name, value)
-			self.updated_at = datetime.utcnow()
+			self.updated_at = datetime.now(timezone.utc)
 			db.session.commit()
 			return True
 		return False

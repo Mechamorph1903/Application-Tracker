@@ -1,0 +1,113 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <title>Settings - InternIn</title>
+</head>
+<body>
+	<nav>
+		<div><a href="javascript:history.back()">
+			<img src="{{ url_for('static', filename='images/back-white.png') }}" alt="Back">
+		</a></div>
+
+		<div class="settings-tabs">
+		<div class="tab active" id="user-settings-tab">User Settings</div>
+		<div class="tab" id="app-settings-tab">App Settings</div>
+		</div>
+	</nav>
+    <!-- User Settings Tab -->
+
+<div class="tab-content" id="user-settings">
+    <!-- Personal Information -->
+    <section class="settings-section">
+        <h3>Personal Information</h3>
+        <!-- firstName, lastName, email, phone, bio -->
+		  <div class="info-grid">
+                <div class="info-item">
+                    <label>First Name:</label>
+                    <span>{{ current_user.firstName or 'Not set' }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Last Name:</label>
+                    <span>{{ current_user.lastName or 'Not set' }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Email:</label>
+                    <span>{{ current_user.email }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Phone:</label>
+                    <span>{{ current_user.phone or 'Not set' }}</span>
+                </div>
+                <div class="info-item full-width">
+                    <label>Bio:</label>
+                    <span>{{ current_user.bio or 'Tell us about yourself...' }}</span>
+                </div>
+            </div>
+    </section>
+    
+    <!-- Education & Profile -->
+    <section class="settings-section">
+        <h3>Education & Profile</h3>
+        <!-- school, year, major, profile_picture -->
+    </section>
+    
+    <!-- Privacy & Visibility -->
+    <section class="settings-section">
+        <h3>Privacy & Visibility</h3>
+        <!-- profile_visibility, show_application_stats -->
+    </section>
+    
+    <!-- Regional & Time -->
+    <section class="settings-section">
+        <h3>Regional & Time Preferences</h3>
+        <!-- timezone, date_format, time_format -->
+    </section>
+    
+    <!-- Security -->
+    <section class="settings-section">
+        <h3>Security</h3>
+        <!-- two_factor_enabled, login_notifications -->
+    </section>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- App Settings Tab -->
+<div class="tab-content" id="app-settings">
+    <!-- Appearance & Display -->
+    <section class="settings-section">
+        <h3>Appearance & Display</h3>
+        <!-- theme, dashboard_layout, items_per_page -->
+    </section>
+    
+    <!-- Notifications -->
+    <section class="settings-section">
+        <h3>Notifications</h3>
+        <!-- email_notifications, friend_request_notifications, 
+             application_reminders, interview_reminders -->
+    </section>
+    
+    <!-- Application Tracking -->
+    <section class="settings-section">
+        <h3>Application Tracking</h3>
+        <!-- auto_archive_rejected, reminder_days_before_followup, 
+             default_application_status -->
+    </section>
+    
+    <!-- Data & Export -->
+    <section class="settings-section">
+        <h3>Data & Export</h3>
+        <!-- auto_backup, export_format -->
+    </section>
+</div>
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+</body>
+</html>
