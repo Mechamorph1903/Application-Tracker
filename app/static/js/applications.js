@@ -1,5 +1,17 @@
 let contacts = [];
 
+// Helper function for proper title case
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, (txt) => {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
+
+// Helper function for lowercase (used in display)
+function toLower(str) {
+    return str.toLowerCase();
+}
+
 const addContactBtn = document.getElementById('add-contact-btn');
 const contactForm = document.getElementById('contact-form');
 const cancelContactBtn = document.getElementById('cancel-contact');
@@ -27,29 +39,34 @@ addContactBtn.addEventListener('click', (e) => {
 cancelContactBtn.addEventListener('click', function() {
         contactForm.classList.add('hidden');
         addContactBtn.style.display = 'flex';
-		contacts = [];
-		contactsData.value = [];
-		clearForm();
-
-       
+        clearForm(); // Only clear the form, keep saved contacts!
 });
 
 saveContactBtn.addEventListener('click', (e) => {
-	e.preventDefault();
+	 e.preventDefault();
+
+    // Get and validate form values
+    let contactName = document.getElementById('contact-name').value.trim();
+    
+    // Only validate when user is trying to save a contact
+    if (!contactName) {
+        alert('Contact name is required when adding a contact!');
+        return;
+	}
 
 	contactForm.classList.add('hidden');
 	addContactBtn.style.display = 'flex';
 
-	const contactName = document.getElementById('contact-name').value;
-	const contactPosition = document.getElementById('contact-title').value || "Not Assigned";
+	contactName = document.getElementById('contact-name').value.trim();
+	const contactTitle = document.getElementById('contact-title').value.trim();
 	const contactEmail = document.getElementById('contact-email').value || "Not Assigned";
 	const contactPhone = document.getElementById('contact-phone').value || "Not Assigned";
 	const contactLinkedIn = document.getElementById('contact-linkedin').value || "Not Assigned";
 	const contactNotes = document.getElementById('contact-notes').value || "Not Assigned";
 
 	const contact = {
-		name: contactName,
-		position: contactPosition,
+		name: contactName ? toTitleCase(contactName) : "Not Assigned",
+		position: contactTitle || "Not Assigned",
 		phone: contactPhone,
 		email: contactEmail,
 		linkedin: contactLinkedIn,
@@ -85,7 +102,7 @@ const updateContactsList = () => {
         html += `
             <div class="contacts" data-index="${index}">
                 <div class="contact-info">
-                    <h4>${contact.name} <i> ${contact.position != 'Not Assigned' ? ` - ${contact.position}` : ''}</i></h4>
+                    <h4>${toLower(contact.name)} <i> ${contact.position != 'Not Assigned' ? ` - ${toLower(contact.position)}` : ''}</i></h4>
                     <button type="button" class="delete-contact" onclick="deleteContact(${index})">
                     	<i class="fas fa-trash"></i>
                		</button>

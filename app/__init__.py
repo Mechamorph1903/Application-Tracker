@@ -25,7 +25,9 @@ def create_app():
 	# Initialize extensions
 	db.init_app(app)
 	login_manager = LoginManager()
-	login_manager.login_view = 'landing'  # Redirect to landing page if not authenticated
+	login_manager.login_view = 'auth.register'  # Redirect to login/register page if not authenticated
+	login_manager.login_message = 'Please log in to access this page.'
+	login_manager.login_message_category = 'info'
 	login_manager.init_app(app)
 
 	@login_manager.user_loader

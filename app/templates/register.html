@@ -7,19 +7,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
         {% for category, message in messages %}
-          <div class="flash {{ category }}">{{ message }}</div>
+          <div class="flash-message flash-{{ category }}">
+            <div class="flash-content">
+              <i class="flash-icon fas {% if category == 'success' %}fa-check-circle{% elif category == 'error' or category == 'danger' %}fa-exclamation-circle{% elif category == 'info' %}fa-info-circle{% elif category == 'warning' %}fa-exclamation-triangle{% else %}fa-bell{% endif %}"></i>
+              <span class="flash-text">{{ message }}</span>
+              <button class="flash-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+            </div>
+          </div>
         {% endfor %}
-      {% endif %}
-    {% endwith %}   <div class="tabs-container">
-    <div class="tab" data-tab="login" onclick="switchTab('login')">Login</div>
-    <div class="tab active" data-tab="register" onclick="switchTab('register')">Register</div>
-  </div>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="container">
+    <div class="tabs-container">
+      <div class="tab" data-tab="login" onclick="switchTab('login')">Login</div>
+      <div class="tab active" data-tab="register" onclick="switchTab('register')">Register</div>
+    </div>
 
     <div class="form-container">
       <!--Login-->
@@ -56,6 +68,26 @@
         <button type="submit">Register</button>
     </form>
     </div>
-    </div>    <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
+    
+    <!-- Flash Message Auto-Dismiss -->
+    <script>
+      // Auto-dismiss flash messages after 5 seconds
+      document.addEventListener('DOMContentLoaded', function() {
+        const flashMessages = document.querySelectorAll('.flash-message');
+        
+        flashMessages.forEach(function(message) {
+          // Auto-dismiss after 5 seconds
+          setTimeout(function() {
+            message.classList.add('flash-dismissing');
+            setTimeout(function() {
+              message.remove();
+            }, 300);
+          }, 5000);
+        });
+      });
+    </script>
 </body>
 </html>

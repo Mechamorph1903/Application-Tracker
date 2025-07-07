@@ -40,19 +40,83 @@
     </div>
   </div>
 
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">
+            <div class="flash-content">
+              <i class="flash-icon fas {% if category == 'success' %}fa-check-circle{% elif category == 'error' %}fa-exclamation-circle{% elif category == 'info' %}fa-info-circle{% else %}fa-bell{% endif %}"></i>
+              <span class="flash-text">{{ message }}</span>
+              <button class="flash-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <main>
     {% block content %}
     <!-- Each page's content will be inserted here -->
     {% endblock %}
   </main>
 
+  <!-- Include nav.js for logout functionality -->
+  <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+  
+  <!-- Flash Message Auto-Dismiss -->
+  <script>
+    // Auto-dismiss flash messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+      const flashMessages = document.querySelectorAll('.flash-message');
+      
+      flashMessages.forEach(function(message) {
+        // Auto-dismiss after 5 seconds
+        setTimeout(function() {
+          message.classList.add('flash-dismissing');
+          setTimeout(function() {
+            message.remove();
+          }, 300);
+        }, 5000);
+      });
+    });
+  </script>
   {% block extra_js %}{% endblock %}
 </body>
 
-<footer>
-    <div class="page-footer">
-        <p class="trademark">A Tinubu Special &trade;</p>
-        <a href="{{ url_for('credits') }}" class="footer-link">Credits & Attribution</a>
+<footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3 class="footer-logo">InternIn</h3>
+                <p class="footer-tagline">Track your journey to success</p>
+            </div>
+            <div class="footer-links">
+                <a href="{{ url_for('home') }}" class="footer-link">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+                <a href="{{ url_for('applications.applicationsList') }}" class="footer-link">
+                    <i class="fas fa-briefcase"></i>
+                    Applications
+                </a>
+                <a href="{{ url_for('credits') }}" class="footer-link">
+                    <i class="fas fa-heart"></i>
+                    Credits
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copyright">
+                <i class="fas fa-copyright"></i>
+                2025 InternIn - A Tinubu Special &trade;
+            </p>
+            <p class="footer-love">
+                Made with <i class="fas fa-heart footer-heart"></i> for aspiring professionals
+            </p>
+        </div>
     </div>
 </footer>
 

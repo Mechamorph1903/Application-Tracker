@@ -11,6 +11,12 @@ body {
     min-height: 100vh;
     color: #333;
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+}
+
+.credits-main {
+    flex: 1;
 }
 
 .container {
@@ -299,7 +305,7 @@ body {
 	-webkit-backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     padding: 2rem 0;
-    margin-top: 3rem;
+    margin-top: auto;
     color: white;
 }
 
@@ -323,6 +329,76 @@ body {
 .footer-trademark {
     opacity: 0.8;
     font-size: 0.9rem;
+}
+
+/* AI Contributions Specific Styling */
+.ai-contributions {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border-radius: 12px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.ai-contributions h4 {
+    color: #4c51bf;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-contributions ul {
+    list-style: none;
+    padding: 0;
+}
+
+.ai-contributions li {
+    margin-bottom: 0.8rem;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.ai-contributions li:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.ai-contributions li strong {
+    color: #4c51bf;
+    font-weight: 600;
+}
+
+/* Robot icon animation for AI section */
+.fa-robot {
+    animation: robotPulse 2s infinite;
+}
+
+@keyframes robotPulse {
+    0%, 100% { 
+        transform: scale(1);
+        color: #667eea;
+    }
+    50% { 
+        transform: scale(1.1);
+        color: #764ba2;
+    }
+}
+
+/* Brain icon styling */
+.fa-brain {
+    color: #8b5cf6;
+    animation: brainGlow 3s infinite alternate;
+}
+
+@keyframes brainGlow {
+    from { opacity: 0.7; }
+    to { opacity: 1; }
 }
 
 /* Responsive Design */

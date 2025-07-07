@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from datetime import datetime, timezone, date
+import json
 from ..models import db, Internship, User
 from . import applications
 
@@ -9,7 +10,10 @@ applications = Blueprint('applications', __name__)
 @applications.route('/applications-list')
 @login_required
 def applicationsList():
-    return render_template('applications.html')
+    """Display user's internship applications"""
+    # Get all internships for the current user
+    internships = Internship.query.filter_by(user_id=current_user.id).all()
+    return render_template('applications.html', internships=internships)
 
 @applications.route('/add', methods=['GET', 'POST'])
 @login_required
@@ -21,19 +25,37 @@ def add_application():
             name = request.form.get('app_name')
             company_name = request.form.get('company')
             position = request.form.get('role')
+            
+            if not name or not company_name:
+                flash('Name and Company are required!', 'error')
+                return redirect(url_for('applications.add_application'))
+            
             application_status = request.form.get('application_status', 'applied')
             application_link = request.form.get('link')
             application_description = request.form.get('description')
             location = request.form.get('location')
             notes = request.form.get('notes')
             visibility = request.form.get('visibility', 'friends')
+            contacts_json = request.form.get('contacts', '[]')
+            
+            # Parse contacts JSON
+            try:
+                contacts = json.loads(contacts_json) if contacts_json else []
+            except json.JSONDecodeError:
+                contacts = []
             
             # Parse date fields (handle empty strings)
+            def parse_date(date_str):
+                if date_str:
+                    return datetime.fromisoformat(date_str).date()
+                return None
+            
             def parse_datetime(date_str):
                 if date_str:
                     return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
                 return None
             
+            applied_date = parse_date(request.form.get('applied'))
             interview_date = parse_datetime(request.form.get('interview_date'))
             follow_up_date = parse_datetime(request.form.get('follow_up_date'))
             deadline_date = parse_datetime(request.form.get('deadline_date'))
@@ -49,9 +71,11 @@ def add_application():
                 location=location,
                 notes=notes,
                 visibility=visibility,
+                applied_date=applied_date,
                 interview_date=interview_date,
                 follow_up_date=follow_up_date,
                 deadline_date=deadline_date,
+                contacts=contacts,
                 user_id=current_user.id
             )
             
@@ -59,11 +83,11 @@ def add_application():
             db.session.commit()
             
             flash(f'Successfully added internship application for {company_name}!', 'success')
-            return redirect(url_for('applications'))
+            return redirect('/applications/applications-list')
             
         except Exception as e:
             flash(f'Error adding internship: {str(e)}', 'error')
-            return redirect(url_for('internships.add_internship'))
+            return redirect(url_for('applications.add_application'))
     
     # GET request - show the form
     today = date.today().strftime('%Y-%m-%d')
@@ -109,7 +133,7 @@ def edit_application(internship_id):
             db.session.commit()
             
             flash(f'Successfully updated {internship.company_name} application!', 'success')
-            return redirect(url_for('applications'))
+            return redirect(url_for('applications.applicationsList'))
             
         except Exception as e:
             flash(f'Error updating internship: {str(e)}', 'error')
@@ -123,14 +147,14 @@ def delete_internship(internship_id):
     internship = Internship.query.filter_by(id=internship_id, user_id=current_user.id).first()
     
     if not internship:
-        flash('Internship not found or you do not have permission to delete it.', 'error')
-        return redirect(url_for('applications'))
+        flash('Internship not found or you do not have permission to edit it.', 'error')
+        return redirect(url_for('applications.applicationsList'))
     
     company_name = internship.company_name
     db.session.delete(internship)
     db.session.commit()
     
     flash(f'Successfully deleted {company_name} application.', 'info')
-    return redirect(url_for('applications'))
+    return redirect(url_for('applications.applicationsList'))
 
 

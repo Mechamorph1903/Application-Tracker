@@ -3,36 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to InternIn</title>
+    <title>InternIn - Your Personal Internship Tracking Hub</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>InternIn</h1>
-        <p>Your Personal Internship Tracking Hub</p>
-        
-        <div class="login-buttons">
-            <a href="{{ url_for('auth.register') }}" class="btn">Get Started</a>
-            <a href="{{ url_for('auth.register') }}?tab=login" class="btn">Sign In</a>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>InternIn</h2>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="{{ url_for('credits') }}" class="nav-link">Credits</a>
+                <a href="{{ url_for('auth.register') }}?tab=login" class="nav-link login-btn">Sign In</a>
+            </div>
         </div>
+    </nav>
 
-        <section class="info-cards">
-            <form action="">
-                <label for="name1">name</label>
-                <input type="text" name="name1" placeholder="Enter your name" title="Name">
-                <label for="next-action">Next Action</label>
-                <select name="NextAction" id="next-action">
-                    <option value="Interview" selected>Interview</option>
-                    <option value="Online Assessment">Online Assessment</option>
-                    <option value="Follow Up">Follow Up</option>
-                </select>
-            </form>
-            <div class="cards"></div>
-            <div class="cards"></div>
-            <div class="cards"></div>
-            <div class="cards"></div>
-            <div class="cards"></div>
-        </section>
-    </div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    Track Your <span class="highlight">Internship Journey</span> Like Never Before
+                </h1>
+                <p class="hero-description">
+                    Stay organized, never miss deadlines, and land your dream internship with our comprehensive 
+                    tracking platform designed specifically for students and job seekers.
+                </p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Get Started Free
+                    </a>
+                    <a href="#features" class="btn btn-secondary">
+                        <i class="fas fa-play"></i> Learn More
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">1000+</span>
+                        <span class="stat-label">Applications Tracked</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Students Helped</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">95%</span>
+                        <span class="stat-label">Success Rate</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="dashboard-preview">
+                    <div class="preview-header">
+                        <div class="preview-nav">
+                            <div class="nav-dot active"></div>
+                            <div class="nav-dot"></div>
+                            <div class="nav-dot"></div>
+                        </div>
+                        <h3>Your Dashboard</h3>
+                    </div>
+                    <div class="preview-content">
+                        <div class="preview-card">
+                            <div class="card-status green"></div>
+                            <h4>Google</h4>
+                            <p>Software Engineer Intern</p>
+                            <span class="card-badge accepted">Accepted</span>
+                        </div>
+                        <div class="preview-card">
+                            <div class="card-status blue"></div>
+                            <h4>Microsoft</h4>
+                            <p>Product Manager Intern</p>
+                            <span class="card-badge interview">Interview</span>
+                        </div>
+                        <div class="preview-card">
+                            <div class="card-status purple"></div>
+                            <h4>Apple</h4>
+                            <p>Design Intern</p>
+                            <span class="card-badge applied">Applied</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Everything You Need to Land Your Dream Internship</h2>
+                <p>Powerful tools to organize, track, and optimize your internship search</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3>Application Tracking</h3>
+                    <p>Keep track of every application with detailed status updates, deadlines, and notes</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Smart Calendar</h3>
+                    <p>Never miss an interview or deadline with our intelligent calendar system</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Contact Management</h3>
+                    <p>Store and organize recruiter contacts, interview notes, and follow-up reminders</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Progress Analytics</h3>
+                    <p>Visualize your application success rate and identify areas for improvement</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Smart Reminders</h3>
+                    <p>Get notified about upcoming deadlines, interviews, and follow-ups</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <h3>Social Features</h3>
+                    <p>Connect with friends, share opportunities, and support each other's journey</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Built by Students, for Students</h2>
+                    <p>
+                        InternIn was created from the frustration of managing dozens of internship applications 
+                        across different platforms. We understand the stress of keeping track of deadlines, 
+                        interview schedules, and application statuses.
+                    </p>
+                    <p>
+                        Our platform is designed to make your internship search organized, efficient, and 
+                        stress-free, so you can focus on what matters most - landing your dream opportunity.
+                    </p>
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>100% Free to Use</span>
+                        </div>
+                        <div class="about-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Privacy First</span>
+                        </div>
+                        <div class="about-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Student-Focused</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <div class="about-image">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Take Control of Your Internship Search?</h2>
+                <p>Join thousands of students who are already using InternIn to organize their applications</p>
+                <div class="cta-buttons">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Create Free Account
+                    </a>
+                    <a href="{{ url_for('auth.register') }}?tab=login" class="btn btn-secondary">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>InternIn</h3>
+                    <p>Your Personal Internship Tracking Hub</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" title="Follow us on Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link" title="Connect with us on LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link" title="View our GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Features</h4>
+                    <ul>
+                        <li><a href="#features">Application Tracking</a></li>
+                        <li><a href="#features">Smart Calendar</a></li>
+                        <li><a href="#features">Contact Management</a></li>
+                        <li><a href="#features">Analytics</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="{{ url_for('credits') }}">Credits & Attribution</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-envelope"></i> support@internin.com</p>
+                    <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                    <p><i class="fas fa-map-marker-alt"></i> University Campus</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 InternIn. All rights reserved. A Tinubu Special &trade;</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(30, 30, 30, 0.95)';
+                navbar.style.backdropFilter = 'blur(10px)';
+            } else {
+                navbar.style.background = 'transparent';
+                navbar.style.backdropFilter = 'none';
+            }
+        });
+
+        // Animate stats on scroll
+        function animateStats() {
+            const stats = document.querySelectorAll('.stat-number');
+            stats.forEach(stat => {
+                const target = parseInt(stat.textContent.replace(/[^0-9]/g, ''));
+                let current = 0;
+                const increment = target / 100;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    stat.textContent = Math.floor(current) + stat.textContent.replace(/[0-9]/g, '').charAt(0);
+                }, 20);
+            });
+        }
+
+        // Trigger animation when hero section is visible
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateStats();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+
+        observer.observe(document.querySelector('.hero-stats'));
+    </script>
 </body>
 </html>
