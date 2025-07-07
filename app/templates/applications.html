@@ -2,132 +2,66 @@
 
 {% block title %}Applications - InternIn{% endblock %}
 {% block head %}
+    {{ super() }}
     <!-- Include your applications-specific CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/applications.css') }}">
 {% endblock %}
 
+
 {% block content %}
-<div class="applications-list">
-    <div class="application-card">
-        <div class="status-indicator gray"></div>
-        <div class="application-content">
-            <div class="application-header">
-                <h3>Arsenal</h3>
-                <span class="status-badge gray">Unavailable</span>
-            </div>
-            <p class="position">Striker</p>
-            <div class="application-details">
-                <div class="detail">
-                    London, UK
-                </div>
-            <div class="detail">
-                Applied: Jan 15, 2024
-            </div>
-        </div>
-        <div class="application-dates">
-            <div class="deadline">
-                Deadline: Feb 1, 2024
-            </div>
-            <div class="followup">
-                Follow-up: Jan 22, 2024
-            </div>
-        </div>
-    </div>
-    <button class="external-link">
-        _some icon here_
-    </button>
+<div id="add-app" title="New Application">
+   <a href="{{ url_for('applications.add_application') }}">📝</a>
 </div>
 
-<div class="applications-list">
-    <div class="application-card">
-        <div class="status-indicator purple"></div>
-        <div class="application-content">
-            <div class="application-header">
-                <h3>Google</h3>
-                <span class="status-badge purple">Interview</span>
-            </div>
-            <p class="position">Software Engineering Intern</p>
-            <div class="application-details">
-                <div class="detail">
-                    Mountain View, CA
+{% if internships %}
+    {% for internship in internships %}
+    <div class="applications-list">
+        <div class="application-card">
+            <div class="status-indicator {% if internship.application_status == 'accepted' %}purple{% elif internship.application_status == 'rejected' %}red{% elif internship.application_status == 'applied' %}cyan{% else %}gray{% endif %}"></div>
+            <div class="application-content">
+                <div class="application-header">
+                    <h3>{{ internship.company_name }}</h3>
+                    <span class="status-badge {% if internship.application_status == 'accepted' %}purple{% elif internship.application_status == 'rejected' %}red{% elif internship.application_status == 'applied' %}cyan{% else %}gray{% endif %}">{{ internship.application_status.title() }}</span>
                 </div>
-            <div class="detail">
-                Applied: Jan 15, 2024
+                <p class="position">{{ internship.position }}</p>
+                <div class="application-details">
+                    {% if internship.location %}
+                    <div class="detail">
+                        {{ internship.location }}
+                    </div>
+                    {% endif %}
+                    {% if internship.applied_date %}
+                    <div class="detail">
+                        Applied: {{ internship.applied_date.strftime('%b %d, %Y') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="application-dates">
+                    {% if internship.deadline_date %}
+                    <div class="deadline">
+                        Deadline: {{ internship.deadline_date.strftime('%b %d, %Y') }}
+                    </div>
+                    {% endif %}
+                    {% if internship.follow_up_date %}
+                    <div class="followup">
+                        Follow-up: {{ internship.follow_up_date.strftime('%b %d, %Y') }}
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="application-dates">
-            <div class="deadline">
-                Deadline: Feb 1, 2024
-            </div>
-            <div class="followup">
-                Follow-up: Jan 22, 2024
-            </div>
+            {% if internship.application_link %}
+            <button class="external-link" title="Application Details" onclick="window.open('{{ internship.application_link }}', '_blank')">
+                <i class="fa-solid fa-up-right-from-square"></i>
+            </button>
+            {% endif %}
         </div>
     </div>
-    <button class="external-link">
-        _some icon here_
-    </button>
-</div>
-
-<div class="applications-list">
-    <div class="application-card">
-        <div class="status-indicator red"></div>
-        <div class="application-content">
-            <div class="application-header">
-                <h3>The Fresh</h3>
-                <span class="status-badge red">Rejected</span>
-            </div>
-            <p class="position">Chief Inspector</p>
-            <div class="application-details">
-                <div class="detail">
-                    Hattiesburg, MS
-                </div>
-            <div class="detail">
-                Applied: Jan 15, 2024
-            </div>
-        </div>
-        <div class="application-dates">
-            <div class="deadline">
-                Deadline: Feb 1, 2024
-            </div>
-            <div class="followup">
-                Follow-up: Jan 22, 2024
-            </div>
-        </div>
+    {% endfor %}
+{% else %}
+    <div class="no-applications">
+        <h2>No applications yet</h2>
+        <p>Start by adding your first internship application!</p>
+        <a href="{{ url_for('applications.add_application') }}" class="btn btn-primary">Add Application</a>
     </div>
-    <button class="external-link">
-        _some icon here_
-    </button>
-</div>
-
-<div class="applications-list">
-    <div class="application-card">
-        <div class="status-indicator cyan"></div>
-        <div class="application-content">
-            <div class="application-header">
-                <h3>Dell</h3>
-                <span class="status-badge cyan">Applied</span>
-            </div>
-            <p class="position">Software Engineering Intern</p>
-            <div class="application-details">
-                <div class="detail">
-                    Mountain View, CA
-                </div>
-            <div class="detail">
-                Applied: Jan 15, 2024
-            </div>
-        </div>
-        <div class="application-dates">
-            <div class="deadline">
-                Deadline: Feb 1, 2024
-            </div>
-            <div class="followup">
-                Follow-up: Jan 22, 2024
-            </div>
-        </div>
-    </div>
-    <button class="external-link">
-        _some icon here_
-    </button>
-</div>
+{% endif %}
 {% endblock %}

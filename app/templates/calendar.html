@@ -1,0 +1,270 @@
+{% extends "layout.html" %}
+
+{% block title %}Calendar - InternIn{% endblock %}
+
+{% block extra_css %}
+<style>
+    .coming-soon-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 70vh;
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(168, 85, 247, 0.1));
+        border-radius: 20px;
+        margin: 2rem auto;
+        max-width: 800px;
+    }
+
+    .coming-soon-icon {
+        font-size: 6rem;
+        color: #7c3aed;
+        margin-bottom: 1.5rem;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .coming-soon-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 10px rgba(124, 58, 237, 0.3);
+    }
+
+    .coming-soon-subtitle {
+        font-size: 1.5rem;
+        color: #a855f7;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+
+    .coming-soon-description {
+        font-size: 1.1rem;
+        color: #cbb6da;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+        max-width: 600px;
+    }
+
+    .feature-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+        width: 100%;
+    }
+
+    .feature-card {
+        background: rgba(30, 30, 30, 0.8);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(124, 58, 237, 0.2);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        color: #a855f7;
+        margin-bottom: 1rem;
+    }
+
+    .feature-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+
+    .feature-description {
+        font-size: 0.9rem;
+        color: #cbb6da;
+        line-height: 1.4;
+    }
+
+    .notify-section {
+        background: rgba(124, 58, 237, 0.1);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .notify-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 1rem;
+    }
+
+    .notify-form {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .notify-input {
+        flex: 1;
+        padding: 0.8rem;
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        border-radius: 8px;
+        background: rgba(30, 30, 30, 0.8);
+        color: #ffffff;
+        font-size: 0.9rem;
+    }
+
+    .notify-input::placeholder {
+        color: #9ca3af;
+    }
+
+    .notify-btn {
+        padding: 0.8rem 1.5rem;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .notify-btn:hover {
+        background: linear-gradient(135deg, #6d28d9, #9333ea);
+        transform: translateY(-2px);
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(124, 58, 237, 0.2);
+        border-radius: 4px;
+        margin-top: 2rem;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border-radius: 4px;
+        width: 45%;
+        animation: progress-pulse 2s infinite;
+    }
+
+    @keyframes progress-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    .progress-text {
+        font-size: 0.9rem;
+        color: #cbb6da;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
+
+    @media (max-width: 768px) {
+        .coming-soon-title {
+            font-size: 2rem;
+        }
+        
+        .coming-soon-subtitle {
+            font-size: 1.2rem;
+        }
+        
+        .notify-form {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .notify-input {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="coming-soon-container">
+    <div class="coming-soon-icon">
+        <i class="fas fa-calendar-alt"></i>
+    </div>
+    
+    <h1 class="coming-soon-title">Calendar Coming Soon!</h1>
+    <p class="coming-soon-subtitle">Track Your Application Deadlines & Interviews</p>
+    
+    <p class="coming-soon-description">
+        We're working hard to bring you an amazing calendar experience that will help you stay organized 
+        and never miss an important deadline or interview. Get ready for a feature-rich calendar that 
+        integrates seamlessly with your internship applications!
+    </p>
+    
+    <div class="feature-preview">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h3 class="feature-title">Smart Reminders</h3>
+            <p class="feature-description">Get notified about upcoming deadlines, interviews, and follow-ups</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-sync"></i>
+            </div>
+            <h3 class="feature-title">Auto-Sync</h3>
+            <p class="feature-description">Automatically sync with your application dates and deadlines</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-eye"></i>
+            </div>
+            <h3 class="feature-title">Multiple Views</h3>
+            <p class="feature-description">Month, week, and day views to fit your planning style</p>
+        </div>
+    </div>
+    
+    <div class="notify-section">
+        <h3 class="notify-title">Get Notified When It's Ready</h3>
+        <form class="notify-form" onsubmit="handleNotification(event)">
+            <input type="email" class="notify-input" placeholder="Enter your email" required>
+            <button type="submit" class="notify-btn">Notify Me</button>
+        </form>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="progress-fill"></div>
+    </div>
+    <p class="progress-text">Development Progress: 45% Complete</p>
+</div>
+
+<script>
+function handleNotification(event) {
+    event.preventDefault();
+    const email = event.target.querySelector('input[type="email"]').value;
+    
+    // Show success message
+    alert(`Thanks! We'll notify ${email} when the calendar is ready! 🎉`);
+    
+    // Clear the form
+    event.target.reset();
+    
+    // You can add actual notification logic here later
+    console.log('Calendar notification signup:', email);
+}
+</script>
+{% endblock %}
