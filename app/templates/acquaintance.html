@@ -1,0 +1,134 @@
+{% extends "layout.html" %}
+
+{% block title %}Limited Profile | InternIn{% endblock %}
+
+{% block content %}
+<style>
+  /* Outer wrapper spacing - top spacing only, no vertical centering */
+  .acquaintance-wrapper {
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Profile Card */
+  .limited-profile-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 540px;
+    padding: 24px 28px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    background: white;
+    color: black;
+    font-weight: bold;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #b993fd;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .add-friend-btn {
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 2px solid #b993fd;
+    border-radius: 10px;
+    background: transparent;
+    color: #cbb6da;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .add-friend-btn:hover {
+    background-color: #b993fd;
+    color: white;
+    transform: scale(1.03);
+  }
+
+  .mutual-friends {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .friend-avatar {
+    width: 34px;
+    height: 34px;
+    background: white;
+    color: black;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid #b993fd;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  .friend-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 6px rgba(185, 147, 253, 0.5);
+  }
+
+  @media (max-width: 600px) {
+    .limited-profile-card {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .limited-profile-card > div:first-child {
+      margin-bottom: 20px;
+    }
+  }
+</style>
+
+<div class="acquaintance-wrapper">
+  <div class="limited-profile-card">
+
+    <!-- Left: Avatar -->
+    <div class="profile-avatar">SJ</div>
+
+    <!-- Right: Info Column -->
+    <div style="flex: 1;">
+      <h2 style="margin: 0 0 4px;">Sarah Johnson</h2>
+      <p style="margin: 0; color: #cbb6da;">MIT</p>
+      <p style="margin: 4px 0 14px; font-size: 0.9rem; color: #b993fd;">You’re not yet friends</p>
+
+      <!-- Add Friend Button -->
+      <button class="add-friend-btn"
+        onmouseover="this.innerText='Unlock Applications 🔓'"
+        onmouseout="this.innerText='Add Friend'">
+        Add Friend
+      </button>
+
+      <!-- Mutual Friends -->
+      <h3 style="margin: 18px 0 10px; color: #fff;">Mutual Friends</h3>
+      <div class="mutual-friends">
+        {% for friend in ['MC', 'SJ', 'AD'] %}
+        <div title="{{ friend }}" class="friend-avatar">{{ friend }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Info Message -->
+      <p style="font-size: 0.95rem; color: #c5a3ff;">
+        Add Sarah as a friend to view internship applications
+      </p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
