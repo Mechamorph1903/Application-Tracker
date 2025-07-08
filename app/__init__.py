@@ -60,7 +60,10 @@ def create_app():
 	def calendar():
 		return render_template('calendar.html')
 	
-	
+	@app.route('/acquaintance')
+	@login_required
+	def limited_profile():
+		return render_template('acquaintance.html')
 	
 	@app.route('/friends')
 	@login_required
