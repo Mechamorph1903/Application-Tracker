@@ -15,6 +15,19 @@ def applicationsList():
     internships = Internship.query.filter_by(user_id=current_user.id).all()
     return render_template('applications.html', internships=internships)
 
+@applications.route('/application-details/<int:internship_id>')
+@login_required
+def application_details(internship_id):
+    """Display detailed view of a specific internship application"""
+    # Get the internship for the current user
+    internship = Internship.query.filter_by(id=internship_id, user_id=current_user.id).first()
+    
+    if not internship:
+        flash('Internship not found or you do not have permission to view it.', 'error')
+        return redirect(url_for('applications.applicationsList'))
+    
+    return render_template('application_details.html', internship=internship)
+
 @applications.route('/add', methods=['GET', 'POST'])
 @login_required
 def add_application():
