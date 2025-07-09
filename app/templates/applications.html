@@ -1,12 +1,9 @@
 {% extends "layout.html" %}
 
 {% block title %}Applications - InternIn{% endblock %}
-{% block head %}
-    {{ super() }}
-    <!-- Include your applications-specific CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/applications.css') }}">
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/applications.css') }}">
 {% endblock %}
-
 
 {% block content %}
 <div id="add-app" title="New Application">
@@ -15,8 +12,9 @@
 
 {% if internships %}
     <!-- Replace the existing application cards with clickable versions -->
+    <div class="applications-grid">
     {% for internship in internships %}
-    <div class="application-card" onclick="window.location.href='{{ url_for('applications.application_details', internship_id=internship.id) }}'" style="cursor: pointer;">       
+        <div class="application-card" onclick="window.location.href='{{ url_for('applications.application_details', internship_id=internship.id) }}'" style="cursor: pointer;">       
         <div class="application-header">
             <div class="application-main-info">
                 <h3 class="company-name">{{ internship.company_name }}</h3>
@@ -70,8 +68,9 @@
                 </div>
             {% endif %}
         </div>
-    </div>
+        </div>
     {% endfor %}
+    </div>
 {% else %}
     <div class="no-applications">
         <h2>No applications yet</h2>

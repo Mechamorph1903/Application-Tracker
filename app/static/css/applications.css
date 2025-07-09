@@ -1,14 +1,12 @@
 /*for the applications page*/
-.applications-list {
-    display: flex;
-    flex-direction: column;
+.applications-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin-bottom: 32px;
 }
 
 .application-card {
-    display: flex;
-    align-items: flex-start;
     gap: 16px;
     padding: 24px;
     background: #2a0f64;
@@ -20,7 +18,8 @@
 }
 
 .application-card:hover {
-    background: #430a9f;
+  transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 10px 40px 0 rgba(164, 89, 255, 0.14);
 }
 
 .status-indicator {
