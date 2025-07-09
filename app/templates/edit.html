@@ -84,15 +84,15 @@
 				<div class="form-col">
 					<select name="next_action" id="next_action" title="Select the next action to take">
 						<option value="">No Action Scheduled</option>
-						<option value="follow_up" {% if internship.follow_up_date and not internship.interview_date %}selected{% endif %}>Follow Up</option>
-						<option value="interview" {% if internship.interview_date %}selected{% endif %}>Interview</option>
-						<option value="assessment">Online Assessment</option>
+						<option value="follow_up" {% if internship.next_action == 'follow_up' %}selected{% endif %}>Follow Up</option>
+						<option value="interview" {% if internship.next_action == 'interview' %}selected{% endif %}>Interview</option>
+						<option value="assessment" {% if internship.next_action == 'assessment' %}selected{% endif %}>Online Assessment</option>
 					</select>
 				</div>
 				<div class="form-col">
 					<label for="next_action_date">Action Date:</label>
 					<input type="datetime-local" name="next_action_date" id="next_action_date" title="Date and time for the next action"
-						value="{% if internship.interview_date %}{{ internship.interview_date.strftime('%Y-%m-%dT%H:%M') }}{% elif internship.follow_up_date %}{{ internship.follow_up_date.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+						value="{% if internship.next_action_date %}{{ internship.next_action_date.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
 				</div>
 			</div>
 		</div>

@@ -69,9 +69,11 @@ def add_application():
                 return None
             
             applied_date = parse_date(request.form.get('applied'))
-            interview_date = parse_datetime(request.form.get('interview_date'))
-            follow_up_date = parse_datetime(request.form.get('follow_up_date'))
             deadline_date = parse_datetime(request.form.get('deadline_date'))
+            
+            # Parse next action data
+            next_action = request.form.get('next_action')
+            next_action_date = parse_datetime(request.form.get('next_action_date'))
             
             # Create new internship
             internship = Internship(
@@ -85,12 +87,14 @@ def add_application():
                 notes=notes,
                 visibility=visibility,
                 applied_date=applied_date,
-                interview_date=interview_date,
-                follow_up_date=follow_up_date,
                 deadline_date=deadline_date,
                 contacts=contacts,
                 user_id=current_user.id
             )
+            
+            # Set next action if provided
+            if next_action and next_action_date:
+                internship.set_next_action(next_action, next_action_date)
             
             db.session.add(internship)
             db.session.commit()
@@ -175,6 +179,10 @@ def edit_application(internship_id):
                 print(f"DEBUG: JSON decode error: {e}")
                 contacts = []
             
+            # Parse next action data
+            next_action = request.form.get('next_action')
+            next_action_date = parse_datetime(request.form.get('next_action_date'))
+            
             # Update all internship fields
             old_status = internship.application_status
             
@@ -188,11 +196,15 @@ def edit_application(internship_id):
             internship.notes = request.form.get('notes')
             internship.visibility = request.form.get('visibility', 'friends')
             internship.applied_date = applied_date
-            internship.interview_date = interview_date
-            internship.follow_up_date = follow_up_date
             internship.deadline_date = deadline_date
             internship.contacts = contacts
             print(f"DEBUG: Set internship.contacts to: {internship.contacts}")
+            
+            # Handle next action - only one can be active at a time
+            if next_action and next_action_date:
+                internship.set_next_action(next_action, next_action_date)
+            else:
+                internship.clear_next_action()
             
             # Update status change date if status changed
             if old_status != internship.application_status:

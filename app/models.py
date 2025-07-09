@@ -184,6 +184,12 @@ class Internship(db.Model): # Internship model for managing internship applicati
 	interview_date = db.Column(db.DateTime)  # Scheduled interview date/time
 	follow_up_date = db.Column(db.DateTime)  # When to follow up
 	deadline_date = db.Column(db.DateTime)   # Application deadline
+	
+	# Next Action tracking - only one action can be active at a time
+	next_action = db.Column(db.String(50))  # 'follow_up', 'interview', 'assessment', or None
+	next_action_date = db.Column(db.DateTime)  # Date/time for the next action
+	next_action_notes = db.Column(db.Text)  # Optional notes about the next action
+	
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # Foreign key linking to the User model
 
 	def to_dict(self):
@@ -196,8 +202,61 @@ class Internship(db.Model): # Internship model for managing internship applicati
 			"application_status": self.application_status,
 			"applied_date": self.applied_date.strftime('%Y-%m-%d'),
 			"status_change_date": self.status_change_date.strftime('%Y-%m-%d'),
-			"notes": self.notes
+			"notes": self.notes,
+			"next_action": self.next_action,
+			"next_action_date": self.next_action_date.strftime('%Y-%m-%d %H:%M') if self.next_action_date else None,
+			"contacts": self.contacts
 		}
+	
+	def set_next_action(self, action_type, action_date=None, notes=None):
+		"""Set the next action, clearing old follow_up/interview dates"""
+		# Clear previous action dates
+		self.follow_up_date = None
+		self.interview_date = None
+		
+		# Set new action
+		self.next_action = action_type
+		self.next_action_date = action_date
+		self.next_action_notes = notes
+		
+		# Also set the specific date fields for backward compatibility
+		if action_type == 'follow_up':
+			self.follow_up_date = action_date
+		elif action_type == 'interview':
+			self.interview_date = action_date
+	
+	def clear_next_action(self):
+		"""Clear all next action fields"""
+		self.next_action = None
+		self.next_action_date = None
+		self.next_action_notes = None
+		self.follow_up_date = None
+		self.interview_date = None
+	
+	def get_next_action_display(self):
+		"""Get human-readable next action text"""
+		if not self.next_action:
+			return "No action scheduled"
+		
+		action_map = {
+			'follow_up': 'Follow Up',
+			'interview': 'Interview',
+			'assessment': 'Online Assessment'
+		}
+		
+		action_text = action_map.get(self.next_action, self.next_action.title())
+		
+		if self.next_action_date:
+			date_str = self.next_action_date.strftime('%b %d, %Y at %I:%M %p')
+			return f"{action_text} on {date_str}"
+		else:
+			return action_text
+	
+	def is_next_action_overdue(self):
+		"""Check if the next action is overdue"""
+		if not self.next_action_date:
+			return False
+		return datetime.now(timezone.utc) > self.next_action_date.replace(tzinfo=timezone.utc)
 	
 	def get_status_color(self):
 		"""Get color code for application status (useful for UI)"""
@@ -207,7 +266,8 @@ class Internship(db.Model): # Internship model for managing internship applicati
 			'offered': '#28a745',      # Green
 			'rejected': '#dc3545',     # Red
 			'accepted': '#28a745',     # Green
-			'withdrawn': '#6c757d'     # Gray
+			'withdrawn': '#6c757d',    # Gray
+			'waitlist': '#fd7e14'      # Orange
 		}
 		return status_colors.get(self.application_status.lower(), '#6c757d')
 
