@@ -693,6 +693,44 @@ input[type="text"] {
     animation: heartbeat 2s infinite;
 }
 
+/* ==== PROFILE CARD STYLES ==== */
+
+.limited-profile-card {
+  max-width: 480px;
+  margin: 60px auto;
+  padding: 32px 28px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #3b1366 0%, #2d044d 100%);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+}
+
+.limited-profile-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+}
+
+/* ==== PROFILE AVATAR (Left Circle) ==== */
+.limited-profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: white;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  font-weight: bold;
+  border: 4px solid #b993fd;
+}
+
 @keyframes heartbeat {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
@@ -738,4 +776,3 @@ input[type="text"] {
         justify-content: center;
     }
 }
-
