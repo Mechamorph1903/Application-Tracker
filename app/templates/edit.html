@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Add Application</title>
+	<title>Edit Application</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename="css/add_edit.css") }}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13,55 +13,89 @@
 			<i class="fa-solid fa-arrow-left"></i><span>Back</span>
 		</button>
 
-		<h1>New Application</h1>
+		<h1>Edit Application</h1>
 	</header>
 
 	<main class="add-form">
-		<form method="POST" action="{{ url_for('applications.add_application') }}" onsubmit="console.log('Form submitting!'); return true;">
+		<form method="POST" action="{{ url_for('applications.edit_application', internship_id=internship.id) }}" onsubmit="console.log('Form submitting!'); return true;">
 			  <div class="form-group">
             <label for="app_name">Job Name: </label>
-            <input type="text" name="app_name" required placeholder="Future Workforce: Summer 2026" title="Name of Program">
+            <input type="text" name="app_name" required placeholder="Future Workforce: Summer 2026" title="Name of Program" value="{{ internship.job_name }}">
         </div>
 
         <div class="form-group">
             <label for="company">Company: </label>
-            <input name="company" required placeholder="McDonald's" title="Name of Company">
+            <input name="company" required placeholder="McDonald's" title="Name of Company" value="{{ internship.company_name }}">
         </div>
 
         <div class="form-group">
             <label for="location">Location: </label>
-            <input name="location" placeholder="Distrito National, Dominican Republic" title="Where is job located?">
+            <input name="location" placeholder="Distrito National, Dominican Republic" title="Where is job located?" value="{{ internship.location or '' }}">
         </div>
 
         <div class="form-group">
             <label for="role">Role: </label>
-            <input type="text" name="role" placeholder="Accountant Intern" title="Enter the role or position">
+            <input type="text" name="role" placeholder="Accountant Intern" title="Enter the role or position" value="{{ internship.position or '' }}">
         </div>
 
         <div class="form-group">
             <label for="link">Link:</label>
-            <input type="text" name="link" title="Link to the Application" placeholder="https://jobs.friesinthebag.com">
+            <input type="text" name="link" title="Link to the Application" placeholder="https://jobs.friesinthebag.com" value="{{ internship.application_link or '' }}">
         </div>
 
         <div class="form-group">
             <label for="applied">Date Applied: </label>
-			<input type="date" name="applied" id="applied" placeholder="Select application date" title="Enter the date you applied" value="{{ today }}">
+			<input type="date" name="applied" id="applied" placeholder="Select application date" title="Enter the date you applied" value="{{ internship.applied_date.strftime('%Y-%m-%d') if internship.applied_date else '' }}">
         </div>
 
 		<div class="form-group">
             <label for="deadline">Deadline: </label>
-			<input type="date" name="deadline" id="applied" placeholder="Select deadline date" title="Enter the deadline date" value="{{ today }}">
+			<input type="date" name="deadline" id="deadline" placeholder="Select deadline date" title="Enter the deadline date" value="{{ internship.deadline_date.strftime('%Y-%m-%d') if internship.deadline_date else '' }}">
         </div>
+
+		<!-- Application Status Section -->
+		<div class="form-group">
+			<label for="application_status">Application Status:</label>
+			<select name="application_status" id="application_status" title="Current status of your application">
+				<option value="applied" {% if internship.application_status == 'applied' %}selected{% endif %}>Applied</option>
+				<option value="interview" {% if internship.application_status == 'interview' %}selected{% endif %}>Interview</option>
+				<option value="assessment" {% if internship.application_status == 'assessment' %}selected{% endif %}>Online Assessment</option>
+				<option value="waitlist" {% if internship.application_status == 'waitlist' %}selected{% endif %}>Waitlist</option>
+				<option value="rejected" {% if internship.application_status == 'rejected' %}selected{% endif %}>Rejected</option>
+				<option value="offered" {% if internship.application_status == 'offered' %}selected{% endif %}>Offered</option>
+				<option value="accepted" {% if internship.application_status == 'accepted' %}selected{% endif %}>Accepted</option>
+			</select>
+		</div>
 
 		<div class="form-group">
             <label for="description">Job Description: </label>
-            <textarea type="text" name="description" placeholder="We want someone committed to Karens..." title="What is the job about?"></textarea>
+            <textarea type="text" name="description" placeholder="We want someone committed to Karens..." title="What is the job about?">{{ internship.application_description or '' }}</textarea>
         </div>
 
 		<div class="form-group">
             <label for="notes">Personal Notes:</label>
-            <textarea type="text" name="notes" placeholder="Should Follow up on 3/20, Call Dumebi tomorrow..." title="Personal Notes"></textarea>
+            <textarea type="text" name="notes" placeholder="Should Follow up on 3/20, Call Dumebi tomorrow..." title="Personal Notes">{{ internship.notes or '' }}</textarea>
         </div>
+
+		<!-- Next Action Section -->
+		<div class="form-group">
+			<label for="next_action">Next Action:</label>
+			<div class="form-row">
+				<div class="form-col">
+					<select name="next_action" id="next_action" title="Select the next action to take">
+						<option value="">No Action Scheduled</option>
+						<option value="follow_up" {% if internship.follow_up_date and not internship.interview_date %}selected{% endif %}>Follow Up</option>
+						<option value="interview" {% if internship.interview_date %}selected{% endif %}>Interview</option>
+						<option value="assessment">Online Assessment</option>
+					</select>
+				</div>
+				<div class="form-col">
+					<label for="next_action_date">Action Date:</label>
+					<input type="datetime-local" name="next_action_date" id="next_action_date" title="Date and time for the next action"
+						value="{% if internship.interview_date %}{{ internship.interview_date.strftime('%Y-%m-%dT%H:%M') }}{% elif internship.follow_up_date %}{{ internship.follow_up_date.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+				</div>
+			</div>
+		</div>
 			 <!-- Contacts Section -->
             <div class="form-group">
                 <div class="contacts-header">
@@ -126,10 +160,16 @@
                 </div>
             </div>
 
-			<input type="hidden" id="contacts-data" name="contacts" value="[]"> <!--Where contatcs data is stored and sent to flask-->
+			<input type="hidden" id="contacts-data" name="contacts" value="">
+			<script>
+				// Safely pass contacts data to JavaScript
+				var templateContactsData = {{ (internship.contacts or [])|tojson|safe }};
+				document.getElementById('contacts-data').value = JSON.stringify(templateContactsData);
+				console.log('Template contacts data:', templateContactsData);
+			</script>
 
 			<div class="form-group">
-            	<button type="submit" onclick="console.log('Submit Btton clciked')">Add Application</button>
+            	<button type="submit" onclick="console.log('Submit Button clicked')">Update Application</button>
         	</div>
 		</form>
 	</main>

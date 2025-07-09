@@ -16,7 +16,7 @@
 {% if internships %}
     <!-- Replace the existing application cards with clickable versions -->
     {% for internship in internships %}
-    <div class="application-card" onclick="window.location.href='{{ url_for('applications.application_details', internship_id=internship.id) }}'" style="cursor: pointer;">
+    <div class="application-card" onclick="window.location.href='{{ url_for('applications.application_details', internship_id=internship.id) }}'" style="cursor: pointer;">       
         <div class="application-header">
             <div class="application-main-info">
                 <h3 class="company-name">{{ internship.company_name }}</h3>

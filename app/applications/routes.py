@@ -26,7 +26,7 @@ def application_details(internship_id):
         flash('Internship not found or you do not have permission to view it.', 'error')
         return redirect(url_for('applications.applicationsList'))
     
-    return render_template('application_details.html', internship=internship)
+    return render_template('application-details.html', internship=internship)
 
 @applications.route('/add', methods=['GET', 'POST'])
 @login_required
@@ -116,31 +116,86 @@ def edit_application(internship_id):
         flash('Internship not found or you do not have permission to edit it.', 'error')
         return redirect(url_for('applications'))
     
+    print(f"DEBUG: Loading internship {internship_id}")
+    print(f"DEBUG: internship.contacts type: {type(internship.contacts)}")
+    print(f"DEBUG: internship.contacts value: {internship.contacts}")
+    
     if request.method == 'POST':
         try:
             # Update fields
-            internship.company_name = request.form.get('company_name')
-            internship.position = request.form.get('position')
-            internship.application_status = request.form.get('application_status')
-            internship.application_link = request.form.get('application_link')
-            internship.application_description = request.form.get('application_description')
-            internship.location = request.form.get('location')
-            internship.notes = request.form.get('notes')
-            internship.visibility = request.form.get('visibility')
+            name = request.form.get('app_name')
+            company_name = request.form.get('company')
+            position = request.form.get('role')
             
-            # Parse date fields
+            if not name or not company_name:
+                flash('Name and Company are required!', 'error')
+                return redirect(url_for('applications.edit_application', internship_id=internship_id))
+            
+            # Parse date fields (handle empty strings)
+            def parse_date(date_str):
+                if date_str:
+                    return datetime.fromisoformat(date_str).date()
+                return None
+            
             def parse_datetime(date_str):
                 if date_str:
                     return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
                 return None
             
-            internship.interview_date = parse_datetime(request.form.get('interview_date'))
-            internship.follow_up_date = parse_datetime(request.form.get('follow_up_date'))
-            internship.deadline_date = parse_datetime(request.form.get('deadline_date'))
+            # Handle next action logic
+            next_action = request.form.get('next_action')
+            next_action_date_str = request.form.get('next_action_date')
+            next_action_date = parse_datetime(next_action_date_str) if next_action_date_str else None
+            
+            # Reset all action dates first
+            interview_date = None
+            follow_up_date = None
+            assessment_date = None  # If you have this field in your model
+            
+            # Set the appropriate date based on selected action
+            if next_action and next_action_date:
+                if next_action == 'interview':
+                    interview_date = next_action_date
+                elif next_action == 'follow_up':
+                    follow_up_date = next_action_date
+                elif next_action == 'assessment':
+                    assessment_date = next_action_date
+            
+            # Parse other date fields
+            applied_date = parse_date(request.form.get('applied'))
+            deadline_date = parse_datetime(request.form.get('deadline'))
+            
+            # Parse contacts JSON
+            contacts_json = request.form.get('contacts', '[]')
+            print(f"DEBUG: Received contacts JSON: {contacts_json}")
+            try:
+                contacts = json.loads(contacts_json) if contacts_json else []
+                print(f"DEBUG: Parsed contacts: {contacts}")
+            except json.JSONDecodeError as e:
+                print(f"DEBUG: JSON decode error: {e}")
+                contacts = []
+            
+            # Update all internship fields
+            old_status = internship.application_status
+            
+            internship.job_name = name
+            internship.company_name = company_name
+            internship.position = position
+            internship.application_status = request.form.get('application_status', 'applied')
+            internship.application_link = request.form.get('link')
+            internship.application_description = request.form.get('description')
+            internship.location = request.form.get('location')
+            internship.notes = request.form.get('notes')
+            internship.visibility = request.form.get('visibility', 'friends')
+            internship.applied_date = applied_date
+            internship.interview_date = interview_date
+            internship.follow_up_date = follow_up_date
+            internship.deadline_date = deadline_date
+            internship.contacts = contacts
+            print(f"DEBUG: Set internship.contacts to: {internship.contacts}")
             
             # Update status change date if status changed
-            old_status = request.form.get('old_status')
-            if old_status and old_status != internship.application_status:
+            if old_status != internship.application_status:
                 internship.status_change_date = datetime.now(timezone.utc).date()
             
             db.session.commit()
@@ -151,7 +206,7 @@ def edit_application(internship_id):
         except Exception as e:
             flash(f'Error updating internship: {str(e)}', 'error')
     
-    return render_template('internships/edit.html', internship=internship)
+    return render_template('edit.html', internship=internship)
 
 @applications.route('/delete/<int:internship_id>', methods=['POST'])
 @login_required

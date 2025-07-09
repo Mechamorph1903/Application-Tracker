@@ -345,3 +345,164 @@ body {
 #no:hover {
     background: #5a6268;
 }
+
+.delete-indicator{
+	color: #d00606;
+}
+
+/* Next Action Section Styling */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-col label {
+    margin-bottom: 0.5rem;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Fix the general select styling to match other form elements */
+.form-group select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.form-group select option {
+    padding: 0.5rem;
+    background: white;
+    color: #374151;
+}
+
+/* Fix datetime-local input to match other form elements */
+input[type="datetime-local"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease;
+}
+
+input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Fix Next Action select specifically */
+#next_action {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+#next_action:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Fix Application Status select specifically */
+#application_status {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+#application_status:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Color-coded status options */
+#application_status option[value="applied"] {
+    color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+#application_status option[value="interview"] {
+    color: #f59e0b;
+    background-color: rgba(245, 158, 11, 0.1);
+}
+
+#application_status option[value="assessment"] {
+    color: #8b5cf6;
+    background-color: rgba(139, 92, 246, 0.1);
+}
+
+#application_status option[value="waitlist"] {
+    color: #6b7280;
+    background-color: rgba(107, 114, 128, 0.1);
+}
+
+#application_status option[value="rejected"] {
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+#application_status option[value="offered"] {
+    color: #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+#application_status option[value="accepted"] {
+    color: #059669;
+    background-color: rgba(5, 150, 105, 0.1);
+    font-weight: 600;
+}
+
+/* Status change indicator */
+#application_status.status-changed {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}

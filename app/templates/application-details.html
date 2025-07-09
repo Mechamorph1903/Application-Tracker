@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Application for {{ internship.job_name }}</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename="css/application-details.css") }}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+	<nav class="details-nav">
+		<div class="back" onclick="javascript:history.back()" id="application-back">
+			<i class="fa-solid fa-arrow-left"></i>
+			<p>Back</p>
+		</div>
+		<h1>{{ internship.job_name }}</h1>
+			<div class="actions">
+				<div class="edit" title="Edit Application">
+				<a href="{{ url_for('applications.edit_application', internship_id=internship.id) }}">
+					<i class="fa-solid fa-pen-to-square"></i>
+				</a>
+			</div>
+			<div class="delete" title="Delete Application">
+				<button type="button" data-internship-id="{{ internship.id }}" id="delete"><i class="fa-solid fa-trash"></i></button>
+			</div>
+		</div>
+	</nav>
+	<section class="details-card">
+		<div class="details">
+			<p>Company: {{ internship.company_name }}</p>
+			{% if internship.location %}
+			<p>Location: {{ internship.location }}</p>
+			{%endif%}
+			{% if internship.position %}
+			<p>Role: {{ internship.position }}</p>
+			{%endif%}
+			<p>Date Applied(YYYY/MM/DD): {{ internship.applied_date }}</p>
+			{% if internship.next_action %}
+			<p>{{ internship.next_action }}: {{ internship.next_action_date }}</p>
+			{%endif%}
+			<a href="{{ internship.application_link }}">
+				Application
+				<i class="fa-solid fa-link"></i>
+			</a>
+		</div>
+	</section>
+
+	<div id="pop-up-back">
+		<div id="pop-up">
+			<i class="fa-solid fa-xmark" id="pop-up-cancel"></i>
+			<p id="pop-up-message">hey</p>
+			<div class="pop-up-buttons">
+				<button class="confirmation-buttons" id="yes">Yes</button>
+				<button class="confirmation-buttons" id="no">No</button>
+			</div>
+		</div>
+	</div>
+	
+	<script src="{{ url_for('static', filename="js/delete-application.js")}}"></script>
+</body>
+</html>
