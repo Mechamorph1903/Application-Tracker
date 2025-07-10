@@ -12,6 +12,10 @@
 
 {% if internships %}
     <!-- Replace the existing application cards with clickable versions -->
+    <div class="applications-search-bar">
+        <input type="text" id="application-search" placeholder="Search applications..." autocomplete="off">
+        <button class="add-application-btn">Add Application (if needed)</button>
+    </div>
     <div class="applications-grid">
     {% for internship in internships %}
         <div class="application-card" onclick="window.location.href='{{ url_for('applications.application_details', internship_id=internship.id) }}'" style="cursor: pointer;">       
