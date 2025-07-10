@@ -6,11 +6,11 @@
 {% endblock %}
 
 {% block content %}
-<div id="add-app" title="New Application">
-   <a href="{{ url_for('applications.add_application') }}">📝</a>
-</div>
-
-{% if internships %}
+<div class="applications-container">
+    <div id="add-app" title="New Application">
+        <a href="{{ url_for('applications.add_application') }}">📝</a>
+    </div>
+    {% if internships %}
     <!-- Replace the existing application cards with clickable versions -->
     <div class="applications-search-bar">
         <input type="text" id="application-search" placeholder="Search applications..." autocomplete="off">
@@ -19,8 +19,7 @@
     <div class="applications-grid">
     {% for internship in internships %}
         <div class="application-card" onclick="window.location.href='{{ url_for('applications.application_details', internship_id=internship.id) }}'" style="cursor: pointer;">       
-        <div class="application-header">
-            <div class="application-main-info">
+            <div class="application-header">
                 <h3 class="company-name">{{ internship.company_name }}</h3>
                 <p class="position">{{ internship.job_name }}</p>
                 {% if internship.location %}
@@ -48,7 +47,6 @@
                     </form>
                 </div>
             </div>
-        </div>
         
         <div class="application-details">
             {% if internship.applied_date %}
@@ -75,11 +73,12 @@
         </div>
     {% endfor %}
     </div>
-{% else %}
+    {% else %}
     <div class="no-applications">
         <h2>No applications yet</h2>
         <p>Start by adding your first internship application!</p>
         <a href="{{ url_for('applications.add_application') }}" class="btn btn-primary">Add Application</a>
     </div>
 {% endif %}
+</div>
 {% endblock %}
