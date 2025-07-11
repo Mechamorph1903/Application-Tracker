@@ -42,7 +42,7 @@ def create_app():
 	
 	app.register_blueprint(auth, url_prefix='/auth')  # Register the auth blueprint with a URL prefix
 	app.register_blueprint(userprofile, url_prefix='/profile')  # Register the user profile blueprint with a URL prefix
-	app.register_blueprint(settings)  # Register the settings blueprint without prefix
+	app.register_blueprint(settings, url_prefix='/settings')  # Register the settings blueprint with settings prefix
 	app.register_blueprint(applications, url_prefix='/applications')  # Register the internships blueprint
 
 	@app.route('/')

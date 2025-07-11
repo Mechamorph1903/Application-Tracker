@@ -1,13 +1,18 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <title>Settings - InternIn</title>
 </head>
 <body>
 	<nav>
-		<div><a href="javascript:history.back()">
+		<div><a href="{{ url_for('profile') }}">
 			<img src="{{ url_for('static', filename='images/back-white.png') }}" alt="Back">
 		</a></div>
 
@@ -16,98 +21,556 @@
 		<div class="tab" id="app-settings-tab">App Settings</div>
 		</div>
 	</nav>
-    <!-- User Settings Tab -->
 
+<!-- User Settings Tab -->
 <div class="tab-content" id="user-settings">
     <!-- Personal Information -->
     <section class="settings-section">
-        <h3>Personal Information</h3>
-        <!-- firstName, lastName, email, phone, bio -->
-		  <div class="info-grid">
-                <div class="info-item">
-                    <label>First Name:</label>
-                    <span>{{ current_user.firstName or 'Not set' }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Last Name:</label>
-                    <span>{{ current_user.lastName or 'Not set' }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Email:</label>
-                    <span>{{ current_user.email }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Phone:</label>
-                    <span>{{ current_user.phone or 'Not set' }}</span>
-                </div>
-                <div class="info-item full-width">
-                    <label>Bio:</label>
-                    <span>{{ current_user.bio or 'Tell us about yourself...' }}</span>
-                </div>
+        <div class="section-header">
+            <h3>Personal Information</h3>
+            <button class="edit-btn" onclick="toggleEdit('personal-info')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <div class="info-grid" id="personal-info-display">
+            <div class="info-item">
+                <label>First Name:</label>
+                <span>{{ current_user.firstName or 'Not set' }}</span>
             </div>
+            <div class="info-item">
+                <label>Last Name:</label>
+                <span>{{ current_user.lastName or 'Not set' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Username:</label>
+                <span>{{ current_user.username }}</span>
+            </div>
+            <div class="info-item">
+                <label>Email:</label>
+                <span>{{ current_user.email }}</span>
+            </div>
+            <div class="info-item">
+                <label>Phone:</label>
+                <span>{{ current_user.phone or 'Not set' }}</span>
+            </div>
+            <div class="info-item full-width">
+                <label>Bio:</label>
+                <span>{{ current_user.bio or 'Tell us about yourself...' }}</span>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="personal-info-form">
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" value="{{ current_user.firstName or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" value="{{ current_user.lastName or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" value="{{ current_user.username }}">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ current_user.email }}">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" value="{{ current_user.phone or '' }}">
+            </div>
+            <div class="form-group full-width">
+                <label for="bio">Bio:</label>
+                <textarea id="bio" name="bio" rows="3">{{ current_user.bio or '' }}</textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('personal-info')">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
     </section>
     
     <!-- Education & Profile -->
     <section class="settings-section">
-        <h3>Education & Profile</h3>
-        <!-- school, year, major, profile_picture -->
+        <div class="section-header">
+            <h3>Education & Profile</h3>
+            <button class="edit-btn" onclick="toggleEdit('education')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <div class="info-grid" id="education-display">
+            <div class="info-item">
+                <label>School:</label>
+                <span>{{ current_user.school or 'Not set' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Graduation Year:</label>
+                <span>{{ current_user.year or 'Not set' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Major:</label>
+                <span>{{ current_user.major or 'Not set' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Profile Picture:</label>
+                <div class="profile-pic-display">
+                    <img src="{{ url_for('static', filename='images/' + current_user.profile_picture) }}" alt="Profile" class="profile-thumb">
+                    <span>{{ current_user.profile_picture }}</span>
+                </div>
+            </div>
+            <div class="info-item full-width">
+                <label>Social Media:</label>
+                <div class="social-links">
+                    {% if current_user.social_media %}
+                        {% for link in current_user.social_media %}
+                            <div class="social-item">
+                                <i class="fab fa-{{ link.platform.lower() }}"></i>
+                                <span>{{ link.platform }}: {{ link.url }}</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">No social media links added</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="education-form">
+            <div class="form-group">
+                <label for="school">School:</label>
+                <input type="text" id="school" name="school" value="{{ current_user.school or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="year">Graduation Year:</label>
+                <input type="text" id="year" name="year" value="{{ current_user.year or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="major">Major:</label>
+                <select id="major" name="major" class="select2-major" data-current-major="{{ current_user.major or '' }}">
+                    <option value="">Select Major...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="profile_picture">Profile Picture:</label>
+                <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
+            </div>
+            <div class="form-group full-width">
+                <label>Social Media Links (Max 4):</label>
+                <div id="social-media-container">
+                    <!-- Social media links will be dynamically added here -->
+                </div>
+                <button type="button" onclick="addSocialMediaLink()" class="btn-add-social" id="add-social-btn">
+                    <i class="fas fa-plus"></i> Add Social Link
+                </button>
+                <input type="hidden" id="social_media" name="social_media" value="">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('education')">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
     </section>
     
     <!-- Privacy & Visibility -->
     <section class="settings-section">
-        <h3>Privacy & Visibility</h3>
-        <!-- profile_visibility, show_application_stats -->
+        <div class="section-header">
+            <h3>Privacy & Visibility</h3>
+            <button class="edit-btn" onclick="toggleEdit('privacy')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <div class="info-grid" id="privacy-display">
+            <div class="info-item">
+                <label>Profile Visibility:</label>
+                <span class="badge badge-{{ current_user.settings.profile_visibility if current_user.settings else 'friends' }}">
+                    {{ (current_user.settings.profile_visibility if current_user.settings else 'friends') | title }}
+                </span>
+            </div>
+            <div class="info-item">
+                <label>Show Application Stats:</label>
+                <span>{{ 'Yes' if current_user.settings and current_user.settings.show_application_stats else 'No' }}</span>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="privacy-form">
+            <div class="form-group">
+                <label for="profile_visibility">Profile Visibility:</label>
+                <select id="profile_visibility" name="profile_visibility">
+                    <option value="public" {{ 'selected' if current_user.settings and current_user.settings.profile_visibility == 'public' else '' }}>Public</option>
+                    <option value="friends" {{ 'selected' if current_user.settings and current_user.settings.profile_visibility == 'friends' else '' }}>Friends Only</option>
+                    <option value="private" {{ 'selected' if current_user.settings and current_user.settings.profile_visibility == 'private' else '' }}>Private</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="show_application_stats">Show Application Stats:</label>
+                <select id="show_application_stats" name="show_application_stats">
+                    <option value="true" {{ 'selected' if current_user.settings and current_user.settings.show_application_stats else '' }}>Yes</option>
+                    <option value="false" {{ 'selected' if not current_user.settings or not current_user.settings.show_application_stats else '' }}>No</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('privacy')">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
     </section>
     
     <!-- Regional & Time -->
     <section class="settings-section">
-        <h3>Regional & Time Preferences</h3>
-        <!-- timezone, date_format, time_format -->
+        <div class="section-header">
+            <h3>Regional & Time Preferences</h3>
+            <button class="edit-btn" onclick="toggleEdit('regional')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <div class="info-grid" id="regional-display">
+            <div class="info-item">
+                <label>Timezone:</label>
+                <span>{{ current_user.settings.timezone if current_user.settings else 'America/New_York' }}</span>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="regional-form">
+            <div class="form-group">
+                <label for="timezone">Timezone:</label>
+                <select id="timezone" name="timezone">
+                    <option value="America/New_York" {{ 'selected' if current_user.settings and current_user.settings.timezone == 'America/New_York' else '' }}>Eastern Time</option>
+                    <option value="America/Chicago" {{ 'selected' if current_user.settings and current_user.settings.timezone == 'America/Chicago' else '' }}>Central Time</option>
+                    <option value="America/Denver" {{ 'selected' if current_user.settings and current_user.settings.timezone == 'America/Denver' else '' }}>Mountain Time</option>
+                    <option value="America/Los_Angeles" {{ 'selected' if current_user.settings and current_user.settings.timezone == 'America/Los_Angeles' else '' }}>Pacific Time</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('regional')">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
     </section>
     
     <!-- Security -->
     <section class="settings-section">
-        <h3>Security</h3>
-        <!-- two_factor_enabled, login_notifications -->
+        <div class="section-header">
+            <h3>Security</h3>
+            <button class="edit-btn" onclick="toggleEdit('security')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <div class="info-grid" id="security-display">
+            <div class="info-item">
+                <label>Two-Factor Authentication:</label>
+                <span>{{ 'Enabled' if current_user.settings and current_user.settings.two_factor_enabled else 'Disabled' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Login Notifications:</label>
+                <span>{{ 'Enabled' if current_user.settings and current_user.settings.login_notifications else 'Disabled' }}</span>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="security-form">
+            <div class="form-group">
+                <label for="two_factor_enabled">Two-Factor Authentication:</label>
+                <select id="two_factor_enabled" name="two_factor_enabled">
+                    <option value="true" {{ 'selected' if current_user.settings and current_user.settings.two_factor_enabled else '' }}>Enabled</option>
+                    <option value="false" {{ 'selected' if not current_user.settings or not current_user.settings.two_factor_enabled else '' }}>Disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="login_notifications">Login Notifications:</label>
+                <select id="login_notifications" name="login_notifications">
+                    <option value="true" {{ 'selected' if current_user.settings and current_user.settings.login_notifications else '' }}>Enabled</option>
+                    <option value="false" {{ 'selected' if not current_user.settings or not current_user.settings.login_notifications else '' }}>Disabled</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('security')">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
     </section>
 </div>
 
-
-
-
-
-
-
-
-
 <!-- App Settings Tab -->
 <div class="tab-content" id="app-settings">
-    <!-- Appearance & Display -->
+    <!-- Display & Interface -->
     <section class="settings-section">
-        <h3>Appearance & Display</h3>
-        <!-- theme, dashboard_layout, items_per_page -->
+        <div class="section-header">
+            <h3>Display & Interface</h3>
+            <button class="edit-btn" onclick="toggleEdit('display')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <div class="info-grid" id="display-display">
+            <div class="info-item">
+                <label>Theme:</label>
+                <span>{{ (current_user.settings.theme if current_user.settings else 'light') | title }}</span>
+            </div>
+            <div class="info-item">
+                <label>Dashboard Layout:</label>
+                <span>{{ (current_user.settings.dashboard_layout if current_user.settings else 'grid') | title }}</span>
+            </div>
+            <div class="info-item">
+                <label>Items Per Page:</label>
+                <span>{{ current_user.settings.items_per_page if current_user.settings else '10' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Date Format:</label>
+                <span>{{ current_user.settings.date_format if current_user.settings else 'MM/DD/YYYY' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Time Format:</label>
+                <span>{{ current_user.settings.time_format if current_user.settings else '12h' }}</span>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="display-form">
+            <div class="form-group">
+                <label for="theme">Theme:</label>
+                <select id="theme" name="theme">
+                    <option value="light" {{ 'selected' if current_user.settings and current_user.settings.theme == 'light' else '' }}>Light</option>
+                    <option value="dark" {{ 'selected' if current_user.settings and current_user.settings.theme == 'dark' else '' }}>Dark</option>
+                    <option value="auto" {{ 'selected' if current_user.settings and current_user.settings.theme == 'auto' else '' }}>Auto</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dashboard_layout">Dashboard Layout:</label>
+                <select id="dashboard_layout" name="dashboard_layout">
+                    <option value="grid" {{ 'selected' if current_user.settings and current_user.settings.dashboard_layout == 'grid' else '' }}>Grid</option>
+                    <option value="list" {{ 'selected' if current_user.settings and current_user.settings.dashboard_layout == 'list' else '' }}>List</option>
+                    <option value="compact" {{ 'selected' if current_user.settings and current_user.settings.dashboard_layout == 'compact' else '' }}>Compact</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="items_per_page">Items Per Page:</label>
+                <select id="items_per_page" name="items_per_page">
+                    <option value="5" {{ 'selected' if current_user.settings and current_user.settings.items_per_page == 5 else '' }}>5</option>
+                    <option value="10" {{ 'selected' if current_user.settings and current_user.settings.items_per_page == 10 else '' }}>10</option>
+                    <option value="25" {{ 'selected' if current_user.settings and current_user.settings.items_per_page == 25 else '' }}>25</option>
+                    <option value="50" {{ 'selected' if current_user.settings and current_user.settings.items_per_page == 50 else '' }}>50</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date_format">Date Format:</label>
+                <select id="date_format" name="date_format">
+                    <option value="MM/DD/YYYY" {{ 'selected' if current_user.settings and current_user.settings.date_format == 'MM/DD/YYYY' else '' }}>MM/DD/YYYY</option>
+                    <option value="DD/MM/YYYY" {{ 'selected' if current_user.settings and current_user.settings.date_format == 'DD/MM/YYYY' else '' }}>DD/MM/YYYY</option>
+                    <option value="YYYY-MM-DD" {{ 'selected' if current_user.settings and current_user.settings.date_format == 'YYYY-MM-DD' else '' }}>YYYY-MM-DD</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="time_format">Time Format:</label>
+                <select id="time_format" name="time_format">
+                    <option value="12h" {{ 'selected' if current_user.settings and current_user.settings.time_format == '12h' else '' }}>12 Hour</option>
+                    <option value="24h" {{ 'selected' if current_user.settings and current_user.settings.time_format == '24h' else '' }}>24 Hour</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('display')">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
     </section>
     
-    <!-- Notifications -->
+    <!-- Notifications & Reminders -->
     <section class="settings-section">
-        <h3>Notifications</h3>
-        <!-- email_notifications, friend_request_notifications, 
-             application_reminders, interview_reminders -->
+        <div class="section-header">
+            <h3>Notifications & Reminders</h3>
+            <button class="edit-btn" onclick="toggleEdit('notifications')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <div class="info-grid" id="notifications-display">
+            <div class="info-item">
+                <label>Email Notifications:</label>
+                <span>{{ 'Enabled' if current_user.settings and current_user.settings.email_notifications else 'Disabled' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Friend Request Notifications:</label>
+                <span>{{ 'Enabled' if current_user.settings and current_user.settings.friend_request_notifications else 'Disabled' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Application Reminders:</label>
+                <span>{{ 'Enabled' if current_user.settings and current_user.settings.application_reminders else 'Disabled' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Interview Reminders:</label>
+                <span>{{ 'Enabled' if current_user.settings and current_user.settings.interview_reminders else 'Disabled' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Reminder Days Before Follow-up:</label>
+                <span>{{ current_user.settings.reminder_days_before_followup if current_user.settings else '14' }} days</span>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="notifications-form">
+            <div class="form-group">
+                <label for="email_notifications">Email Notifications:</label>
+                <select id="email_notifications" name="email_notifications">
+                    <option value="true" {{ 'selected' if current_user.settings and current_user.settings.email_notifications else '' }}>Enabled</option>
+                    <option value="false" {{ 'selected' if not current_user.settings or not current_user.settings.email_notifications else '' }}>Disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="friend_request_notifications">Friend Request Notifications:</label>
+                <select id="friend_request_notifications" name="friend_request_notifications">
+                    <option value="true" {{ 'selected' if current_user.settings and current_user.settings.friend_request_notifications else '' }}>Enabled</option>
+                    <option value="false" {{ 'selected' if not current_user.settings or not current_user.settings.friend_request_notifications else '' }}>Disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="application_reminders">Application Reminders:</label>
+                <select id="application_reminders" name="application_reminders">
+                    <option value="true" {{ 'selected' if current_user.settings and current_user.settings.application_reminders else '' }}>Enabled</option>
+                    <option value="false" {{ 'selected' if not current_user.settings or not current_user.settings.application_reminders else '' }}>Disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="interview_reminders">Interview Reminders:</label>
+                <select id="interview_reminders" name="interview_reminders">
+                    <option value="true" {{ 'selected' if current_user.settings and current_user.settings.interview_reminders else '' }}>Enabled</option>
+                    <option value="false" {{ 'selected' if not current_user.settings or not current_user.settings.interview_reminders else '' }}>Disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reminder_days_before_followup">Reminder Days Before Follow-up:</label>
+                <select id="reminder_days_before_followup" name="reminder_days_before_followup">
+                    <option value="7" {{ 'selected' if current_user.settings and current_user.settings.reminder_days_before_followup == 7 else '' }}>7 days</option>
+                    <option value="14" {{ 'selected' if current_user.settings and current_user.settings.reminder_days_before_followup == 14 else '' }}>14 days</option>
+                    <option value="21" {{ 'selected' if current_user.settings and current_user.settings.reminder_days_before_followup == 21 else '' }}>21 days</option>
+                    <option value="30" {{ 'selected' if current_user.settings and current_user.settings.reminder_days_before_followup == 30 else '' }}>30 days</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('notifications')">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
     </section>
     
     <!-- Application Tracking -->
     <section class="settings-section">
-        <h3>Application Tracking</h3>
-        <!-- auto_archive_rejected, reminder_days_before_followup, 
-             default_application_status -->
+        <div class="section-header">
+            <h3>Application Tracking</h3>
+            <button class="edit-btn" onclick="toggleEdit('tracking')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <div class="info-grid" id="tracking-display">
+            <div class="info-item">
+                <label>Auto-Archive Rejected:</label>
+                <span>{{ 'Enabled' if current_user.settings and current_user.settings.auto_archive_rejected else 'Disabled' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Default Application Status:</label>
+                <span>{{ (current_user.settings.default_application_status if current_user.settings else 'applied') | title }}</span>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="tracking-form">
+            <div class="form-group">
+                <label for="auto_archive_rejected">Auto-Archive Rejected:</label>
+                <select id="auto_archive_rejected" name="auto_archive_rejected">
+                    <option value="true" {{ 'selected' if current_user.settings and current_user.settings.auto_archive_rejected else '' }}>Enabled</option>
+                    <option value="false" {{ 'selected' if not current_user.settings or not current_user.settings.auto_archive_rejected else '' }}>Disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="default_application_status">Default Application Status:</label>
+                <select id="default_application_status" name="default_application_status">
+                    <option value="applied" {{ 'selected' if current_user.settings and current_user.settings.default_application_status == 'applied' else '' }}>Applied</option>
+                    <option value="interviewing" {{ 'selected' if current_user.settings and current_user.settings.default_application_status == 'interviewing' else '' }}>Interviewing</option>
+                    <option value="offered" {{ 'selected' if current_user.settings and current_user.settings.default_application_status == 'offered' else '' }}>Offered</option>
+                    <option value="rejected" {{ 'selected' if current_user.settings and current_user.settings.default_application_status == 'rejected' else '' }}>Rejected</option>
+                    <option value="accepted" {{ 'selected' if current_user.settings and current_user.settings.default_application_status == 'accepted' else '' }}>Accepted</option>
+                    <option value="withdrawn" {{ 'selected' if current_user.settings and current_user.settings.default_application_status == 'withdrawn' else '' }}>Withdrawn</option>
+                    <option value="waitlist" {{ 'selected' if current_user.settings and current_user.settings.default_application_status == 'waitlist' else '' }}>Waitlist</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('tracking')">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
     </section>
     
     <!-- Data & Export -->
     <section class="settings-section">
-        <h3>Data & Export</h3>
-        <!-- auto_backup, export_format -->
+        <div class="section-header">
+            <h3>Data & Export</h3>
+            <button class="edit-btn" onclick="toggleEdit('data')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        </div>
+        
+        <div class="info-grid" id="data-display">
+            <div class="info-item">
+                <label>Auto-Backup:</label>
+                <span>{{ 'Enabled' if current_user.settings and current_user.settings.auto_backup else 'Disabled' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Export Format:</label>
+                <span>{{ (current_user.settings.export_format if current_user.settings else 'csv') | upper }}</span>
+            </div>
+            <div class="info-item">
+                <label>Export Data:</label>
+                <button onclick="exportInternships()" class="export-btn">
+                    <i class="fas fa-download"></i> Export Internships
+                </button>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="data-form">
+            <div class="form-group">
+                <label for="auto_backup">Auto-Backup:</label>
+                <select id="auto_backup" name="auto_backup">
+                    <option value="true" {{ 'selected' if current_user.settings and current_user.settings.auto_backup else '' }}>Enabled</option>
+                    <option value="false" {{ 'selected' if not current_user.settings or not current_user.settings.auto_backup else '' }}>Disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="export_format">Export Format:</label>
+                <select id="export_format" name="export_format">
+                    <option value="csv" {{ 'selected' if current_user.settings and current_user.settings.export_format == 'csv' else '' }}>CSV</option>
+                    <option value="excel" {{ 'selected' if current_user.settings and current_user.settings.export_format == 'excel' else '' }}{% if not pandas_available %} disabled{% endif %}>Excel{% if not pandas_available %} (Requires pandas){% endif %}</option>
+                    <option value="pdf" {{ 'selected' if current_user.settings and current_user.settings.export_format == 'pdf' else '' }}>PDF</option>
+                </select>
+                {% if not pandas_available %}
+                <small class="form-note warning-text">
+                    Excel export requires the pandas library. Install it with: pip install pandas
+                </small>
+                {% endif %}
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('data')">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
     </section>
 </div>
+
+<!-- Confirmation Popup -->
+<div id="pop-up-back">
+    <div id="pop-up">
+        <i class="fa-solid fa-xmark" id="pop-up-cancel"></i>
+        <p id="pop-up-message">Are you sure you want to save these changes?</p>
+        <div class="pop-up-buttons">
+            <button class="confirmation-buttons" id="yes">Yes</button>
+            <button class="confirmation-buttons" id="no">No</button>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data for JavaScript -->
+<script type="application/json" id="social-media-data">{{ current_user.social_media | tojson | safe }}</script>
+
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 </body>
 </html>
