@@ -546,3 +546,111 @@ nav > div:first-child {
     border-radius: 50%;
     object-fit: cover;
 }
+
+/* Password-specific styles */
+.password-strength {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: none;
+}
+
+.password-strength.weak {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border-left: 4px solid #dc2626;
+}
+
+.password-strength.medium {
+    background-color: #fef3c7;
+    color: #d97706;
+    border-left: 4px solid #d97706;
+}
+
+.password-strength.strong {
+    background-color: #d1fae5;
+    color: #059669;
+    border-left: 4px solid #059669;
+}
+
+.password-feedback {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: none;
+}
+
+.password-feedback.error {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border-left: 4px solid #dc2626;
+}
+
+.password-feedback.success {
+    background-color: #d1fae5;
+    color: #059669;
+    border-left: 4px solid #059669;
+}
+
+/* Password input styling */
+input[type="password"] {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+input[type="password"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Enhanced form validation styles */
+.form-group input:invalid {
+    border-color: #dc2626;
+}
+
+.form-group input:valid {
+    border-color: #059669;
+}
+
+/* Password requirements checklist (optional enhancement) */
+.password-requirements {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background-color: #f8fafc;
+    border-radius: 4px;
+    border-left: 4px solid #e2e8f0;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    list-style-type: none;
+}
+
+.password-requirements li {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+    position: relative;
+}
+
+.password-requirements li:before {
+    content: "×";
+    position: absolute;
+    left: -1.5rem;
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.password-requirements li.valid:before {
+    content: "✓";
+    color: #059669;
+}
+
+.password-requirements li.valid {
+    color: #059669;
+}

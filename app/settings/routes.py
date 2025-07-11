@@ -6,7 +6,7 @@ import csv
 import io
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from werkzeug.utils import secure_filename
 
 # Try to import pandas for Excel export, fallback to CSV if not available
@@ -206,6 +206,46 @@ def export_internships():
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@settings.route('/change-password', methods=['POST'])
+@login_required
+def change_password():
+    """Change user's password"""
+    try:
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Validate input
+        if not current_password or not new_password or not confirm_password:
+            return jsonify({'success': False, 'error': 'All fields are required'}), 400
+        
+        # Check if current password is correct
+        if not current_user.check_password(current_password):
+            return jsonify({'success': False, 'error': 'Current password is incorrect'}), 400
+        
+        # Check if new passwords match
+        if new_password != confirm_password:
+            return jsonify({'success': False, 'error': 'New passwords do not match'}), 400
+        
+        # Validate new password strength
+        if len(new_password) < 8:
+            return jsonify({'success': False, 'error': 'Password must be at least 8 characters long'}), 400
+        
+        # Check if new password is different from current
+        if current_user.check_password(new_password):
+            return jsonify({'success': False, 'error': 'New password must be different from current password'}), 400
+        
+        # Update password
+        current_user.set_password(new_password)
+        
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Password changed successfully!'})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # Helper functions for file upload
 def allowed_file(filename):

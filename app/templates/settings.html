@@ -136,17 +136,6 @@
                 <label>Major:</label>
                 <span>{{ current_user.major or 'Not set' }}</span>
             </div>
-            <div class="info-item">
-                <label>Profile Picture:</label>
-                <div class="profile-pic-display">
-                    {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-                        <img src="{{ url_for('static', filename='uploads/profile_pictures/' + current_user.profile_picture) }}" alt="Profile Picture" class="profile-thumb">
-                    {% else %}
-                        <div class="profile-thumb-initials">{{ current_user | initials }}</div>
-                    {% endif %}
-                    <span>{{ current_user.profile_picture or 'default.jpg' }}</span>
-                </div>
-            </div>
             <div class="info-item full-width">
                 <label>Social Media:</label>
                 <div class="social-links">
@@ -320,6 +309,49 @@
             <div class="form-actions">
                 <button type="button" class="btn-cancel" onclick="cancelEdit('security')">Cancel</button>
                 <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+        </form>
+    </section>
+    
+    <!-- Change Password -->
+    <section class="settings-section">
+        <div class="section-header">
+            <h3>Change Password</h3>
+            <button class="edit-btn" onclick="toggleEdit('password')">
+                <i class="fas fa-key"></i> Change Password
+            </button>
+        </div>
+        
+        <div class="info-grid" id="password-display">
+            <div class="info-item">
+                <label>Password:</label>
+                <span>••••••••••••</span>
+            </div>
+            <div class="info-item">
+                <label>Last Changed:</label>
+                <span>{{ current_user.password_changed_at | safe_date }}</span>
+            </div>
+        </div>
+        
+        <form class="form-grid hidden" id="password-form">
+            <div class="form-group">
+                <label for="current_password">Current Password:</label>
+                <input type="password" id="current_password" name="current_password" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password">New Password:</label>
+                <input type="password" id="new_password" name="new_password" required minlength="8">
+                <small class="form-note">Password must be at least 8 characters long</small>
+                <div id="password-strength" class="password-strength" style="display: none;"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm New Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+                <div id="password-match-feedback" class="password-feedback" style="display: none;"></div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelEdit('password')">Cancel</button>
+                <button type="submit" class="btn-save">Change Password</button>
             </div>
         </form>
     </section>

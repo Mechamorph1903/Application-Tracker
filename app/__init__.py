@@ -112,6 +112,16 @@ def create_app():
 		
 		return first_initial + last_initial if first_initial and last_initial else 'U'
 	
+	@app.template_filter('safe_date')
+	def safe_date_format(date_obj, format_str='%B %d, %Y'):
+		"""Safely format a date object, return 'Never' if None or invalid"""
+		try:
+			if date_obj:
+				return date_obj.strftime(format_str)
+			return 'Never'
+		except (AttributeError, ValueError):
+			return 'Never'
+	
 
 	# user statuses
 	@app.before_request

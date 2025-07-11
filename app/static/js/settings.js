@@ -150,6 +150,9 @@ document.addEventListener('DOMContentLoaded', function() {
             handleFormSubmit(form, sectionName);
         });
     });
+    
+    // Initialize password features
+    initializePasswordFeatures();
 });
 
 // Toggle edit mode for sections
@@ -432,12 +435,167 @@ function initializeProfilePicturePreview() {
     }
 }
 
+// Password functionality
+function initializePasswordFeatures() {
+    const passwordForm = document.getElementById('password-form');
+    const newPasswordInput = document.getElementById('new_password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const strengthIndicator = document.getElementById('password-strength');
+    const matchFeedback = document.getElementById('password-match-feedback');
+
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', handlePasswordSubmit);
+    }
+
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', function() {
+            showPasswordStrength(this.value);
+            validatePasswordMatch();
+        });
+    }
+
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+    }
+
+    function showPasswordStrength(password) {
+        if (!strengthIndicator) return;
+
+        if (password.length === 0) {
+            strengthIndicator.style.display = 'none';
+            return;
+        }
+
+        const strength = checkPasswordStrength(password);
+        strengthIndicator.className = `password-strength ${strength}`;
+        strengthIndicator.style.display = 'block';
+
+        const messages = {
+            weak: 'Weak password - Add more characters, numbers, and symbols',
+            medium: 'Medium password - Good, but could be stronger',
+            strong: 'Strong password - Excellent!'
+        };
+
+        strengthIndicator.textContent = messages[strength];
+    }
+
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        const checks = {
+            length: password.length >= 8,
+            lowercase: /[a-z]/.test(password),
+            uppercase: /[A-Z]/.test(password),
+            numbers: /\d/.test(password),
+            symbols: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        };
+
+        strength = Object.values(checks).filter(Boolean).length;
+
+        if (strength < 3) return 'weak';
+        if (strength < 5) return 'medium';
+        return 'strong';
+    }
+
+    function validatePasswordMatch() {
+        if (!newPasswordInput || !confirmPasswordInput || !matchFeedback) return;
+
+        const newPassword = newPasswordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (confirmPassword.length === 0) {
+            matchFeedback.style.display = 'none';
+            confirmPasswordInput.setCustomValidity('');
+            return;
+        }
+
+        if (newPassword === confirmPassword) {
+            matchFeedback.className = 'password-feedback success';
+            matchFeedback.textContent = 'Passwords match!';
+            matchFeedback.style.display = 'block';
+            confirmPasswordInput.setCustomValidity('');
+        } else {
+            matchFeedback.className = 'password-feedback error';
+            matchFeedback.textContent = 'Passwords do not match';
+            matchFeedback.style.display = 'block';
+            confirmPasswordInput.setCustomValidity('Passwords do not match');
+        }
+    }
+
+    async function handlePasswordSubmit(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const data = {
+            current_password: formData.get('current_password'),
+            new_password: formData.get('new_password'),
+            confirm_password: formData.get('confirm_password')
+        };
+
+        // Validate client-side first
+        if (!data.current_password || !data.new_password || !data.confirm_password) {
+            alert('All password fields are required');
+            return;
+        }
+
+        if (data.new_password.length < 8) {
+            alert('New password must be at least 8 characters long');
+            return;
+        }
+
+        if (data.new_password !== data.confirm_password) {
+            alert('New passwords do not match');
+            return;
+        }
+
+        try {
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Changing...';
+            submitButton.disabled = true;
+
+            const response = await fetch('/settings/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Password changed successfully!');
+                
+                // Clear form
+                event.target.reset();
+                
+                // Hide strength indicators
+                if (strengthIndicator) strengthIndicator.style.display = 'none';
+                if (matchFeedback) matchFeedback.style.display = 'none';
+                
+                // Close edit mode
+                cancelEdit('password');
+            } else {
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Password change error:', error);
+            alert('Network error. Please try again.');
+        } finally {
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            submitButton.textContent = 'Change Password';
+            submitButton.disabled = false;
+        }
+    }
+}
+
 // Initialize everything when page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize social media and majors
     initializeSocialMedia();
     initializeMajors();
     initializeProfilePicturePreview();
+    initializePasswordFeatures();
 });
 
 switchTab(document.querySelector('#user-settings-tab'));
