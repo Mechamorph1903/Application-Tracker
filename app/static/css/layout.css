@@ -275,8 +275,7 @@ main {
 }
 
 /* Buttons (global style, can be used sitewide) */
-.profile-btn,
-.add-friend-btn {
+.profile-btn{
   padding: 10px 24px;
   border-radius: 16px;
   background: transparent;
@@ -292,8 +291,8 @@ main {
   text-align: center;
   display: inline-block;
 }
-.profile-btn:hover,
-.add-friend-btn:hover {
+
+.profile-btn:hover{
   background: #b993fd;
   color: #3b1366;
   box-shadow: 0 0 8px 2px #b993fd44;
@@ -819,4 +818,20 @@ input[type="text"] {
         max-width: 200px;
         justify-content: center;
     }
+}
+
+/*extra stuff*/
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    filter: brightness(0) invert(1);
+    background: transparent;
+}
+
+.delete-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
 }

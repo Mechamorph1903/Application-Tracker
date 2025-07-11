@@ -1,18 +1,20 @@
-/*for the applications page*/
-.applications-list {
-    display: flex;
-    flex-direction: column;
+.applications-container{
+    padding: 12px;
+}
+
+.applications-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
-    margin-bottom: 32px;
+    margin-bottom: 1px;
 }
 
 .application-card {
     display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 24px;
-    background: #2a0f64;
-    border: 1px solid #1851a1;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 12px;
+    background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
     border-radius: 12px;
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
@@ -20,46 +22,45 @@
 }
 
 .application-card:hover {
-    background: #430a9f;
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: 0 0 2px #ffffffbf;
 }
 
-.status-indicator {
-    width: 24px;
-    height: 16px;
-    border-radius: 5px;
-    flex-shrink: 0;
-}
-
-.status-indicator.cyan { background: #06b6d4; }
-.status-indicator.purple { background: #8b5cf6; }
-.status-indicator.red { background: #ef4444; }
-.status-indicator.gray { background: #6b7280; }
-
-.application-content {
-    flex: 1;
+.application-card:active {
+    transform: scale(0.95)
 }
 
 .application-header {
     display: flex;
-    align-items: center;
-    gap: 20px;
+    flex-direction: column;
+    gap: 0px;
+    margin: 0;
     margin-bottom: 8px;
 }
 
-.application-header h3 {
+.company-name {
+    margin: 0;
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 1000;
     color: white;
 }
 
-.status-badge {
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: white;
+.position {
+    margin: 0;
 }
 
+.location {
+    margin: 0;
+}
+
+.application-status {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/*for the dependent color coding*/
 .status-badge.cyan { background: #06b6d4; }
 .status-badge.purple { background: #8b5cf6; }
 .status-badge.red { background: #ef4444; }
@@ -75,16 +76,10 @@
 
 .application-details {
     display: flex;
-    gap: 24px;
-    margin-bottom: 8px;
-}
-
-.detail {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: #94a3b8;
-    font-size: 0.875rem;
+    flex-direction: column;
+    gap: 2px;
+    background-size: 1px 100%;
+    background-repeat: no-repeat;
 }
 
 .application-dates {
@@ -107,17 +102,31 @@
     color: #06b6d4;
 }
 
-.external-link {
-    background: #2a0f64;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 4px;
-    transition: color 0.2s;
+.applications-search-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.external-link:hover {
-    color: white;
+.add-application-btn {
+  padding: 10px 24px;
+  border-radius: 16px;
+  background: transparent;
+  color: #b993fd;
+  border: 1.7px solid #b993fd;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  display: inline-block;
 }
 
+.add-application-btn:hover {
+  background: #b993fd;
+  color: #3b1366;
+  box-shadow: 0 0 8px 2px #b993fd44;
+}
