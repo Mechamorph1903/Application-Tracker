@@ -11,6 +11,22 @@ nav > div:first-child {
     justify-self: start; /* Back button on left */
 }
 
+/* Back button styling */
+.back-button a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.back-button a:hover {
+    color: #3b82f6;
+}
+
+.back-button i {
+    font-size: 1.2rem;
+}
+
 .settings-tabs {
 	justify-self: center;
     display: flex;
@@ -200,6 +216,22 @@ nav > div:first-child {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
+    border: 2px solid #e5e7eb;
+}
+
+.profile-thumb-initials {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 16px;
+    text-transform: uppercase;
+    border: 2px solid #e5e7eb;
 }
 
 .badge {
@@ -473,4 +505,44 @@ nav > div:first-child {
 /* Hidden class for toggling display/edit modes */
 .hidden {
     display: none !important;
+}
+
+/* File input styling */
+.file-input {
+    padding: 0.5rem;
+    border: 2px dashed #d1d5db;
+    border-radius: 6px;
+    background: #f9fafb;
+    transition: border-color 0.3s ease;
+    cursor: pointer;
+}
+
+.file-input:hover {
+    border-color: #3b82f6;
+    background: #f0f9ff;
+}
+
+.file-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Profile picture preview */
+.profile-preview {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.preview-thumb {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
 }

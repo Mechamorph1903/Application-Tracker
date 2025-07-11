@@ -80,6 +80,38 @@ def create_app():
 		"""Render the credits page with attributions"""
 		return render_template('credits.html')
 	
+	@app.template_filter('social_icon')
+	def get_social_icon(platform):
+		"""Get Font Awesome icon class for social media platform"""
+		icons = {
+			'LinkedIn': 'fa-brands fa-linkedin',
+			'GitHub': 'fa-brands fa-github',
+			'Facebook': 'fa-brands fa-facebook',
+			'Instagram': 'fa-brands fa-instagram',
+			'Twitter': 'fa-brands fa-twitter',
+			'YouTube': 'fa-brands fa-youtube',
+			'Discord': 'fa-brands fa-discord',
+			'Twitch': 'fa-brands fa-twitch',
+			'DeviantArt': 'fa-brands fa-deviantart',
+			'Steam': 'fa-brands fa-steam',
+			'Xbox': 'fa-brands fa-xbox',
+			'PlayStation': 'fa-brands fa-playstation',
+			'Nintendo': 'fa-solid fa-gamepad',
+			'Personal Website': 'fa-solid fa-globe'
+		}
+		return icons.get(platform, 'fa-solid fa-link')
+	
+	@app.template_filter('initials')
+	def get_user_initials(user):
+		"""Get user initials from first and last name"""
+		if not user or not hasattr(user, 'firstName') or not hasattr(user, 'lastName'):
+			return 'U'
+		
+		first_initial = user.firstName[0].upper() if user.firstName else ''
+		last_initial = user.lastName[0].upper() if user.lastName else ''
+		
+		return first_initial + last_initial if first_initial and last_initial else 'U'
+	
 
 	# user statuses
 	@app.before_request

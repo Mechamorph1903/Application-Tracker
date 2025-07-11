@@ -110,6 +110,30 @@ const editNotes = () => {
     txtarea.setSelectionRange(txtarea.value.length, txtarea.value.length);
 };
 
+	// Description modal functions
+		function showDescription() {
+			document.getElementById('description-modal').style.display = 'flex';
+		}
+		
+		function hideDescription() {
+			document.getElementById('description-modal').style.display = 'none';
+		}
+		
+		// Close modal when clicking outside
+		document.getElementById('description-modal').addEventListener('click', function(e) {
+			if (e.target === this) {
+				hideDescription();
+			}
+		});
+		
+		// Close modal with Escape key
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape' && document.getElementById('description-modal').style.display === 'flex') {
+				hideDescription();
+			}
+		});
+
+
 // Move the event listeners outside and add them once when page loads
 document.addEventListener('DOMContentLoaded', (e) => {
     if(deleteBtn) {

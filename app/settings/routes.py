@@ -4,7 +4,10 @@ from app.models import db, User, UserSettings, Internship
 import json
 import csv
 import io
+import os
+import uuid
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 # Try to import pandas for Excel export, fallback to CSV if not available
 try:
@@ -12,6 +15,10 @@ try:
     PANDAS_AVAILABLE = True
 except ImportError:
     PANDAS_AVAILABLE = False
+
+# File upload configuration
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 settings = Blueprint('settings', __name__)
 
@@ -29,6 +36,31 @@ def settings_page():
 def update_user_settings():
     """Update user personal information"""
     try:
+        # Handle profile picture upload
+        if 'profile_picture' in request.files:
+            file = request.files['profile_picture']
+            if file and file.filename:
+                # Check file size
+                file.seek(0, os.SEEK_END)
+                file_size = file.tell()
+                file.seek(0)
+                
+                if file_size > MAX_FILE_SIZE:
+                    return jsonify({'success': False, 'error': 'File size too large. Maximum 5MB allowed.'}), 400
+                
+                # Save new profile picture
+                new_filename = save_profile_picture(file)
+                if new_filename:
+                    # Delete old profile picture if it exists and is not default
+                    if current_user.profile_picture and current_user.profile_picture != 'default.jpg':
+                        old_file_path = os.path.join('app', 'static', 'uploads', 'profile_pictures', current_user.profile_picture)
+                        if os.path.exists(old_file_path):
+                            os.remove(old_file_path)
+                    
+                    current_user.profile_picture = new_filename
+                else:
+                    return jsonify({'success': False, 'error': 'Invalid file type. Please upload JPG, PNG, or GIF files.'}), 400
+        
         # Update User model fields
         current_user.firstName = request.form.get('firstName', current_user.firstName)
         current_user.lastName = request.form.get('lastName', current_user.lastName)
@@ -174,3 +206,27 @@ def export_internships():
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Helper functions for file upload
+def allowed_file(filename):
+    """Check if file extension is allowed"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_profile_picture(file):
+    """Save uploaded profile picture and return filename"""
+    if file and allowed_file(file.filename):
+        # Generate unique filename
+        file_extension = file.filename.rsplit('.', 1)[1].lower()
+        unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
+        
+        # Create upload path
+        upload_folder = os.path.join('app', 'static', 'uploads', 'profile_pictures')
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+        
+        file_path = os.path.join(upload_folder, unique_filename)
+        
+        # Save file
+        file.save(file_path)
+        return unique_filename
+    return None

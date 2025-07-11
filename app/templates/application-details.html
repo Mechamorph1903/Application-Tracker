@@ -52,6 +52,15 @@
 			{%endif%}
 		</div>
 		
+		{% if internship.application_description %}
+		<div class="description-section">
+			<button class="description-btn" onclick="showDescription()" title="View Job Description">
+				<i class="fa-solid fa-info-circle"></i>
+				View Job Description
+			</button>
+		</div>
+		{% endif %}
+		
 		<!-- Single column for notes, contacts, and link -->
 		<div class="details-single">
 			<div class="notes">
@@ -140,7 +149,25 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Description Popup Modal -->
+	<div id="description-modal" class="modal-overlay">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3><i class="fa-solid fa-info-circle"></i> Job Description</h3>
+				<button class="modal-close" onclick="hideDescription()">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="description-content">
+					{{ internship.application_description or 'No description available.' }}
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="modal-btn" onclick="hideDescription()">Close</button>
+			</div>
+		</div>
+	</div>
 	
-	<script src="{{ url_for('static', filename="js/delete-application.js")}}"></script>
+	<script src="{{ url_for('static', filename="js/application-details.js")}}"></script>
 </body>
 </html>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Profile - InternIn{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="profile-container">
@@ -12,12 +13,12 @@
         <div class="cover-section">
             <div class="cover-overlay"></div>
             <div class="back-button">
-                <a href="javascript:history.back()">
-			        <img src="{{ url_for('static', filename='images/back-white.png') }}" alt="Back" id="back-button">
+                <a href="javascript:void(0)" onclick="goBackToLastPage()" title="Go back to previous page">
+			        <i class="fas fa-arrow-left"></i>
 		        </a> 
             </div>
             <div class="settings">
-                <a href="{{ url_for('settings.settings_page') }}" class="settings-link">
+                <a href="{{ url_for('settings.settings_page') }}" class="settings-link" onclick="storeCurrentPage(event)">
                     <img src="{{ url_for('static', filename='images/settings.png') }}" alt="Settings Icon" class="settings-icon">
                      <i class="settings-text">Settings</i>
                 </a>
@@ -28,7 +29,13 @@
         <!-- Profile Header -->
         <div class="profile-header">
             <div class="profile-info">
-                <div class="profile-picture"></div>
+                <div class="profile-picture">
+                    {% if user.profile_picture and user.profile_picture != 'default.jpg' %}
+                        <img src="{{ url_for('static', filename='uploads/profile_pictures/' + user.profile_picture) }}" alt="Profile Picture" class="profile-img">
+                    {% else %}
+                        <div class="profile-initials">{{ user | initials }}</div>
+                    {% endif %}
+                </div>
                 <div class="profile-details">
                     <h1 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h1>
                     <div class="online-status">
@@ -41,18 +48,16 @@
                         <div id="major">Major: {{ user.major }}</div>
                     </div>
                     <div class="social-links">
-                        <a href="#" class="social-link">
-                            @sarahjohnson
-                        </a>
-                        <a href="#" class="social-link">
-                            sarah-johnson
-                        </a>
-                        <a href="#" class="social-link">
-                            sarahj-dev
-                        </a>
-                        <a href="#" class="social-link">
-                            @sarah.codes
-                        </a>
+                        {%if user.social_media %}
+                            {% for social_link in user.social_media %}
+                                <a href="{{ social_link.url }}" class="social-link" target="_blank" rel="noopener noreferrer">
+                                    <i class="{{ social_link.platform|social_icon }}"></i>
+                                     <span>{{ social_link.platform }}</span>
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <p>No Social Media Added</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -181,5 +186,56 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        // Navigation state management using stack
+        function goBackToLastPage() {
+            const lastPage = popFromNavigationStack();
+            
+            if (lastPage && lastPage !== window.location.href) {
+                window.location.href = lastPage;
+            } else {
+                window.location.href = '/home';
+            }
+        }
+        
+        // Store navigation when arriving at profile
+        document.addEventListener('DOMContentLoaded', function() {
+            // Push current page to navigation stack if coming from valid pages
+            if (document.referrer) {
+                const referrerPath = new URL(document.referrer).pathname;
+                if (['/home', '/friends', '/applications/applications-list', '/calendar'].includes(referrerPath)) {
+                    pushToNavigationStack(document.referrer);
+                }
+            }
+        });
+        
+        // Navigation stack functions (defined in layout.html)
+        function pushToNavigationStack(page) {
+            const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
+            if (stack.length === 0 || stack[stack.length - 1] !== page) {
+                stack.push(page);
+                if (stack.length > 5) {
+                    stack.shift();
+                }
+                sessionStorage.setItem('navigationStack', JSON.stringify(stack));
+            }
+        }
+        
+        function popFromNavigationStack() {
+            const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
+            if (stack.length > 0) {
+                stack.pop();
+                sessionStorage.setItem('navigationStack', JSON.stringify(stack));
+                return stack[stack.length - 1];
+            }
+            return null;
+        }
+        
+        // Store current page when navigating TO settings
+        function storeCurrentPage(event) {
+            pushToNavigationStack(window.location.href);
+        }
+    </script>
 </body>
 </html>

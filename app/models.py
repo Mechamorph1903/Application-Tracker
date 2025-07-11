@@ -66,7 +66,25 @@ class User(db.Model, UserMixin): # User model for managing user data
 		else:
 			return 'offline'  # Override to offline if inactive
 		
-
+	def get_social_icon(self, platform):
+		"""Get Font Awesome icon class for social media platform"""
+		icons = {
+			'LinkedIn': 'fa-brands fa-linkedin',
+			'GitHub': 'fa-brands fa-github',
+			'Facebook': 'fa-brands fa-facebook',
+			'Instagram': 'fa-brands fa-instagram',
+			'Twitter': 'fa-brands fa-twitter',
+			'YouTube': 'fa-brands fa-youtube',
+			'Discord': 'fa-brands fa-discord',
+			'Twitch': 'fa-brands fa-twitch',
+			'DeviantArt': 'fa-brands fa-deviantart',
+			'Steam': 'fa-brands fa-steam',
+			'Xbox': 'fa-brands fa-xbox',
+			'PlayStation': 'fa-brands fa-playstation',
+			'Nintendo': 'fa-solid fa-gamepad',
+			'Personal Website': 'fa-solid fa-globe'
+		}
+		return icons.get(platform, 'fa-solid fa-link')
 
 
 

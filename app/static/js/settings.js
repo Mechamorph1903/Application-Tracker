@@ -98,6 +98,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Show success message
                     alert('Settings saved successfully!');
+                    
+                    // Refresh the page to show updated values
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
                 } else {
                     alert('Error saving settings: ' + (result.error || 'Unknown error'));
                 }
@@ -207,15 +212,23 @@ async function exportInternships() {
 
 // Social Media Management
 let socialMediaLinks = [];
-const maxSocialLinks = 4;
+const maxSocialLinks = 6;
 
 const socialPlatforms = [
-    { name: 'LinkedIn', icon: 'fa-linkedin', placeholder: 'https://linkedin.com/in/username' },
-    { name: 'GitHub', icon: 'fa-github', placeholder: 'https://github.com/username' },
-    { name: 'Facebook', icon: 'fa-facebook', placeholder: 'https://facebook.com/username' },
-    { name: 'Instagram', icon: 'fa-instagram', placeholder: 'https://instagram.com/username' },
-    { name: 'Twitter', icon: 'fa-twitter', placeholder: 'https://twitter.com/username' },
-    { name: 'Personal Website', icon: 'fa-globe', placeholder: 'https://yourwebsite.com' }
+    { name: 'LinkedIn', icon: 'fa-brands fa-linkedin', placeholder: 'https://linkedin.com/in/username' },
+    { name: 'GitHub', icon: 'fa-brands fa-github', placeholder: 'https://github.com/username' },
+    { name: 'Facebook', icon: 'fa-brands fa-facebook', placeholder: 'https://facebook.com/username' },
+    { name: 'Instagram', icon: 'fa-brands fa-instagram', placeholder: 'https://instagram.com/username' },
+    { name: 'Twitter', icon: 'fa-brands fa-twitter', placeholder: 'https://twitter.com/username' },
+    { name: 'YouTube', icon: 'fa-brands fa-youtube', placeholder: 'https://youtube.com/@username' },
+    { name: 'Discord', icon: 'fa-brands fa-discord', placeholder: 'https://discord.gg/username' },
+    { name: 'Twitch', icon: 'fa-brands fa-twitch', placeholder: 'https://twitch.tv/username' },
+    { name: 'DeviantArt', icon: 'fa-brands fa-deviantart', placeholder: 'https://deviantart.com/username' },
+    { name: 'Steam', icon: 'fa-brands fa-steam', placeholder: 'https://steamcommunity.com/id/username' },
+    { name: 'Xbox', icon: 'fa-brands fa-xbox', placeholder: 'https://account.xbox.com/en-us/profile?gamertag=username' },
+    { name: 'PlayStation', icon: 'fa-brands fa-playstation', placeholder: 'https://my.playstation.com/profile/username' },
+    { name: 'Nintendo', icon: 'fas fa-gamepad', placeholder: 'https://accounts.nintendo.com/profile/username' },
+    { name: 'Personal Website', icon: 'fas fa-globe', placeholder: 'https://yourwebsite.com' }
 ];
 
 function initializeSocialMedia() {
@@ -269,8 +282,9 @@ function renderSocialLinks() {
                 </select>
                 <input type="url" 
                        placeholder="${getSocialPlaceholder(link.platform)}" 
-                       value="${link.url}" 
+                       value="${link.url || (link.platform ? getSocialPlaceholder(link.platform) : '')}" 
                        onchange="updateSocialUrl(${index}, this.value)"
+                       onfocus="handleInputFocus(this, ${index})"
                        class="social-url-input">
                 <button type="button" onclick="removeSocialMediaLink(${index})" class="btn-remove-social">
                     <i class="fas fa-trash"></i>
@@ -289,12 +303,46 @@ function renderSocialLinks() {
 
 function updateSocialPlatform(index, platform) {
     socialMediaLinks[index].platform = platform;
+    
+    // Auto-fill the URL with placeholder template when platform is selected
+    if (platform && !socialMediaLinks[index].url) {
+        socialMediaLinks[index].url = getSocialPlaceholder(platform);
+    }
+    
     renderSocialLinks();
 }
 
 function updateSocialUrl(index, url) {
     socialMediaLinks[index].url = url;
-    renderSocialLinks();
+    
+    // Update the hidden input field so changes are saved
+    document.getElementById('social_media').value = JSON.stringify(socialMediaLinks);
+}
+
+function handleInputFocus(input, index) {
+    // If the input contains the placeholder template, select the "username" part
+    const placeholder = getSocialPlaceholder(socialMediaLinks[index].platform);
+    if (input.value === placeholder) {
+        // Select the "username" part for easy replacement
+        setTimeout(() => {
+            if (placeholder.includes('gamertag=username')) {
+                // Xbox special case
+                const start = placeholder.indexOf('gamertag=username') + 9; // "gamertag=".length
+                const end = start + 'username'.length;
+                input.setSelectionRange(start, end);
+            } else if (placeholder.includes('@username')) {
+                // YouTube case
+                const start = placeholder.indexOf('@username') + 1;
+                const end = start + 'username'.length;
+                input.setSelectionRange(start, end);
+            } else if (placeholder.includes('username')) {
+                // Standard case
+                const start = placeholder.indexOf('username');
+                const end = start + 'username'.length;
+                input.setSelectionRange(start, end);
+            }
+        }, 0);
+    }
 }
 
 function getSocialPlaceholder(platform) {
@@ -339,11 +387,57 @@ async function initializeMajors() {
     }
 }
 
+// Profile picture preview functionality
+function initializeProfilePicturePreview() {
+    const fileInput = document.getElementById('profile_picture');
+    const previewContainer = document.getElementById('profile-preview');
+    const previewImage = document.getElementById('preview-image');
+    const previewFilename = document.getElementById('preview-filename');
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Check file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Check file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size too large. Maximum 5MB allowed.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Create preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (previewImage && previewFilename && previewContainer) {
+                        previewImage.src = e.target.result;
+                        previewFilename.textContent = file.name;
+                        previewContainer.classList.remove('hidden');
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Hide preview if no file selected
+                if (previewContainer) {
+                    previewContainer.classList.add('hidden');
+                }
+            }
+        });
+    }
+}
+
 // Initialize everything when page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize social media and majors
     initializeSocialMedia();
     initializeMajors();
+    initializeProfilePicturePreview();
 });
 
 switchTab(document.querySelector('#user-settings-tab'));
