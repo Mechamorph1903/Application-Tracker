@@ -16,7 +16,6 @@
     <!--search bar and button-->
     <div class="applications-search-bar">
         <input type="text" id="application-search" placeholder="Search applications..." autocomplete="off">
-        <button class="add-application-btn">Add Application (if needed)</button>
     </div>
 
     <div class="applications-grid"> <!--three equal columns-->
@@ -83,4 +82,64 @@
     </div>
 {% endif %}
 </div>
+
+<script>
+// Search functionality for applications
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('application-search');
+    const applicationCards = document.querySelectorAll('.application-card');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            
+            applicationCards.forEach(card => {
+                const companyName = card.querySelector('.company-name')?.textContent.toLowerCase() || '';
+                const position = card.querySelector('.position')?.textContent.toLowerCase() || '';
+                const location = card.querySelector('.location')?.textContent.toLowerCase() || '';
+                const status = card.querySelector('.application-status span')?.textContent.toLowerCase() || '';
+                
+                // Check if search term matches any of the fields
+                const matches = companyName.includes(searchTerm) || 
+                               position.includes(searchTerm) || 
+                               location.includes(searchTerm) || 
+                               status.includes(searchTerm);
+                
+                if (matches || searchTerm === '') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show/hide "no results" message
+            const visibleCards = document.querySelectorAll('.application-card[style="display: block"], .application-card:not([style*="display: none"])');
+            const noResultsMessage = document.getElementById('no-search-results');
+            
+            if (visibleCards.length === 0 && searchTerm !== '') {
+                if (!noResultsMessage) {
+                    const noResults = document.createElement('div');
+                    noResults.id = 'no-search-results';
+                    noResults.className = 'no-applications';
+                    noResults.innerHTML = `
+                        <h2>No applications found</h2>
+                        <p>Try searching with different keywords or <a href="{{ url_for('applications.add_application') }}">add a new application</a>.</p>
+                    `;
+                    document.querySelector('.applications-grid').after(noResults);
+                }
+            } else if (noResultsMessage) {
+                noResultsMessage.remove();
+            }
+        });
+        
+        // Clear search on escape key
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                this.value = '';
+                this.dispatchEvent(new Event('input'));
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

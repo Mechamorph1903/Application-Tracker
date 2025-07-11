@@ -17,7 +17,7 @@
       <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
       <a href="{{ url_for('calendar') }}" class="{% if request.endpoint == 'calendar' %}active{% endif %}">Calendar</a>
       <a href="{{ url_for('friends') }}" class="{% if request.endpoint == 'friends' %}active{% endif %}">Friends</a>
-      <a href="{{ url_for('applications.applicationsList') }}" class="{% if request.endpoint == 'applications' %}active{% endif %}">Applications</a>
+      <a href="{{ url_for('applications.applicationsList') }}" class="{% if request.endpoint == 'applications.applicationsList' %}active{% endif %}">Applications</a>
     </div>
     <div class="navbar-user">
       {% if current_user.is_authenticated %}
