@@ -12,6 +12,7 @@ class User(db.Model, UserMixin): # User model for managing user data
 	username = db.Column(db.String(150), nullable=False, unique=True)  # Username must be unique
 	email = db.Column(db.String(150), nullable=False)  # email for the user
 	password_hash = db.Column(db.String(256), nullable=False) # Hashed password for security
+	password_changed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # When password was last changed
 	is_admin = db.Column(db.Boolean, default=False) # Flag to indicate if the user is an admin
 	profile_picture = db.Column(db.String(150), default='default.jpg') # Path to the user's profile picture
 	
@@ -35,6 +36,7 @@ class User(db.Model, UserMixin): # User model for managing user data
 
 	def set_password(self, password):
 		self.password_hash = generate_password_hash(password)
+		self.password_changed_at = datetime.now(timezone.utc)
 
 	def check_password(self, password):
 		return check_password_hash(self.password_hash, password)
@@ -66,7 +68,25 @@ class User(db.Model, UserMixin): # User model for managing user data
 		else:
 			return 'offline'  # Override to offline if inactive
 		
-
+	def get_social_icon(self, platform):
+		"""Get Font Awesome icon class for social media platform"""
+		icons = {
+			'LinkedIn': 'fa-brands fa-linkedin',
+			'GitHub': 'fa-brands fa-github',
+			'Facebook': 'fa-brands fa-facebook',
+			'Instagram': 'fa-brands fa-instagram',
+			'Twitter': 'fa-brands fa-twitter',
+			'YouTube': 'fa-brands fa-youtube',
+			'Discord': 'fa-brands fa-discord',
+			'Twitch': 'fa-brands fa-twitch',
+			'DeviantArt': 'fa-brands fa-deviantart',
+			'Steam': 'fa-brands fa-steam',
+			'Xbox': 'fa-brands fa-xbox',
+			'PlayStation': 'fa-brands fa-playstation',
+			'Nintendo': 'fa-solid fa-gamepad',
+			'Personal Website': 'fa-solid fa-globe'
+		}
+		return icons.get(platform, 'fa-solid fa-link')
 
 
 

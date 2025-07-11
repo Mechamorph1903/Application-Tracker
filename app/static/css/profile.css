@@ -87,9 +87,19 @@
             z-index: 10;
         }
 
-        .back-button img {
-            width: 3em;
-            height: 3em;
+        .back-button a {
+            color: white;
+            text-decoration: none;
+            font-size: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-button a:hover {
+            color: #3b82f6;
+        }
+
+        .back-button i {
+            font-size: 2rem;
         }
 
         /* Profile Header */
@@ -112,10 +122,33 @@
             height: 160px;
             border-radius: 50%;
             border: 6px solid white;
-            background-image: url(../images/profile.png);
-            background-size: cover;
-            background-position: center;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-initials {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 3rem;
+            text-transform: uppercase;
         }
 
         .profile-details {
@@ -181,6 +214,16 @@
         .social-link:hover {
             background: #ffffff4d;
             transform: translateY(-2px);
+        }
+
+        .social-link i {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .social-link span {
+            font-weight: 500;
         }
 
         /* Main Content */

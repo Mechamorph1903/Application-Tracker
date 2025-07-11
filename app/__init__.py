@@ -42,7 +42,7 @@ def create_app():
 	
 	app.register_blueprint(auth, url_prefix='/auth')  # Register the auth blueprint with a URL prefix
 	app.register_blueprint(userprofile, url_prefix='/profile')  # Register the user profile blueprint with a URL prefix
-	app.register_blueprint(settings)  # Register the settings blueprint without prefix
+	app.register_blueprint(settings, url_prefix='/settings')  # Register the settings blueprint with settings prefix
 	app.register_blueprint(applications, url_prefix='/applications')  # Register the internships blueprint
 
 	@app.route('/')
@@ -79,6 +79,48 @@ def create_app():
 	def credits():
 		"""Render the credits page with attributions"""
 		return render_template('credits.html')
+	
+	@app.template_filter('social_icon')
+	def get_social_icon(platform):
+		"""Get Font Awesome icon class for social media platform"""
+		icons = {
+			'LinkedIn': 'fa-brands fa-linkedin',
+			'GitHub': 'fa-brands fa-github',
+			'Facebook': 'fa-brands fa-facebook',
+			'Instagram': 'fa-brands fa-instagram',
+			'Twitter': 'fa-brands fa-twitter',
+			'YouTube': 'fa-brands fa-youtube',
+			'Discord': 'fa-brands fa-discord',
+			'Twitch': 'fa-brands fa-twitch',
+			'DeviantArt': 'fa-brands fa-deviantart',
+			'Steam': 'fa-brands fa-steam',
+			'Xbox': 'fa-brands fa-xbox',
+			'PlayStation': 'fa-brands fa-playstation',
+			'Nintendo': 'fa-solid fa-gamepad',
+			'Personal Website': 'fa-solid fa-globe'
+		}
+		return icons.get(platform, 'fa-solid fa-link')
+	
+	@app.template_filter('initials')
+	def get_user_initials(user):
+		"""Get user initials from first and last name"""
+		if not user or not hasattr(user, 'firstName') or not hasattr(user, 'lastName'):
+			return 'U'
+		
+		first_initial = user.firstName[0].upper() if user.firstName else ''
+		last_initial = user.lastName[0].upper() if user.lastName else ''
+		
+		return first_initial + last_initial if first_initial and last_initial else 'U'
+	
+	@app.template_filter('safe_date')
+	def safe_date_format(date_obj, format_str='%B %d, %Y'):
+		"""Safely format a date object, return 'Never' if None or invalid"""
+		try:
+			if date_obj:
+				return date_obj.strftime(format_str)
+			return 'Never'
+		except (AttributeError, ValueError):
+			return 'Never'
 	
 
 	# user statuses

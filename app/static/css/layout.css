@@ -69,6 +69,32 @@ main {
   background: #fff;
 }
 
+/* Profile Image Styles */
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #a259ff;
+  object-fit: cover;
+  background: #fff;
+}
+
+/* Profile Initials Styles */
+.profile-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #a259ff;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
 .username {
   font-size: 1rem;
   font-weight: 500;
@@ -139,11 +165,29 @@ main {
 }
 
 .profile-card-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: 2px solid #7c3aed;
-    margin-right: 15px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #7c3aed;
+  margin-right: 15px;
+  object-fit: cover;
+}
+
+/* Profile Card Initials Styles */
+.profile-card-initials {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #7c3aed;
+  margin-right: 15px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 20px;
+  text-transform: uppercase;
 }
 
 .profile-card-info {
