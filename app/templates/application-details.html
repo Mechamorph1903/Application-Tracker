@@ -27,6 +27,13 @@
 		</div>
 	</nav>
 	<section class="details-card">
+		<!-- Header with status -->
+		<div class="details-header">
+			<div class="status-badge" style="background-color: {{ internship.get_status_color() }}">
+				{{ internship.application_status }}
+			</div>
+		</div>
+		
 		<!-- 2-column grid for basic details -->
 		<div class="details-grid">
 			<p>Company: {{ internship.company_name }}</p>
@@ -36,9 +43,9 @@
 			{% if internship.position %}
 			<p>Role: {{ internship.position }}</p>
 			{%endif%}
-			<p>Date Applied(YYYY/MM/DD): {{ internship.applied_date }}</p>
+			<p>Date Applied: {{ internship.applied_date.strftime('%B %d, %Y') }}</p>
 			{% if internship.deadline_date%}
-			<p><strong class="delete-indicator">Deadline:</strong> {{ internship.deadline_date }}</p>
+			<p><strong class="delete-indicator">Deadline:</strong> {{ internship.deadline_date.strftime('%B %d, %Y') }}</p>
 			{%endif%}
 			{% if internship.next_action %}
 				<p><strong>Next Action:</strong> {{ internship.get_next_action_display() }}</p>
@@ -49,13 +56,21 @@
 		<div class="details-single">
 			<div class="notes">
 				<h4><i class="fa-solid fa-note-sticky"></i>Notes:</h4>
-			<div class="notes-content">
+			<div class="notes-content" onclick="editNotes()" id="notes-content" title="Edit Notes">
 				{% if internship.notes %}
-					<p>{{ internship.notes }}</p>
+					<p id="internship-notes">{{ internship.notes }}</p>
 				{%else%}
 					<p>No Notes.</p>
 				{%endif%}
 			</div>
+				<form action="{{ url_for('applications.editNotes', internship_id=internship.id) }}" method="POST" id="notes-form" style="display: none;">
+					<label for="notes">Edit Notes:</label>
+					<textarea name="notes" id="notes" class="notes-content">{{ internship.notes or ''}}</textarea>
+					<div class="action-buttons">
+						<button type="button" id="forget">Cancel</button>
+						<button type="submit" id="update">Update</button>
+					</div>
+				</form>
 			</div>
 			<div class="contacts">
 				<p>Contacts:</p>

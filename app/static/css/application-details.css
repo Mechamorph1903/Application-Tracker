@@ -393,18 +393,171 @@
     font-weight: 500;
 }
 
-.notes{
+.notes {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
 }
 
-.notes-content{
-    background-color: #3741511c;
-    outline: 3px inset rgba(128, 128, 128, 0.738);
-    height: 6rem;
-    border-radius: 20px;
-    padding: 10px;
+.notes h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: #2d3748;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
 
+.notes h4 i {
+    color: #7c3aed;
+    font-size: 1rem;
+}
+
+.notes-content {
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 4rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.notes-content:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.notes-content p {
+    margin: 0;
+    color: #374151;
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+/* Notes form styling to match the display */
+#notes-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#notes-form label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: #2d3748;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+#notes-form textarea {
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 8rem;
+    resize: vertical;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #374151;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#notes-form textarea:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.35);
+    border-color: #7c3aed;
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.2);
+}
+
+#notes-form textarea::placeholder {
+    color: rgba(55, 65, 81, 0.6);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.action-buttons button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+}
+
+#forget {
+    background: #6c757d;
+    color: white;
+}
+
+#forget:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+#update {
+    background: #7c3aed;
+    color: white;
+}
+
+#update:hover {
+    background: #5b21b6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.action-buttons button:active {
+    transform: translateY(0);
+}
+
+.action-buttons button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Details header with status badge */
+.details-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 1rem;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }

@@ -4,6 +4,13 @@ const popUpMsg = document.getElementById('pop-up-message');
 const popUpCancel = document.getElementById('pop-up-cancel');
 const popUpYes = document.getElementById('yes');
 const popUpNo = document.getElementById('no');
+const notesContainer = document.getElementById('notes-content');
+const notesForm = document.getElementById('notes-form');
+const notes =  document.getElementById('internship-notes');
+const txtarea = document.getElementById('notes');
+const forget = document.getElementById('forget');
+const update = document.getElementById('update');
+
 
 const showPopUp = (scenario) => {
 	return new Promise((resolve) => {
@@ -91,11 +98,69 @@ const getInternshipId = () => {
 	return null;
 }
 
+const editNotes = () => {
+    notesContainer.style.display = 'none';
+    notesForm.style.display = 'block';
+
+    currentNotes = notes?.innerText || '';
+    txtarea.value = currentNotes;
+    
+    // Auto-focus the textarea and move cursor to end
+    txtarea.focus();
+    txtarea.setSelectionRange(txtarea.value.length, txtarea.value.length);
+};
+
+// Move the event listeners outside and add them once when page loads
 document.addEventListener('DOMContentLoaded', (e) => {
-	if(deleteBtn) {
-		deleteBtn.addEventListener('click', (e) => {
+    if(deleteBtn) {
+        deleteBtn.addEventListener('click', (e) => {
             e.preventDefault();
             deleteApplication();
         });
-	}
-});	
+    }
+    
+    // Add the cancel button event listener
+    if(forget) {
+        forget.addEventListener('click', () => {
+            notesContainer.style.display = 'block';
+            notesForm.style.display = 'none';
+        });
+    }
+    
+    // Add the form submission event listener
+    if(notesForm) {
+        notesForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Fixed: Added parentheses
+            
+            const formData = new FormData(e.target);
+            const notes = formData.get('notes');
+            
+            try {
+                const response = await fetch(e.target.action, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const notesDisplay = document.getElementById('internship-notes');
+                    if (notes.trim()) {
+                        notesDisplay.innerText = notes;
+                    } else {
+                        notesDisplay.innerText = 'No Notes.';
+                    }
+                    
+                    notesContainer.style.display = 'block';
+                    notesForm.style.display = 'none';
+                    
+                    console.log('Notes updated successfully!');
+                } else {
+                    alert('Error updating notes');
+                }
+                
+            } catch(error) {
+                console.error('Error:', error);
+                alert('Error updating notes');
+            }
+        });
+    }
+});

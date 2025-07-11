@@ -230,11 +230,35 @@ def delete_internship(internship_id):
         flash('Internship not found or you do not have permission to edit it.', 'error')
         return redirect(url_for('applications.applicationsList'))
     
-    company_name = internship.company_name
+    job_name = internship.job_name
     db.session.delete(internship)
     db.session.commit()
     
-    flash(f'Successfully deleted {company_name} application.', 'info')
+    flash(f'Successfully deleted {job_name} application.', 'info')
     return redirect(url_for('applications.applicationsList'))
+
+
+@applications.route('/application-details/<int:internship_id>', methods=['POST'])
+@login_required
+def editNotes(internship_id):
+    """Edit Notes"""
+    internship = Internship.query.filter_by(id=internship_id, user_id=current_user.id).first()
+
+    if not internship:
+         return {'error': 'Internship not found'}, 404
+    try:
+        notes = request.form.get('notes', '')
+        internship.notes = notes
+        db.session.commit()
+        print('Notes successfully updated!')
+        flash('Notes successfully updated!', 'success')
+        
+        return {'success': True, 'notes': notes}, 200
+        
+    except Exception as e:
+        flash(f'Error updating notes: {str(e)}', 'error')
+        db.session.rollback()
+        return {'error': str(e)}, 500
+
 
 
