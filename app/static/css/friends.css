@@ -173,3 +173,26 @@
   margin: 0 14px;
   border-radius: 1px;
 }
+
+.add-friend-btn {
+  padding: 10px 24px;
+  border-radius: 16px;
+  background: transparent;
+  color: #b993fd;
+  border: 1.7px solid #b993fd;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  display: inline-block;
+}
+
+.add-friend-btn:hover {
+  background: #b993fd;
+  color: #3b1366;
+  box-shadow: 0 0 8px 2px #b993fd44;
+}
