@@ -1,5 +1,5 @@
 .applications-container{
-    padding: 20px;
+    padding: 12px;
 }
 
 .applications-grid {
@@ -11,8 +11,9 @@
 
 .application-card {
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
-    padding: 24px;
+    padding: 12px;
     background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
     border-radius: 12px;
     -webkit-backdrop-filter: blur(8px);
@@ -25,47 +26,41 @@
   box-shadow: 0 0 2px #ffffffbf;
 }
 
-.status-indicator {
-    width: 24px;
-    height: 16px;
-    border-radius: 5px;
-    flex-shrink: 0;
-}
-
-.status-indicator.cyan { background: #06b6d4; }
-.status-indicator.purple { background: #8b5cf6; }
-.status-indicator.red { background: #ef4444; }
-.status-indicator.gray { background: #6b7280; }
-
-.application-content {
-    flex: 1;
+.application-card:active {
+    transform: scale(0.95)
 }
 
 .application-header {
     display: flex;
     flex-direction: column;
     gap: 0px;
+    margin: 0;
+    margin-bottom: 8px;
 }
 
-.application-header h3 {
+.company-name {
     margin: 0;
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 1000;
     color: white;
 }
 
-.applications-header p {
+.position {
     margin: 0;
 }
 
-.status-badge {
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: white;
+.location {
+    margin: 0;
 }
 
+.application-status {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/*for the dependent color coding*/
 .status-badge.cyan { background: #06b6d4; }
 .status-badge.purple { background: #8b5cf6; }
 .status-badge.red { background: #ef4444; }
@@ -81,16 +76,10 @@
 
 .application-details {
     display: flex;
-    gap: 24px;
-    margin-bottom: 8px;
-}
-
-.detail {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: #94a3b8;
-    font-size: 0.875rem;
+    flex-direction: column;
+    gap: 2px;
+    background-size: 1px 100%;
+    background-repeat: no-repeat;
 }
 
 .application-dates {
@@ -111,20 +100,6 @@
     align-items: center;
     gap: 4px;
     color: #06b6d4;
-}
-
-.external-link {
-    background: #2a0f64;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 4px;
-    transition: color 0.2s;
-}
-
-.external-link:hover {
-    color: white;
 }
 
 .applications-search-bar {

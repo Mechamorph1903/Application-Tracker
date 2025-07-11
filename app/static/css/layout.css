@@ -775,3 +775,19 @@ input[type="text"] {
         justify-content: center;
     }
 }
+
+/*extra stuff*/
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    filter: brightness(0) invert(1);
+    background: transparent;
+}
+
+.delete-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
