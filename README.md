@@ -7,6 +7,8 @@
 
 A modern, feature-rich Flask web application designed to help students and job seekers organize, track, and optimize their internship search journey. Built by students, for students! 🚀
 
+> **⚠️ Copyright Notice:** This project is the original work of DEN and is protected under Apache 2.0 License. While the code is open source for educational purposes, please respect the license terms and provide proper attribution if you use any part of this codebase.
+
 ![InternIn Dashboard](https://via.placeholder.com/800x400/2c3e50/ffffff?text=InternIn+Dashboard+Preview)
 
 ---

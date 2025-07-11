@@ -1,3 +1,9 @@
+"""
+InternIn - Personal Internship Tracking Hub
+Copyright © 2025 DEN. All rights reserved.
+Licensed under Apache 2.0 License
+"""
+
 # "This folder is a package — and you can import from it."
 import datetime
 from flask import Flask, render_template
