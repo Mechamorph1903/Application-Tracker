@@ -326,17 +326,13 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - **Flask Community** for the excellent web framework
 - **Font Awesome** for the comprehensive icon library
 - **Select2** for enhanced dropdown functionality
-- **All Contributors** who helped improve this project
 
 ---
 
 ## 📞 Support
 
 If you have questions or need help:
-
-1. Check the [Issues](https://github.com/YOUR_USERNAME/internship-tracker/issues) page
-2. Create a new issue if your problem isn't already reported
-3. Contact us at support@internin.com
+Contact me(daniel.anorue@usm.edu), elyon (elyon.aganah@usm.edu) or neville(neville.onsomu@usm.edu)
 
 ---
 
