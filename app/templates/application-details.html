@@ -27,7 +27,8 @@
 		</div>
 	</nav>
 	<section class="details-card">
-		<div class="details">
+		<!-- 2-column grid for basic details -->
+		<div class="details-grid">
 			<p>Company: {{ internship.company_name }}</p>
 			{% if internship.location %}
 			<p>Location: {{ internship.location }}</p>
@@ -42,7 +43,20 @@
 			{% if internship.next_action %}
 				<p><strong>Next Action:</strong> {{ internship.get_next_action_display() }}</p>
 			{%endif%}
-			
+		</div>
+		
+		<!-- Single column for notes, contacts, and link -->
+		<div class="details-single">
+			<div class="notes">
+				<h4><i class="fa-solid fa-note-sticky"></i>Notes:</h4>
+			<div class="notes-content">
+				{% if internship.notes %}
+					<p>{{ internship.notes }}</p>
+				{%else%}
+					<p>No Notes.</p>
+				{%endif%}
+			</div>
+			</div>
 			<div class="contacts">
 				<p>Contacts:</p>
 				{% if internship.contacts %}
@@ -94,7 +108,7 @@
 				{% endif %}
 			</div>
 
-			<a href="{{ internship.application_link }}">
+			<a href="{{ internship.application_link }}" target="_blank" rel="noopener noreferrer">
 				Application
 				<i class="fa-solid fa-link"></i>
 			</a>

@@ -88,16 +88,40 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.details{
+.details-grid {
 	display: grid;
-	grid-template-columns: (auto-fit, minmax(250px, 1fr));
-	max-width: 1200px;
-	margin: 0 auto;
-	gap: 2rem;
-    padding: 2rem;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 1rem;
+	margin-bottom: 2rem;
+	padding: 1rem;
 }
 
-.details a {
+.details-grid p {
+	margin: 0.5rem 0;
+	font-size: 1rem;
+	color: #2d3748;
+}
+
+.details-single {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 1rem;
+}
+
+.details-single h4 {
+	margin: 0 0 0.5rem 0;
+	color: #2d3748;
+	font-size: 1.2rem;
+	font-weight: 600;
+}
+
+.details-single p {
+	margin: 0.25rem 0;
+	color: #4a5568;
+}
+
+.details-single a {
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
@@ -116,7 +140,7 @@
     min-width: 200px;
 }
 
-.details a:hover {
+.details-single a:hover {
     background: white;
     border-color: #7c3aed;
     color: #7c3aed;
@@ -124,7 +148,7 @@
     box-shadow: 0 8px 25px rgba(124, 58, 237, 0.2);
 }
 
-.details a i {
+.details-single a i {
     background: #7c3aed;
     color: white;
     padding: 8px;
@@ -133,7 +157,7 @@
     transition: all 0.3s ease;
 }
 
-.details a:hover i {
+.details-single a:hover i {
     background: #5b21b6;
     transform: scale(1.1);
 }
@@ -367,4 +391,20 @@
 .contact-detail span {
     color: #374151;
     font-weight: 500;
+}
+
+.notes{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.notes-content{
+    background-color: #3741511c;
+    outline: 3px inset rgba(128, 128, 128, 0.738);
+    height: 6rem;
+    border-radius: 20px;
+    padding: 10px;
+
 }
