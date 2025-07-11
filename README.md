@@ -9,7 +9,22 @@ A modern, feature-rich Flask web application designed to help students and job s
 
 > **⚠️ Copyright Notice:** This project is the original work of DEN and is protected under Apache 2.0 License. While the code is open source for educational purposes, please respect the license terms and provide proper attribution if you use any part of this codebase.
 
-![InternIn Dashboard](https://via.placeholder.com/800x400/2c3e50/ffffff?text=InternIn+Dashboard+Preview)
+## 📸 Application Screenshots
+
+### 🏠 Landing Page
+![Landing Page](app/static/images/landing_page.png)
+
+### 📊 Dashboard
+![Dashboard](app/static/images/dashboard.png)
+
+### 🔐 Login Page
+![Login Page](app/static/images/login_page.png)
+
+### 👤 Profile Page
+![Profile Page](app/static/images/profile_page.png)
+
+### ⚙️ Settings Page
+![Settings Page](app/static/images/settings_page.png)
 
 ---
 
