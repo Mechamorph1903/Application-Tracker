@@ -59,7 +59,40 @@ def create_app():
 	@app.route('/dashboard')
 	@login_required
 	def home():
-		return render_template('home.html')
+		# Get user's applications for dashboard
+		applications = current_user.internships
+		
+		# Get recent applications (5 most recent)
+		recent_applications = []
+		if applications:
+			try:
+				recent_applications = sorted(
+					[app for app in applications if app.applied_date], 
+					key=lambda x: x.applied_date, 
+					reverse=True
+				)[:5]
+			except Exception as e:
+				print(f"Error sorting applications: {e}")
+				recent_applications = list(applications)[:5]
+		
+		# Quick stats for dashboard
+		total_applications = len(applications)
+		status_counts = {}
+		for app in applications:
+			status = app.application_status.lower()
+			status_counts[status] = status_counts.get(status, 0) + 1
+		
+		interviews = status_counts.get('interviewing', 0) + status_counts.get('interview scheduled', 0)
+		offers = status_counts.get('offered', 0) + status_counts.get('accepted', 0)
+		
+		stats = {
+			'total_applications': total_applications,
+			'interviews': interviews,
+			'offers': offers,
+			'pending': status_counts.get('applied', 0) + status_counts.get('under review', 0)
+		}
+		
+		return render_template('home.html', stats=stats, recent_applications=recent_applications)
 	
 	@app.route('/calendar')
 	@login_required
@@ -67,6 +100,7 @@ def create_app():
 		return render_template('calendar.html')
 	
 	@app.route('/acquaintance')
+	@app.route('/limited-profile')
 	@login_required
 	def limited_profile():
 		return render_template('acquaintance.html')
@@ -75,12 +109,7 @@ def create_app():
 	@login_required
 	def friends():
 		return render_template('friends.html')
-	
-	@app.route('/profile')
-	@login_required
-	def profile():
-		return render_template('profile.html', user=current_user)
-	
+
 	@app.route('/credits')
 	def credits():
 		"""Render the credits page with attributions"""
@@ -127,6 +156,13 @@ def create_app():
 			return 'Never'
 		except (AttributeError, ValueError):
 			return 'Never'
+	
+	@app.template_filter('nl2br')
+	def nl2br_filter(text):
+		"""Convert newlines to HTML line breaks"""
+		if text:
+			return text.replace('\n', '<br>\n').replace('\r\n', '<br>\n')
+		return text
 	
 
 	# user statuses

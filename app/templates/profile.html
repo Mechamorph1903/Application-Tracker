@@ -69,57 +69,20 @@
                 <!-- Activity Section -->
                 <div class="section">
                     <h2 class="section-title">
-                        Recent Applications
+                        <i class="fas fa-bell"></i>
+                        Notifications
                     </h2>
-                    
-                    <div class="activity-item">
-                        <div class="activity-icon">
+                    <div class="notifications-container">
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">No new notifications</div>
+                                <div class="notification-details">Check back later for updates</div>
+                            </div>
                         </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Software Engineer Intern - Google</div>
-                            <div class="activity-details">Applied 2 days ago • Mountain View, CA</div>
-                        </div>
-                        <div class="activity-status status-pending">Pending</div>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Frontend Developer - Meta</div>
-                            <div class="activity-details">Applied 1 week ago • Menlo Park, CA</div>
-                        </div>
-                        <div class="activity-status status-approved">Interview Scheduled</div>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Full Stack Developer - Stripe</div>
-                            <div class="activity-details">Applied 2 weeks ago • San Francisco, CA</div>
-                        </div>
-                        <div class="activity-status status-rejected">Not Selected</div>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">iOS Developer - Apple</div>
-                            <div class="activity-details">Applied 3 weeks ago • Cupertino, CA</div>
-                        </div>
-                        <div class="activity-status status-pending">Under Review</div>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Data Engineer - Netflix</div>
-                            <div class="activity-details">Applied 1 month ago • Los Gatos, CA</div>
-                        </div>
-                        <div class="activity-status status-approved">Offer Received</div>
+                        <!-- Placeholder for future notifications -->
                     </div>
                 </div>
             </div>
@@ -133,19 +96,19 @@
                     </h2>
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-number">24</div>
+                            <div class="stat-number">{{ stats.total_applications if stats else current_user.internships|length }}</div>
                             <div class="stat-label">Total Applications</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">8</div>
+                            <div class="stat-number">{{ stats.interviews if stats else 0 }}</div>
                             <div class="stat-label">Interviews</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">3</div>
+                            <div class="stat-number">{{ stats.offers if stats else 0 }}</div>
                             <div class="stat-label">Offers</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">67%</div>
+                            <div class="stat-number">{{ stats.response_rate if stats else '0%' }}</div>
                             <div class="stat-label">Response Rate</div>
                         </div>
                     </div>
@@ -188,6 +151,17 @@
     </div>
     
     <script>
+        // Set dynamic status colors
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusElements = document.querySelectorAll('.activity-status[data-status-color]');
+            statusElements.forEach(element => {
+                const color = element.getAttribute('data-status-color');
+                if (color) {
+                    element.style.backgroundColor = color;
+                }
+            });
+        });
+
         // Navigation state management using stack
         function goBackToLastPage() {
             const lastPage = popFromNavigationStack();

@@ -36,12 +36,12 @@
 		
 		<!-- 2-column grid for basic details -->
 		<div class="details-grid">
-			<p>Company: {{ internship.company_name }}</p>
+			<p><i class="fa-solid fa-building"></i> <strong> Company:</strong> {{ internship.company_name }}</p>
 			{% if internship.location %}
-			<p>Location: {{ internship.location }}</p>
+			<p><i class="fa-solid fa-location-dot"></i> <strong> Location:</strong> {{ internship.location }}</p>
 			{%endif%}
 			{% if internship.position %}
-			<p>Role: {{ internship.position }}</p>
+			<p> <i class="fa-solid fa-helmet-safety"></i><strong> Role:</strong> {{ internship.position }}</p>
 			{%endif%}
 			<p>Date Applied: {{ internship.applied_date.strftime('%B %d, %Y') }}</p>
 			{% if internship.deadline_date%}
@@ -67,9 +67,9 @@
 				<h4><i class="fa-solid fa-note-sticky"></i>Notes:</h4>
 			<div class="notes-content" onclick="editNotes()" id="notes-content" title="Edit Notes">
 				{% if internship.notes %}
-					<p id="internship-notes">{{ internship.notes }}</p>
+					<div id="internship-notes" class="notes-text">{{ internship.notes | nl2br | safe }}</div>
 				{%else%}
-					<p>No Notes.</p>
+					<p class="no-notes">No Notes. Click to add notes.</p>
 				{%endif%}
 			</div>
 				<form action="{{ url_for('applications.editNotes', internship_id=internship.id) }}" method="POST" id="notes-form" style="display: none;">

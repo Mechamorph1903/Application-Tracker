@@ -1,50 +1,132 @@
 {% extends "layout.html" %}
 
-{% block title %}Home - InternIn{% endblock %}
+{% block title %}Dashboard - InternIn{% endblock %}
 
 {% block content %}
-<!-- Your home page content goes here -->
- <div class="dashboard">
-    <h2>Dashboard</h2>
-	<h2>Hi, {{ current_user.username }}</h2>
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <p class="welcome-message">Welcome back, {{ current_user.firstName }}! 👋</p>
+    </div>
     
     <!-- Quick stats section -->
     <div class="stats-grid">
-        <!-- Add 3-4 stat cards here -->
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ stats.total_applications if stats else 0 }}</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ stats.interviews if stats else 0 }}</div>
+                <div class="stat-label">Interviews</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ stats.offers if stats else 0 }}</div>
+                <div class="stat-label">Offers</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ stats.pending if stats else 0 }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
     </div>
 
-	<!-- Daily Motivation/Fun Fact -->
-	<div class="daily-message">
-		<h3>💪 Daily Motivation</h3>
-		<p>"Your future self will thank you for every application you submit today!"</p>
-	</div>
-		
-    <!-- Recent activity section -->
-    <div class="recent-activity">
-        <h3>Recent Activity</h3>
-        <ul>
-			<li>Applied to Meta 4 days ago..;</li>
-			<li>Applied to JP Morgan Chase 65 days ago..;</li>
-			<li>Applied to Wells Fargo 120 days ago..;</li>
-		</ul>
+    <!-- Main content grid -->
+    <div class="dashboard-grid">
+        <!-- Recent Applications -->
+        <div class="dashboard-section">
+            <h3 class="section-title">
+                <i class="fas fa-history"></i>
+                Recent Applications
+            </h3>
+            {% if recent_applications %}
+                <div class="recent-applications">
+                    {% for internship in recent_applications %}
+                        <div class="application-item">
+                            <div class="application-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div class="application-content">
+                                <div class="application-title">{{ internship.job_name }}</div>
+                                <div class="application-company">{{ internship.company_name }}</div>
+                                <div class="application-date">{{ internship.applied_date.strftime('%b %d, %Y') if internship.applied_date else 'Date not set' }}</div>
+                            </div>
+                            <div class="application-status status-{{ internship.application_status.lower().replace(' ', '-') }}">
+                                {{ internship.application_status }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="section-footer">
+                    <a href="{{ url_for('applications.applicationsList') }}" class="view-all-btn">View All Applications →</a>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-plus-circle"></i>
+                    <p>No applications yet</p>
+                    <a href="{{ url_for('applications.add_application') }}" class="add-first-btn">Add Your First Application</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Daily Motivation -->
+        <div class="dashboard-section">
+            <h3 class="section-title">
+                <i class="fas fa-lightbulb"></i>
+                Daily Motivation
+            </h3>
+            <div class="motivation-card">
+                <div class="motivation-text">
+                    "Your future self will thank you for every application you submit today!"
+                </div>
+                <div class="motivation-footer">💪 Keep pushing forward!</div>
+            </div>
+        </div>
     </div>
     
     <!-- Quick actions -->
     <div class="quick-actions">
-        <!-- Add some action buttons -->
-		 <button>Add Application</button>
-		 <button>View Calendar</button>
-		 <button>Schedule Interview</button>
-		 <button>Search Applications</button>
-		 <button>Set Goals</button>
-		 <button> View Analytics</button>
-
+        <h3 class="section-title">
+            <i class="fas fa-bolt"></i>
+            Quick Actions
+        </h3>
+        <div class="actions-grid">
+            <a href="{{ url_for('applications.add_application') }}" class="action-btn primary">
+                <i class="fas fa-plus"></i>
+                Add Application
+            </a>
+            <a href="{{ url_for('calendar') }}" class="action-btn">
+                <i class="fas fa-calendar"></i>
+                View Calendar
+            </a>
+            <a href="{{ url_for('applications.applicationsList') }}" class="action-btn">
+                <i class="fas fa-search"></i>
+                Search Applications
+            </a>
+            <a href="{{ url_for('profile.profile') }}" class="action-btn">
+                <i class="fas fa-user"></i>
+                View Profile
+            </a>
+        </div>
     </div>
 </div>
-
-<footer>
-    <p class="trademark">A Tinubu Special &trade;</p>
-</footer>
-
 
 {% endblock %}
