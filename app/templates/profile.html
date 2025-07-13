@@ -31,17 +31,13 @@
             <div class="profile-info">
                 <div class="profile-picture">
                     {% if user.profile_picture and user.profile_picture != 'default.jpg' %}
-                        <img src="{{ url_for('static', filename='uploads/profile_pictures/' + user.profile_picture) }}" alt="Profile Picture" class="profile-img">
+                        <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" class="profile-img">
                     {% else %}
                         <div class="profile-initials">{{ user | initials }}</div>
                     {% endif %}
                 </div>
                 <div class="profile-details">
                     <h1 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h1>
-                    <div class="online-status">
-                        <div class="status-indicator"></div>
-                        <span>Online now</span>
-                    </div>
                     <div class="school-info">
                         <div id="school">School: {{ user.school }}</div>
                         <div id="year">Class: {{ user.year }}</div>

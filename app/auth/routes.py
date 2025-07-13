@@ -46,7 +46,6 @@ def login():
 	currentUser = User.query.filter_by(email=email).first()  # Find user by email
 	if currentUser and currentUser.check_password(password):
 		login_user(currentUser)
-		currentUser.online_status = 'online'
 		currentUser.last_seen = datetime.now()
 		db.session.commit()  # Commit the changes to the database
 		flash('Login successful!', 'success')
@@ -62,7 +61,6 @@ from flask_login import current_user
 def logout():
 	"""Log out the current user and redirect to landing page."""
 	if current_user.is_authenticated:
-		current_user.online_status = 'offline'  # Update user's online status
 		current_user.last_seen = datetime.now()  # Update last seen time
 		db.session.commit()
 	logout_user()

@@ -10,17 +10,16 @@
   <h1 class="page-title">Friends</h1>
   <div class="friends-search-bar">
     <input type="text" id="friend-search" placeholder="Search friends by name, school, or status..." autocomplete="off">
-    <button class="add-friend-btn">+ Add Friend</button>
+    <a class="add-friend-btn" href="{{ url_for('friends.search_friends') }}">+ Add Friends</a>
   </div>
   <div class="friends-grid">
-    <!-- Friend Card 1 (Online) -->
-    <div class="friend-card online">
+    <!-- Friend Card 1 - Clickable -->
+    <div class="friend-card clickable-card" data-profile-url="{{ url_for('friends.friend_profile', username='mikechen') }}">>
       <div class="friend-main">
         <img src="https://ui-avatars.com/api/?name=Mike+Chen" alt="Mike Chen" class="friend-avatar">
         <div class="friend-info">
           <div class="friend-name-status">
             <div class="friend-name">Mike Chen</div>
-            <span class="friend-status online-dot">Online</span>
           </div>
           <div class="friend-school">Stanford University</div>
           <div class="friend-mutual">2 mutual friends</div>
@@ -45,17 +44,18 @@
           <div class="stat-label">Offers</div>
         </div>
       </div>
-      <a class="profile-btn" href="profile.html?user=mikechen">View Profile</a>
+      <div class="profile-btn-wrapper">
+        <span class="profile-btn">Click to View Profile</span>
+      </div>
     </div>
 
-    <!-- Friend Card 2 (Offline) -->
-    <div class="friend-card offline">
+    <!-- Friend Card 2 -->
+    <div class="friend-card">
       <div class="friend-main">
         <img src="https://ui-avatars.com/api/?name=Sarah+Johnson" alt="Sarah Johnson" class="friend-avatar">
         <div class="friend-info">
           <div class="friend-name-status">
             <div class="friend-name">Sarah Johnson</div>
-            <span class="friend-status offline-dot">Offline</span>
           </div>
           <div class="friend-school">MIT</div>
           <div class="friend-mutual">3 mutual friends</div>
@@ -80,7 +80,7 @@
           <div class="stat-label">Offers</div>
         </div>
       </div>
-      <a class="profile-btn" href="profile.html?user=sarahjohnson">View Profile</a>
+      <a class="profile-btn" href="{{ url_for('friends.friend_profile', username='sarahjohnson') }}">View Profile</a>
     </div>
     <!-- More friend cards can be added in the same format! -->
   </div>
@@ -94,6 +94,20 @@
     document.querySelectorAll('.friend-card').forEach(function(card) {
       let text = card.textContent.toLowerCase();
       card.style.display = text.includes(filter) ? '' : 'none';
+    });
+  });
+
+  // Make clickable friend cards navigate to profile
+  document.querySelectorAll('.clickable-card').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      // Don't trigger if clicking on a link or button
+      if (e.target.tagName.toLowerCase() === 'a' || e.target.tagName.toLowerCase() === 'button') {
+        return;
+      }
+      const profileUrl = this.getAttribute('data-profile-url');
+      if (profileUrl) {
+        window.location.href = profileUrl;
+      }
     });
   });
 </script>

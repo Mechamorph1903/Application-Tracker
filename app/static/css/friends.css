@@ -35,6 +35,18 @@
   box-shadow: 0 10px 40px 0 rgba(164, 89, 255, 0.14);
 }
 
+/* Clickable card styles */
+.friend-card.clickable-card {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.friend-card.clickable-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 48px 0 rgba(164, 89, 255, 0.2);
+}
+
 /* Header section: avatar + name + status + privacy badge */
 .friend-main {
   display: flex;
@@ -82,9 +94,6 @@
   padding: 2px 12px;
   background: transparent;
   color: #31f28c;
-}
-.friend-status.offline-dot {
-  color: #b0b0bc;
 }
 
 .friend-school {
@@ -175,6 +184,7 @@
 }
 
 .add-friend-btn {
+  text-decoration: none;
   padding: 10px 24px;
   border-radius: 16px;
   background: transparent;
@@ -192,6 +202,56 @@
 }
 
 .add-friend-btn:hover {
+  background: #b993fd;
+  color: #3b1366;
+  box-shadow: 0 0 8px 2px #b993fd44;
+}
+
+/* Profile button wrapper for clickable cards */
+.profile-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.profile-btn-wrapper .profile-btn {
+  background: transparent;
+  color: #b993fd;
+  border: 1.7px solid #b993fd;
+  padding: 8px 20px;
+  border-radius: 12px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-decoration: none;
+  pointer-events: none; /* Prevent clicking on the button itself */
+}
+
+.friend-card.clickable-card:hover .profile-btn {
+  background: #b993fd;
+  color: #3b1366;
+  box-shadow: 0 0 8px 2px #b993fd44;
+}
+
+/* Regular profile button styles */
+.profile-btn {
+  background: transparent;
+  color: #b993fd;
+  border: 1.7px solid #b993fd;
+  padding: 8px 20px;
+  border-radius: 12px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.profile-btn:hover {
   background: #b993fd;
   color: #3b1366;
   box-shadow: 0 0 8px 2px #b993fd44;

@@ -6,6 +6,8 @@ Licensed under Apache 2.0 License
 
 # "This folder is a package — and you can import from it."
 import datetime
+import os
+from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
@@ -14,14 +16,47 @@ from .auth.routes import auth
 from .profile.routes import userprofile
 from .settings.routes import settings
 from .applications.routes import applications
+from .friends.routes import friends
 
 import os
 
 def create_app():
+	# Load environment variables
+	load_dotenv()
+	
 	app = Flask(__name__)
-	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'internships.db') # local DB
+	
+	# Try Supabase PostgreSQL first, fall back to SQLite if it fails
+	database_url = os.getenv('SUPABASE_DATABASE_URL')
+	if database_url:
+		try:
+			# Test if we can connect to Supabase
+			import psycopg2
+			test_conn = psycopg2.connect(database_url, connect_timeout=5)
+			test_conn.close()
+			
+			app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+			print("✅ Connected to Supabase PostgreSQL")
+			
+		except ImportError:
+			print("⚠️  psycopg2 not available, using SQLite")
+			app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'internships.db')
+		except Exception as e:
+			# PostgreSQL connection failed, use SQLite
+			print(f"⚠️  PostgreSQL connection failed: {e}")
+			print("📁 Falling back to SQLite database")
+			app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'internships.db')
+	else:
+		# No Supabase URL, use SQLite
+		print("📁 Using SQLite database (no Supabase URL found)")
+		app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'internships.db')
+	
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # Disable track modifications to save resources
 	app.config['SECRET_KEY'] = 'Tinubu'  # Change this to a secure key
+	
+	# File upload configuration
+	app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
+	app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 	
 	db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')
@@ -50,6 +85,7 @@ def create_app():
 	app.register_blueprint(userprofile, url_prefix='/profile')  # Register the user profile blueprint with a URL prefix
 	app.register_blueprint(settings, url_prefix='/settings')  # Register the settings blueprint with settings prefix
 	app.register_blueprint(applications, url_prefix='/applications')  # Register the internships blueprint
+	app.register_blueprint(friends, url_prefix='/friends')  # Register the friends blueprint
 
 	@app.route('/')
 	def landing():
@@ -99,16 +135,7 @@ def create_app():
 	def calendar():
 		return render_template('calendar.html')
 	
-	@app.route('/acquaintance')
-	@app.route('/limited-profile')
-	@login_required
-	def limited_profile():
-		return render_template('acquaintance.html')
-	
-	@app.route('/friends')
-	@login_required
-	def friends():
-		return render_template('friends.html')
+
 
 	@app.route('/credits')
 	def credits():

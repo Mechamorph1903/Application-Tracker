@@ -164,22 +164,6 @@
             text-shadow: 0 2px 4px #0000004d;
         }
 
-        .online-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-        }
-
-        .status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #4ade80;
-            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3);
-        }
-
         .school-info {
             font-size: 1.1rem;
             opacity: 0.9;

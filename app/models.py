@@ -6,6 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash # Impo
 db = SQLAlchemy()  # Initialize the SQLAlchemy object
 
 class User(db.Model, UserMixin): # User model for managing user data
+	__tablename__ = 'users'  # Use PostgreSQL-friendly table name
+	
 	id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each user
 	firstName = db.Column(db.String(100), nullable=False)  # First name of the user
 	lastName = db.Column(db.String(100), nullable=False)  # Last name of the user
@@ -25,10 +27,7 @@ class User(db.Model, UserMixin): # User model for managing user data
 	major = db.Column(db.String(100)) # Field of study
 	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # When user registered
 	
-	# Online status tracking
-	online_status = db.Column(db.String(20), default='offline')  # online, offline, away, busy
 	last_seen = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))  # When user was last active
-	status_message = db.Column(db.String(100))  # Custom status message like "Looking for internships"
 	
 	# Relationships
 	settings = db.relationship('UserSettings', backref='user', uselist=False, lazy=True)
@@ -43,30 +42,6 @@ class User(db.Model, UserMixin): # User model for managing user data
 	
 	def __repr__(self):
 		return f'<User {self.username}>'
-	
-	# Helper methods for onlibne status tracking
-	def set_online_status(self, status):
-		"""Update User's Online Status"""
-		valid_statuses = ['online', 'offline', 'away', 'busy']
-		if status in valid_statuses:
-			self.online_status = status
-			db.session.commit()
-		else:
-			raise ValueError(f"Invalid status: {status}. Must be one of {valid_statuses}")
-
-	def is_recently_active(self, minutes=5):
-		"""Check if user was active within the last N minutes"""
-		if self.last_seen:
-			time_diff = datetime.now(timezone.utc) - self.last_seen
-			return time_diff.total_seconds() < (minutes * 60)
-		return False
-
-	def get_actual_status(self):
-		"""Get real online status based on activity - manual status is not overridden"""
-		if self.is_recently_active():
-			return self.online_status  # Use their set status
-		else:
-			return 'offline'  # Override to offline if inactive
 		
 	def get_social_icon(self, platform):
 		"""Get Font Awesome icon class for social media platform"""
@@ -187,6 +162,8 @@ class User(db.Model, UserMixin): # User model for managing user data
 		return True
 
 class Internship(db.Model): # Internship model for managing internship applications
+	__tablename__ = 'internships'  # Use PostgreSQL-friendly table name
+	
 	id = db.Column(db.Integer, primary_key=True) # Unique identifier for each internship application
 	job_name = db.Column(db.String(250), nullable=False)
 	company_name = db.Column(db.String(100), nullable=False) # Name of the company offering the internship
@@ -200,6 +177,18 @@ class Internship(db.Model): # Internship model for managing internship applicati
 	visibility = db.Column(db.String(20), default='friends') # Visibility: 'public', 'friends', 'private'
 	location = db.Column(db.String(200))  # City, State or Remote # Location of the internship (if applicable)
 	contacts = db.Column(db.JSON, default=list)  # List of contacts: [{"name": "Recruiter Name", "details": "recruiter@email.com, 555-1234, LinkedIn"}]
+	
+	# Work arrangement
+	job_type = db.Column(db.String(20), default='on-site')  # 'remote', 'on-site', 'hybrid'
+	
+	# Calendar integration fields for events
+	calendar_event_id = db.Column(db.String(100))  # Google Calendar event ID for interviews/follow-ups
+	reminder_date = db.Column(db.DateTime)  # Custom reminder date
+	
+	# Application tracking enhancements
+	application_method = db.Column(db.String(20), default='website')  # 'website', 'email', 'linkedin', 'referral'
+	priority_level = db.Column(db.String(10), default='medium')  # 'high', 'medium', 'low'
+	
 	# Interview and follow-up tracking
 	interview_date = db.Column(db.DateTime)  # Scheduled interview date/time
 	follow_up_date = db.Column(db.DateTime)  # When to follow up
@@ -210,7 +199,7 @@ class Internship(db.Model): # Internship model for managing internship applicati
 	next_action_date = db.Column(db.DateTime)  # Date/time for the next action
 	next_action_notes = db.Column(db.Text)  # Optional notes about the next action
 	
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # Foreign key linking to the User model
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) # Foreign key linking to the User model
 
 	def to_dict(self):
 		return {
@@ -261,7 +250,7 @@ class Internship(db.Model): # Internship model for managing internship applicati
 		action_map = {
 			'follow_up': 'Follow Up',
 			'interview': 'Interview',
-			'assessment': 'Online Assessment'
+			'assessment': 'Assessment'
 		}
 		
 		action_text = action_map.get(self.next_action, self.next_action.title())
@@ -293,9 +282,11 @@ class Internship(db.Model): # Internship model for managing internship applicati
 
 class FriendRequest(db.Model):
 	"""Model for storing friend requests between users"""
+	__tablename__ = 'friend_requests'  # Use PostgreSQL-friendly table name
+	
 	id = db.Column(db.Integer, primary_key=True)
-	sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-	receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+	receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 	status = db.Column(db.String(20), default='pending')  # pending, accepted, declined
 	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 	updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
@@ -323,8 +314,9 @@ class FriendRequest(db.Model):
 		return f'<FriendRequest {self.sender.username} -> {self.receiver.username} ({self.status})>'
 
 class UserSettings(db.Model):
+	# Note: user_settings table name is already correct in Supabase
 	id = db.Column(db.Integer, primary_key=True)
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
 	
 	# Display & Theme Settings
 	theme = db.Column(db.String(20), default='light')  # light, dark, auto
@@ -339,7 +331,6 @@ class UserSettings(db.Model):
 	email_notifications = db.Column(db.Boolean, default=True)
 	friend_request_notifications = db.Column(db.Boolean, default=True)
 	application_reminders = db.Column(db.Boolean, default=True)
-	online_assessment_reminders = db.Column(db.Boolean, default=True)
 	interview_reminders = db.Column(db.Boolean, default=True)
 	
 	# Application Tracking Settings

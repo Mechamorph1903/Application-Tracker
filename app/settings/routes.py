@@ -1,6 +1,7 @@
-from flask import render_template, request, redirect, url_for, flash, Blueprint, jsonify, send_file
+from flask import render_template, request, redirect, url_for, flash, Blueprint, jsonify, send_file, current_app
 from flask_login import current_user, login_required
 from app.models import db, User, UserSettings, Internship
+from app.utils.file_storage import file_storage
 import json
 import csv
 import io
@@ -40,26 +41,20 @@ def update_user_settings():
         if 'profile_picture' in request.files:
             file = request.files['profile_picture']
             if file and file.filename:
-                # Check file size
-                file.seek(0, os.SEEK_END)
-                file_size = file.tell()
-                file.seek(0)
+                # Initialize file storage
+                file_storage.init_app(current_app)
                 
-                if file_size > MAX_FILE_SIZE:
-                    return jsonify({'success': False, 'error': 'File size too large. Maximum 5MB allowed.'}), 400
+                # Save new profile picture using enhanced storage
+                relative_path, error = file_storage.save_profile_picture(file, current_user.id)
                 
-                # Save new profile picture
-                new_filename = save_profile_picture(file)
-                if new_filename:
-                    # Delete old profile picture if it exists and is not default
-                    if current_user.profile_picture and current_user.profile_picture != 'default.jpg':
-                        old_file_path = os.path.join('app', 'static', 'uploads', 'profile_pictures', current_user.profile_picture)
-                        if os.path.exists(old_file_path):
-                            os.remove(old_file_path)
-                    
-                    current_user.profile_picture = new_filename
-                else:
-                    return jsonify({'success': False, 'error': 'Invalid file type. Please upload JPG, PNG, or GIF files.'}), 400
+                if error:
+                    return jsonify({'success': False, 'error': error}), 400
+                
+                # Delete old profile picture if it exists
+                if current_user.profile_picture and current_user.profile_picture != 'default.jpg':
+                    file_storage.delete_file(current_user.profile_picture)
+                
+                current_user.profile_picture = relative_path
         
         # Update User model fields
         current_user.firstName = request.form.get('firstName', current_user.firstName)
@@ -247,26 +242,5 @@ def change_password():
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# Helper functions for file upload
-def allowed_file(filename):
-    """Check if file extension is allowed"""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def save_profile_picture(file):
-    """Save uploaded profile picture and return filename"""
-    if file and allowed_file(file.filename):
-        # Generate unique filename
-        file_extension = file.filename.rsplit('.', 1)[1].lower()
-        unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
-        
-        # Create upload path
-        upload_folder = os.path.join('app', 'static', 'uploads', 'profile_pictures')
-        if not os.path.exists(upload_folder):
-            os.makedirs(upload_folder)
-        
-        file_path = os.path.join(upload_folder, unique_filename)
-        
-        # Save file
-        file.save(file_path)
-        return unique_filename
-    return None
+# Enhanced file storage system handles all file operations
+# See app/utils/file_storage.py for implementation

@@ -59,7 +59,7 @@
 			<select name="application_status" id="application_status" title="Current status of your application">
 				<option value="applied" {% if internship.application_status == 'applied' %}selected{% endif %}>Applied</option>
 				<option value="interview" {% if internship.application_status == 'interview' %}selected{% endif %}>Interview</option>
-				<option value="assessment" {% if internship.application_status == 'assessment' %}selected{% endif %}>Online Assessment</option>
+				<option value="assessment" {% if internship.application_status == 'assessment' %}selected{% endif %}>Assessment</option>
 				<option value="waitlist" {% if internship.application_status == 'waitlist' %}selected{% endif %}>Waitlist</option>
 				<option value="rejected" {% if internship.application_status == 'rejected' %}selected{% endif %}>Rejected</option>
 				<option value="offered" {% if internship.application_status == 'offered' %}selected{% endif %}>Offered</option>
@@ -86,7 +86,7 @@
 						<option value="">No Action Scheduled</option>
 						<option value="follow_up" {% if internship.next_action == 'follow_up' %}selected{% endif %}>Follow Up</option>
 						<option value="interview" {% if internship.next_action == 'interview' %}selected{% endif %}>Interview</option>
-						<option value="assessment" {% if internship.next_action == 'assessment' %}selected{% endif %}>Online Assessment</option>
+						<option value="assessment" {% if internship.next_action == 'assessment' %}selected{% endif %}>Assessment</option>
 					</select>
 				</div>
 				<div class="form-col">

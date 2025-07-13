@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}Friends Portal | InternIn{% endblock %}
+
+{% block content %}
+
+<section class="header">
+	<button><i class="fa-solid fa-arrow-left"></i></button>
+	<div class="text">
+		<h1>Friend Portal</h1>
+		<p>Find like minded students from anywhere</p>
+	</div>
+</section>
+ <section class="searchbar-secton">
+	<form action="{{ search_friends }}" method="POST">
+		<div class="search-section">
+			<label for="user_name">Name: </label>
+			<input type="text" name="user_name" placeholder="Promise Tinubu">
+		</div>
+		<div class="search-section">
+			<label for="user_name">School: </label>
+			<input type="text" name="user_name" placeholder="Southern Miss">
+		</div>
+		<div class="search-section">
+			<label for="user_name">Major: </label>
+			<select class="js-example-basic-single" name="state" title="Search by Majors">
+				<option value="AL">Alabama</option>
+					...
+				<option value="WY">Wyoming</option>
+			</select>
+		</div>
+
+		<button type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search </button>
+	</form>
+</section>
+<section class="users">
+{%endblock%}
+
+</section>
+
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{%endblock%}

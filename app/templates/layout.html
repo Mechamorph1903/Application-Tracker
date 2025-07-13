@@ -12,6 +12,7 @@
     -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -22,13 +23,13 @@
     <div class="navbar-links">
       <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
       <a href="{{ url_for('calendar') }}" class="{% if request.endpoint == 'calendar' %}active{% endif %}">Calendar</a>
-      <a href="{{ url_for('friends') }}" class="{% if request.endpoint == 'friends' %}active{% endif %}">Friends</a>
+      <a href="{{ url_for('friends.friendsList') }}" class="{% if request.endpoint == 'friends.friendsList' %}active{% endif %}">Friends</a>
       <a href="{{ url_for('applications.applicationsList') }}" class="{% if request.endpoint == 'applications.applicationsList' %}active{% endif %}">Applications</a>
     </div>
     <div class="navbar-user">
       {% if current_user.is_authenticated %}
         {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-          <img src="{{ url_for('static', filename='uploads/profile_pictures/' + current_user.profile_picture) }}" alt="Profile Picture" class="profile-img">
+          <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" alt="Profile Picture" class="profile-img">
         {% else %}
           <div class="profile-initials">{{ current_user | initials }}</div>
         {% endif %}
@@ -36,7 +37,7 @@
         <div class="profile-card">
                     <div class="profile-card-header">
                         {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-                          <img src="{{ url_for('static', filename='uploads/profile_pictures/' + current_user.profile_picture) }}" alt="Profile Picture" class="profile-card-avatar">
+                          <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" alt="Profile Picture" class="profile-card-avatar">
                         {% else %}
                           <div class="profile-card-initials">{{ current_user | initials }}</div>
                         {% endif %}

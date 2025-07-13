@@ -1,0 +1,2 @@
+# This file ensures the profile_pictures directory is tracked by git
+# even when it's empty

@@ -2,12 +2,34 @@ venv/
 __pycache__/
 
 # Database files (NEVER commit these!)
-instance/
 *.db
+*.sqlite
+*.sqlite3
+instance/
 *.db.backup*
 
-# User uploads
-app/static/uploads/
+# User uploads (keep folder structure, ignore files)
+app/static/uploads/*.jpg
+app/static/uploads/*.jpeg
+app/static/uploads/*.png
+app/static/uploads/*.gif
+app/static/uploads/*.pdf
+app/static/uploads/*.doc
+app/static/uploads/*.docx
+app/static/uploads/profile_pictures/*.jpg
+app/static/uploads/profile_pictures/*.jpeg
+app/static/uploads/profile_pictures/*.png
+app/static/uploads/profile_pictures/*.gif
+app/static/uploads/resumes/*.pdf
+app/static/uploads/resumes/*.doc
+app/static/uploads/resumes/*.docx
+# But keep the folders themselves
+!app/static/uploads/
+!app/static/uploads/.gitkeep
+!app/static/uploads/profile_pictures/
+!app/static/uploads/profile_pictures/.gitkeep
+!app/static/uploads/resumes/
+!app/static/uploads/resumes/.gitkeep
 
 # Test and debug scripts
 debug_password.py
@@ -18,7 +40,116 @@ recreate_db.py
 # Environment files
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
 
 # OS generated files
 .DS_Store
 Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Additional security files
+*.key
+*.pem
+*.crt
+config.json
+secrets.json
+
+# Temporary sync/debug files
+sync_*.py
+test_*.py
+check_*.py
+cleanup_*.py
+fix_*.py
+simple_*.py
+
+# Backup and temporary files
+*.backup
+*.tmp
+*.temp
+*.bak
+*.old
+
+# Logs
+*.log
+logs/
+app.log
+
+# IDE and editor files
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Development databases
+dev.db
+test.db
+local.db
+
+# Export files (user data)
+exports/
+*.csv
+*.xlsx
+*.xls
+data_export_*
+
+# Cache directories
+.pytest_cache/
+.mypy_cache/
+.tox/
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+
+# Package files
+dist/
+build/
+*.egg-info/

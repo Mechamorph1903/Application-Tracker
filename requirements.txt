@@ -1,6 +1,32 @@
+# Core Flask Dependencies
 Flask==2.3.3
 Flask-SQLAlchemy==3.1.1
-Flask-WTF==1.2.1         # For better form handling
-Flask-Migrate==4.0.5     # For handling database migrations
-Flask-Login
-Werkzeug
+Flask-Login==0.6.2
+Flask-WTF==1.2.1
+Flask-Migrate==4.0.5
+Werkzeug==2.3.7
+
+# Database Support
+psycopg2-binary>=2.9.0   # PostgreSQL support for Supabase
+
+# Cloud & API Integration
+supabase>=1.0.0          # Supabase client for cloud sync
+requests>=2.31.0         # HTTP requests
+
+# Security & Authentication
+python-dotenv>=0.19.0    # Environment variables management
+bcrypt>=4.0.0            # Password hashing (alternative to Werkzeug)
+
+# File & Image Processing
+Pillow>=8.0.0            # Image processing for profile pictures
+
+# Data Processing & Export
+pandas>=1.5.0            # Data manipulation and CSV/Excel export
+openpyxl>=3.1.0          # Excel file support
+
+# Development & Testing (optional)
+pytest>=7.0.0            # Testing framework
+pytest-flask>=1.2.0     # Flask testing utilities
+
+# Production Server (optional)
+gunicorn>=21.0.0         # WSGI server for production deployment

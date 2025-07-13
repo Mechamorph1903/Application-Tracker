@@ -12,12 +12,12 @@
         <a href="{{ url_for('applications.add_application') }}">📝</a> <!--the circular bubble (bottom left) for creating your application card-->
     </div>
 
-    {% if internships %}
-    <!--search bar and button-->
+     <!--search bar and button-->
     <div class="applications-search-bar">
         <input type="text" id="application-search" placeholder="Search applications..." autocomplete="off">
     </div>
 
+    {% if internships %}
     <div class="applications-grid"> <!--three equal columns-->
 
         {% for internship in internships %}
@@ -53,21 +53,21 @@
             {% if internship.applied_date %}
                 <div class="app-detail-item-1">
                     <i class="fas fa-calendar"></i>
-                    <span>applied: {{ internship.applied_date.strftime('%B %d, %Y') }}</span>
+                    <p>Applied: {{ internship.applied_date.strftime('%B %d, %Y') }}</p>
                 </div>
             {% endif %}
             
             {% if internship.interview_date %}
                 <div class="app-detail-item-2">
-                    <i class="fas fa-handshake"></i>
-                    <span>interview: {{ internship.interview_date.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                    <i class="fas fa-handshake"></i>  
+                    <p>Interview: {{ internship.interview_date.strftime('%B %d, %Y at %I:%M %p') }}</p>
                 </div>
             {% endif %}
             
             {% if internship.contacts %}
                 <div class="app-detail-item-3">
                     <i class="fas fa-users"></i>
-                    <span>{{ internship.contacts|length }} Contact(s)</span>
+                    <p>{{ internship.contacts|length }} Contact(s)</p>
                 </div>
             {% endif %}
         </div>
