@@ -40,7 +40,7 @@
                 <label>Profile Picture:</label>
                 <div class="profile-pic-display">
                     {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-                        <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" alt="Profile Picture" class="profile-thumb">
+                        <img src="{{ url_for('static', filename='uploads/profile_pictures/' + current_user.profile_picture) }}" alt="Profile Picture" class="profile-thumb">
                     {% else %}
                         <div class="profile-thumb-initials">{{ current_user | initials }}</div>
                     {% endif %}

@@ -6,8 +6,6 @@ Licensed under Apache 2.0 License
 
 # "This folder is a package — and you can import from it."
 import datetime
-import os
-from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
@@ -16,51 +14,52 @@ from .auth.routes import auth
 from .profile.routes import userprofile
 from .settings.routes import settings
 from .applications.routes import applications
+from .friends import friends
 from .friends.routes import friends
 
 import os
 
 def create_app():
-	# Load environment variables
-	load_dotenv()
-	
 	app = Flask(__name__)
-	
-	# Try Supabase PostgreSQL first, fall back to SQLite if it fails
+	# Configure database connection - prioritize Supabase for dynamic sync
+	force_supabase = os.getenv('FORCE_SUPABASE', 'False').lower() == 'true'
 	database_url = os.getenv('SUPABASE_DATABASE_URL')
-	if database_url:
+	
+	if database_url and (force_supabase or not os.path.exists(os.path.join(app.instance_path, 'internships.db'))):
 		try:
-			# Test if we can connect to Supabase
+			# Test Supabase PostgreSQL connection
 			import psycopg2
-			test_conn = psycopg2.connect(database_url, connect_timeout=5)
+			test_conn = psycopg2.connect(database_url, connect_timeout=10)
 			test_conn.close()
 			
 			app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-			print("✅ Connected to Supabase PostgreSQL")
+			app.config['USE_SUPABASE'] = True
+			print("✅ Connected to Supabase PostgreSQL (Dynamic Sync Enabled)")
 			
 		except ImportError:
 			print("⚠️  psycopg2 not available, using SQLite")
 			app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'internships.db')
+			app.config['USE_SUPABASE'] = False
 		except Exception as e:
 			# PostgreSQL connection failed, use SQLite
 			print(f"⚠️  PostgreSQL connection failed: {e}")
 			print("📁 Falling back to SQLite database")
 			app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'internships.db')
+			app.config['USE_SUPABASE'] = False
 	else:
-		# No Supabase URL, use SQLite
-		print("📁 Using SQLite database (no Supabase URL found)")
+		# Use SQLite for local development
 		app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'internships.db')
-	
+		app.config['USE_SUPABASE'] = False
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # Disable track modifications to save resources
 	app.config['SECRET_KEY'] = 'Tinubu'  # Change this to a secure key
-	
-	# File upload configuration
-	app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
-	app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
-	
-	db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')
-	print("Database file will be at:", os.path.abspath(db_path))
+	# Print database information
+	db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+	if 'sqlite' in db_uri:
+		db_path = db_uri.replace('sqlite:///', '')
+		print("Database file will be at:", os.path.abspath(db_path))
+	else:
+		print("Database URI:", db_uri[:50] + "..." if len(db_uri) > 50 else db_uri)
 
 
 	# Initialize extensions

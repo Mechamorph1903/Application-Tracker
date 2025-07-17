@@ -36,6 +36,8 @@ debug_password.py
 migrate_*.py
 reset_password.py
 recreate_db.py
+migration_template.py
+migration_tutorial.py
 
 # Environment files
 .env

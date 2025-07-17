@@ -14,7 +14,7 @@
         <div class="friend-profile-info">
             <div class="friend-avatar-large">
                 {% if user.profile_picture and user.profile_picture != 'default.jpg' %}
-                    <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" class="friend-profile-img">
+                    <img src="{{ url_for('static', filename='uploads/profile_pictures/' + user.profile_picture) }}" alt="Profile Picture" class="friend-profile-img">
                 {% else %}
                     <div class="friend-profile-initials">{{ user | initials }}</div>
                 {% endif %}

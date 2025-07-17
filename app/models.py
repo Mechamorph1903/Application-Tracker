@@ -6,8 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash # Impo
 db = SQLAlchemy()  # Initialize the SQLAlchemy object
 
 class User(db.Model, UserMixin): # User model for managing user data
-	__tablename__ = 'users'  # Use PostgreSQL-friendly table name
-	
+	__tablename__ = 'users'  # Use plural table name to match existing Supabase data
 	id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each user
 	firstName = db.Column(db.String(100), nullable=False)  # First name of the user
 	lastName = db.Column(db.String(100), nullable=False)  # Last name of the user
@@ -162,8 +161,7 @@ class User(db.Model, UserMixin): # User model for managing user data
 		return True
 
 class Internship(db.Model): # Internship model for managing internship applications
-	__tablename__ = 'internships'  # Use PostgreSQL-friendly table name
-	
+	__tablename__ = 'internships'  # Use plural table name to match existing Supabase data
 	id = db.Column(db.Integer, primary_key=True) # Unique identifier for each internship application
 	job_name = db.Column(db.String(250), nullable=False)
 	company_name = db.Column(db.String(100), nullable=False) # Name of the company offering the internship
@@ -178,11 +176,11 @@ class Internship(db.Model): # Internship model for managing internship applicati
 	location = db.Column(db.String(200))  # City, State or Remote # Location of the internship (if applicable)
 	contacts = db.Column(db.JSON, default=list)  # List of contacts: [{"name": "Recruiter Name", "details": "recruiter@email.com, 555-1234, LinkedIn"}]
 	
-	# Work arrangement
+	# Work arrangement and job details
 	job_type = db.Column(db.String(20), default='on-site')  # 'remote', 'on-site', 'hybrid'
 	
-	# Calendar integration fields for events
-	calendar_event_id = db.Column(db.String(100))  # Google Calendar event ID for interviews/follow-ups
+	# Calendar integration fields
+	calendar_event_id = db.Column(db.String(100))  # Google Calendar event ID for interviews
 	reminder_date = db.Column(db.DateTime)  # Custom reminder date
 	
 	# Application tracking enhancements
@@ -282,8 +280,6 @@ class Internship(db.Model): # Internship model for managing internship applicati
 
 class FriendRequest(db.Model):
 	"""Model for storing friend requests between users"""
-	__tablename__ = 'friend_requests'  # Use PostgreSQL-friendly table name
-	
 	id = db.Column(db.Integer, primary_key=True)
 	sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 	receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -314,7 +310,6 @@ class FriendRequest(db.Model):
 		return f'<FriendRequest {self.sender.username} -> {self.receiver.username} ({self.status})>'
 
 class UserSettings(db.Model):
-	# Note: user_settings table name is already correct in Supabase
 	id = db.Column(db.Integer, primary_key=True)
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
 	
