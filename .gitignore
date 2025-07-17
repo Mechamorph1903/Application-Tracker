@@ -38,6 +38,8 @@ reset_password.py
 recreate_db.py
 migration_template.py
 migration_tutorial.py
+team_migration.py
+TEAM_MIGRATION_README.md
 
 # Environment files
 .env
