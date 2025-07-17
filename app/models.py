@@ -199,6 +199,27 @@ class Internship(db.Model): # Internship model for managing internship applicati
 	
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) # Foreign key linking to the User model
 
+	@property
+	def parsed_contacts(self):
+		"""Return contacts as a Python list, parsing JSON string if needed"""
+		if not self.contacts:
+			return []
+		
+		# If it's already a list, return it
+		if isinstance(self.contacts, list):
+			return self.contacts
+		
+		# If it's a string, try to parse it as JSON
+		if isinstance(self.contacts, str):
+			try:
+				import json
+				return json.loads(self.contacts)
+			except (json.JSONDecodeError, TypeError):
+				return []
+		
+		# Default to empty list
+		return []
+
 	def to_dict(self):
 		return {
 			"id": self.id,
@@ -212,7 +233,7 @@ class Internship(db.Model): # Internship model for managing internship applicati
 			"notes": self.notes,
 			"next_action": self.next_action,
 			"next_action_date": self.next_action_date.strftime('%Y-%m-%d %H:%M') if self.next_action_date else None,
-			"contacts": self.contacts
+			"contacts": self.parsed_contacts
 		}
 	
 	def set_next_action(self, action_type, action_date=None, notes=None):

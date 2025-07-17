@@ -64,10 +64,10 @@
                 </div>
             {% endif %}
             
-            {% if internship.contacts %}
+            {% if internship.parsed_contacts %}
                 <div class="app-detail-item-3">
                     <i class="fas fa-users"></i>
-                    <p>{{ internship.contacts|length }} Contact(s)</p>
+                    <p>{{ internship.parsed_contacts|length }} Contact(s)</p>
                 </div>
             {% endif %}
         </div>

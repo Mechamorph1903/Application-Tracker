@@ -83,10 +83,10 @@
 			</div>
 			<div class="contacts">
 				<p>Contacts:</p>
-				{% if internship.contacts %}
-					<p style="color: #666; font-size: 0.9rem;">Found {{ internship.contacts|length }} contact(s)</p>
+				{% if internship.parsed_contacts %}
+					<p style="color: #666; font-size: 0.9rem;">Found {{ internship.parsed_contacts|length }} contact(s)</p>
 					<div class="contact-grid">
-						{% for contact in internship.contacts %}
+						{% for contact in internship.parsed_contacts %}
 							<div class="contact-card">
 								<div class="contact-header">
 									<h3>{{ contact.name or "No Name" }}</h3>

@@ -163,7 +163,7 @@
 			<input type="hidden" id="contacts-data" name="contacts" value="">
 			<script>
 				// Safely pass contacts data to JavaScript
-				var templateContactsData = {{ (internship.contacts or [])|tojson|safe }};
+				var templateContactsData = {{ (internship.parsed_contacts or [])|tojson|safe }};
 				document.getElementById('contacts-data').value = JSON.stringify(templateContactsData);
 				console.log('Template contacts data:', templateContactsData);
 			</script>
