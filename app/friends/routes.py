@@ -15,23 +15,51 @@ def friendsList():
 	                     pending_received=pending_received,
 	                     pending_sent=pending_sent)
 
+# not friends
 @friends.route('/users/<username>')
 @login_required
 def limited_profile(username):
 	user =  User.query.filter_by(username=username).first()
+	isFriends = user.is_friends_with(current_user)
+	if isFriends:
+		return redirect(url_for('friends.friend_profile', username=username))
+	
+	if username == current_user.username:
+		flash("Thats's you silly, 😂", 'info')
+		return redirect(url_for('profile.profile'))
 	if not user:
 		flash('User not found.', 'error')
 		return redirect(url_for('friends.friendsList'))
 
-	return render_template('acquaintance.html', user=user)
-	
+	return render_template('acquaintance.html', user=user, isFriends=isFriends)
+
+#user pool
 @friends.route('/friends-portal', methods=['GET', 'POST'])
 @login_required
 def search_friends():
-	all_users =  User.query.all()
+	all_users =  User.query.filter(User.username!=current_user.username).all()
+	
+
 
 	return render_template("friends-portal.html", users=all_users)
 
+#friend request logic
+@friends.route('/add-friend', methods=['POST'])
+@login_required
+def addFriend(userId):
+	
+
+
+
+
+
+
+
+
+
+
+
+# if friends
 
 @friends.route('/friends/<username>')
 @login_required

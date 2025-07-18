@@ -112,11 +112,13 @@
       <p style="margin: 4px 0 14px; font-size: 0.9rem; color: #b993fd;">You’re not yet friends</p>
 
       <!-- Add Friend Button -->
-      <button class="add-friend-btn"
+      <form action="" method="POST">
+        <button type="submit" class="add-friend-btn"
         onmouseover="this.innerText='Unlock Applications 🔓'"
         onmouseout="this.innerText='Add Friend'">
-        Add Friend
-      </button>
+          Add Friend
+        </button>
+      </form>
 
       <!-- Mutual Friends -->
       <h3 style="margin: 18px 0 10px; color: #fff;">Mutual Friends</h3>
@@ -128,7 +130,7 @@
 
       <!-- Info Message -->
       <p style="font-size: 0.95rem; color: #c5a3ff;">
-        Add Sarah as a friend to view internship applications
+        Add {{user.firstName}} as a friend to view internship applications
       </p>
     </div>
 
