@@ -42,6 +42,27 @@ class User(db.Model, UserMixin): # User model for managing user data
 	def __repr__(self):
 		return f'<User {self.username}>'
 		
+	@property
+	def parsed_social_media(self):
+		"""Return social media as a Python list, parsing JSON string if needed"""
+		if not self.social_media:
+			return []
+		
+		# If it's already a list, return it
+		if isinstance(self.social_media, list):
+			return self.social_media
+		
+		# If it's a string, try to parse it as JSON
+		if isinstance(self.social_media, str):
+			try:
+				import json
+				return json.loads(self.social_media)
+			except (json.JSONDecodeError, TypeError):
+				return []
+		
+		# Default to empty list
+		return []
+
 	def get_social_icon(self, platform):
 		"""Get Font Awesome icon class for social media platform"""
 		icons = {

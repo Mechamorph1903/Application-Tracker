@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 
 {% block title %}Friends Portal | InternIn{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/friend-portal.css') }}">
+{% endblock %}
+
 
 {% block content %}
 
@@ -11,7 +15,7 @@
 		<p>Find like minded students from anywhere</p>
 	</div>
 </section>
- <section class="searchbar-secton">
+ <section class="searchbar-section">
 	<form action="{{ search_friends }}" method="POST">
 		<div class="search-section">
 			<label for="user_name">Name: </label>
@@ -34,10 +38,38 @@
 	</form>
 </section>
 <section class="users">
-{%endblock%}
+	<div class="users-grid">
+		{% if users %}
+		{% for user in users%}
+			<div class="user-card">
+				<div class="user-card-head">
+					<div class="name-logo">
+						{{user | initials}}
+					</div>
+					<div class="names">
+						<h3>{{user.firstName}} {{user.lastName}}</h3>
+						<p>{{user.username}}</p>
+					</div>
+				</div>
+				<div class="user-card-body">
+					<p>School: {{user.school or 'Not Assigned'}}</p><hr>
+					<p>Major: {{user.major or 'Not Assigned'}}</p><hr>
+					<p>Year: {{user.year or  'Not Assigned'}}</p>
+				</div>
+				<div class="view-profile">
+					<a href="{{url_for('friends.limited_profile', username=user.username)}}">View Profile</a>
+				</div>
+			</div>
+		{%endfor%}
+	{%else%}
+		<div class="centralized-message">
+			<h1><span style="color: red;">ERROR!</span> No Users Found!</h1>
+		</div>
+	{%endif%}
+	</div>
 
 </section>
-
+{%endblock%}
 {% block extra_js %}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 {%endblock%}

@@ -139,8 +139,8 @@
             <div class="info-item full-width">
                 <label>Social Media:</label>
                 <div class="social-links">
-                    {% if current_user.social_media %}
-                        {% for link in current_user.social_media %}
+                    {% if current_user.parsed_social_media %}
+                        {% for link in current_user.parsed_social_media %}
                             <div class="social-item">
                                 <i class="fab fa-{{ link.platform.lower() }}"></i>
                                 <span>{{ link.platform }}: {{ link.url }}</span>
@@ -631,7 +631,7 @@
 </div>
 
 <!-- Hidden data for JavaScript -->
-<script type="application/json" id="social-media-data">{{ current_user.social_media | tojson | safe }}</script>
+<script type="application/json" id="social-media-data">{{ current_user.parsed_social_media | tojson | safe }}</script>
 
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 

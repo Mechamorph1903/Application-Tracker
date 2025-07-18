@@ -44,8 +44,8 @@
                         <div id="major">Major: {{ user.major }}</div>
                     </div>
                     <div class="social-links">
-                        {%if user.social_media %}
-                            {% for social_link in user.social_media %}
+                        {%if user.parsed_social_media %}
+                            {% for social_link in user.parsed_social_media %}
                                 <a href="{{ social_link.url }}" class="social-link" target="_blank" rel="noopener noreferrer">
                                     <i class="{{ social_link.platform|social_icon }}"></i>
                                      <span>{{ social_link.platform }}</span>

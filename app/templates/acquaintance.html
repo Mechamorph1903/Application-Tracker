@@ -74,7 +74,7 @@
     justify-content: center;
     border-radius: 50%;
     border: 2px solid #b993fd;
-    transition: transform 0.2s ease;
+    transition: transform 0.4s ease;
     cursor: pointer;
   }
 
@@ -100,12 +100,15 @@
   <div class="limited-profile-card">
 
     <!-- Left: Avatar -->
-    <div class="profile-avatar">SJ</div>
-
+    {% if user.profile_picture and user.profile_picture not in ['default.jpg', 'default.png', '', None] %}
+      <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture">
+    {% else %}
+      <div class="profile-avatar">{{user | initials}}</div>
+    {%endif%}
     <!-- Right: Info Column -->
     <div style="flex: 1;">
-      <h2 style="margin: 0 0 4px;">Sarah Johnson</h2>
-      <p style="margin: 0; color: #cbb6da;">MIT</p>
+      <h2 style="margin: 0 0 4px;">{{user.firstName}} {{user.lastName}}</h2>
+      <p style="margin: 0; color: #cbb6da;">{{user.year}} <strong>@</strong> {{user.school}} <strong>studying</strong> {{user.major}}</p>
       <p style="margin: 4px 0 14px; font-size: 0.9rem; color: #b993fd;">You’re not yet friends</p>
 
       <!-- Add Friend Button -->

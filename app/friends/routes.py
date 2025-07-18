@@ -15,16 +15,22 @@ def friendsList():
 	                     pending_received=pending_received,
 	                     pending_sent=pending_sent)
 
-@friends.route('/acquaintance')
-@friends.route('/limited-profile')
+@friends.route('/users/<username>')
 @login_required
-def limited_profile():
-	return render_template('acquaintance.html')
+def limited_profile(username):
+	user =  User.query.filter_by(username=username).first()
+	if not user:
+		flash('User not found.', 'error')
+		return redirect(url_for('friends.friendsList'))
+
+	return render_template('acquaintance.html', user=user)
 	
 @friends.route('/friends-portal', methods=['GET', 'POST'])
 @login_required
 def search_friends():
-	return render_template("friends-portal.html")
+	all_users =  User.query.all()
+
+	return render_template("friends-portal.html", users=all_users)
 
 
 @friends.route('/friends/<username>')
@@ -33,9 +39,6 @@ def friend_profile(username):
 	user = User.query.filter_by(username=username).first()
 	if not user:
 		# For testing purposes, if 'mikechen' doesn't exist, use current user as example
-		if username == 'mikechen':
-			user = current_user
-		else:
 			flash('User not found.', 'error')
 			return redirect(url_for('friends.friendsList'))
 	

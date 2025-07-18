@@ -14,7 +14,9 @@
   </div>
   <div class="friends-grid">
     <!-- Friend Card 1 - Clickable -->
-    <div class="friend-card clickable-card" data-profile-url="{{ url_for('friends.friend_profile', username='mikechen') }}">>
+    {%if friends%}
+    {% for friend in friend %}
+      <div class="friend-card clickable-card" data-profile-url="{{ url_for('friends.friend_profile', username='mikechen') }}">>
       <div class="friend-main">
         <img src="https://ui-avatars.com/api/?name=Mike+Chen" alt="Mike Chen" class="friend-avatar">
         <div class="friend-info">
@@ -48,42 +50,14 @@
         <span class="profile-btn">Click to View Profile</span>
       </div>
     </div>
-
-    <!-- Friend Card 2 -->
-    <div class="friend-card">
-      <div class="friend-main">
-        <img src="https://ui-avatars.com/api/?name=Sarah+Johnson" alt="Sarah Johnson" class="friend-avatar">
-        <div class="friend-info">
-          <div class="friend-name-status">
-            <div class="friend-name">Sarah Johnson</div>
-          </div>
-          <div class="friend-school">MIT</div>
-          <div class="friend-mutual">3 mutual friends</div>
-        </div>
-        <div class="privacy-badge private">Private</div>
+    {% endfor %}
+    {% else %}
+      <div class="centralized-message">
+        <h1>It's pretty lonely in here</h1>
+        <p>Don't Miss Out. Add Friends Now!⬇️</p>
+        <a href="{{ url_for('friends.search_friends')}}">Find Friends</a>
       </div>
-      <div class="friend-activity">Got offer at Stripe</div>
-      <hr class="card-separator">
-      <div class="friend-stats-row">
-        <div class="stat-block">
-          <div class="stat-number">7</div>
-          <div class="stat-label">Applications</div>
-        </div>
-        <div class="vertical-separator"></div>
-        <div class="stat-block">
-          <div class="stat-number">2</div>
-          <div class="stat-label">Interviews</div>
-        </div>
-        <div class="vertical-separator"></div>
-        <div class="stat-block">
-          <div class="stat-number">0</div>
-          <div class="stat-label">Offers</div>
-        </div>
-      </div>
-      <a class="profile-btn" href="{{ url_for('friends.friend_profile', username='sarahjohnson') }}">View Profile</a>
-    </div>
-    <!-- More friend cards can be added in the same format! -->
-  </div>
+    {%endif%}
 </div>
 {% endblock %}
 
