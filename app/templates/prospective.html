@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block title %}Limited Profile | InternIn{% endblock %}
+{%block extra_css%}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/acquaintance.css') }}">
+{%endblock%}
+
+{% block content %}
+<!-- Back Button -->
+<a href="{{ url_for('friends.search_users') }}" class="back-button">
+  <i class="fa-solid fa-arrow-left"></i>
+  Back to Portal
+</a>
+
+<div class="acquaintance-wrapper">
+  <div class="limited-profile-card">
+    <!-- Left: Avatar -->
+    <div class="avatar-section">
+      {% if user.profile_picture and user.profile_picture not in ['default.jpg', 'default.png', '', None] %}
+        <div class="profile-avatar">
+          <img src="{{ url_for('static', filename='uploads/profile_pictures/' + user.profile_picture) }}" alt="Profile Picture">
+        </div>
+      {% else %}
+        <div class="profile-avatar">{{user | initials}}</div>
+      {% endif %}
+    </div>
+    <!-- Right: Info Column -->
+    <div class="user-info">
+      <div class="user-header">
+        <h2>{{user.firstName}} {{user.lastName}}</h2>
+        <p class="user-details">{{user.year}} <strong>@</strong> {{user.school}} <strong>studying</strong> {{user.major}}</p>
+        <p class="friendship-status">You're not yet friends</p>
+      </div>
+      <div class="bio-section">
+        <h3>Bio:</h3>
+        <div class="bio">
+          <p>{{user.bio or 'Nothing to see here... 🤷‍♂️'}}</p>
+        </div>
+      </div>
+      <div class="button-container">
+        <form action="{{ url_for('friends.addFriend') }}" method="POST" id="friend-request-form">
+          <input type="hidden" name="user_id" value="{{ user.id }}">
+          <button type="submit" class="action-btn add-friend-btn" id="add-friend-btn">
+            <i class="fa-solid fa-user-plus"></i>
+            <span class="btn-text">Add Friend</span>
+          </button>
+        </form>
+        <button type="button" class="action-btn cancel-request-btn hidden" id="cancel-request-btn">
+          <i class="fa-solid fa-user-xmark"></i>
+          <span class="btn-text">Cancel Request</span>
+        </button>
+      </div>
+      <div class="mutual-friends-section">
+        <h3>Mutual Friends</h3>
+        <div class="mutual-friends">
+          {% for friend in ['MC', 'SJ', 'AD'] %}
+          <div title="{{ friend }}" class="friend-avatar">{{ friend }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <p class="info-message">
+        <i class="fa-solid fa-info-circle"></i>
+        Add {{user.firstName}} as a friend to view their internship applications
+      </p>
+    </div>
+  </div>
+</div>
+<script src="{{url_for('static', filename='js/acquaintance.js')}}"></script>
+{% endblock %}

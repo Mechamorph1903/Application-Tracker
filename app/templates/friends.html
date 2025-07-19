@@ -10,7 +10,7 @@
   <h1 class="page-title">Friends</h1>
   <div class="friends-search-bar">
     <input type="text" id="friend-search" placeholder="Search friends by name, school, or status..." autocomplete="off">
-    <a class="add-friend-btn" href="{{ url_for('friends.search_friends') }}">+ Add Friends</a>
+    <a class="add-friend-btn" href="{{ url_for('friends.search_users') }}">+ Add Friends</a>
   </div>
   <div class="friends-grid">
     <!-- Friend Card 1 - Clickable -->
@@ -55,7 +55,7 @@
       <div class="centralized-message">
         <h1>It's pretty lonely in here</h1>
         <p>Don't Miss Out. Add Friends Now!⬇️</p>
-        <a href="{{ url_for('friends.search_friends')}}">Find Friends</a>
+        <a href="{{ url_for('friends.search_users')}}">Find Friends</a>
       </div>
     {%endif%}
 </div>
