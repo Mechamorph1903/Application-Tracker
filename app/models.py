@@ -134,6 +134,10 @@ class User(db.Model, UserMixin): # User model for managing user data
 			FriendRequest.status == 'pending'
 		).first() is not None
 	
+	def has_pending_request_from(self, user):
+		"""Check if there is a pending friend request from 'user' to 'self'."""
+		return FriendRequest.query.filter_by(sender_id=user.id, receiver_id=self.id, status='pending').first() is not None
+	
 	def remove_friend(self, user):
 		"""Remove friendship between users"""
 		friend_request = FriendRequest.query.filter(
@@ -180,6 +184,23 @@ class User(db.Model, UserMixin): # User model for managing user data
 		db.session.add(friend_request)
 		db.session.commit()
 		return True
+
+	def cancel_friend_request(self, user):
+		# Find the FriendRequest where self is the sender and user is the receiver
+		req = FriendRequest.query.filter_by(sender_id=self.id, receiver_id=user.id, status='pending').first()
+		if req:
+			db.session.delete(req)
+			db.session.commit()
+			return True
+		return False
+
+	def accept_friend_request(self, user):
+		"""Accept a pending friend request from 'user' to 'self'."""
+		req = FriendRequest.query.filter_by(sender_id=user.id, receiver_id=self.id, status='pending').first()
+		if req:
+			req.accept()
+			return True
+		return False
 
 class Internship(db.Model): # Internship model for managing internship applications
 	__tablename__ = 'internships'  # Use plural table name to match existing Supabase data

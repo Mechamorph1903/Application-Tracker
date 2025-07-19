@@ -1,3 +1,22 @@
+  .friend-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b993fd 0%, #6683bc 100%);
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-right: 16px;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 2px solid #fff;
+  overflow: hidden;
+}
 .friends-container {
   max-width: 1200px;
   margin: 48px auto 0 auto;

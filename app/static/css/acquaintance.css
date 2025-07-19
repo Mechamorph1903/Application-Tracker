@@ -1,18 +1,17 @@
 /* Acquaintance Profile Page Styles */
 
 /* Outer wrapper spacing - top spacing only, no vertical centering */
+
 .acquaintance-wrapper {
   padding: 40px 20px;
-  display: flex;
-  justify-content: center;
   min-height: 80vh;
+  position: relative;
 }
 
 /* Back Button */
+/* Back Button - now static and centered */
+
 .back-button {
-  position: absolute;
-  top: 20px;
-  left: 20px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -25,8 +24,12 @@
   font-size: 0.9rem;
   font-weight: 500;
   transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  margin-bottom: 32px;
+  max-width: 120px;
+  justify-content: center;
+  position: relative;
 }
 
 .back-button:hover {
@@ -40,27 +43,50 @@
   font-size: 1rem;
 }
 
+@media (max-width: 600px) {
+  .acquaintance-wrapper {
+    padding: 20px 8px;
+  }
+  .back-button {
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: none;
+  }
+}
+
 /* Profile Card */
 .limited-profile-card {
   display: flex;
-  align-items: flex-start;
-  gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: -10px;
   max-width: 600px;
   width: 100%;
-  padding: 32px;
+  padding: 20px 32px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 24px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(185, 147, 253, 0.1);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   position: relative;
+}
+
+/* Avatar Section */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  margin-right: 0;
 }
 
 /* Profile Avatar */
 .profile-avatar {
-  width: 90px;
-  height: 90px;
+  width: 120px;
+  height: 120px;
   background: linear-gradient(135deg, #b993fd, #cbb6da);
   color: #1a1a1a;
   font-weight: bold;
@@ -75,8 +101,8 @@
 }
 
 .profile-avatar img {
-  width: 90px;
-  height: 90px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid rgba(185, 147, 253, 0.3);
@@ -125,7 +151,7 @@
 }
 
 .bio {
-  width: 100%;
+  width: 90%;
   min-height: 80px;
   padding: 16px;
   border-radius: 12px;
@@ -304,7 +330,8 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 20px;
+    padding: 20px 8px;
+    gap: 20px;
   }
 
   .profile-avatar {

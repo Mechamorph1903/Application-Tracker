@@ -71,6 +71,7 @@
 
 .search-section input, .search-section select {
     padding: 8px 10px;
+    color: black;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 14px;
@@ -182,6 +183,18 @@
     gap: 12px;
     width: 100%;
     margin-bottom: 16px;
+    position: relative;
+}
+
+.isfriends{
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: rgb(100, 162, 171);
+    color: rgb(64, 99, 104);
+    font-weight: 700;
+    padding: 5px;
+    border-radius: 20px;
 }
 
 .names h3 {

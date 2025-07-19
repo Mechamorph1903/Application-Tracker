@@ -35,8 +35,28 @@ def limited_profile(username):
 @friends.route('/friends-portal', methods=['GET', 'POST'])
 @login_required
 def search_users():
-	all_users =  User.query.filter(User.username!=current_user.username).all()
-	return render_template("friends-portal.html", users=all_users)
+	import json
+	majors_path = 'app/static/js/majors.json'
+	with open(majors_path, encoding='utf-8') as f:
+		majors_data = json.load(f)
+	majors = [m['major'] for m in majors_data['Majors']]
+
+	users_query = User.query.filter(User.username != current_user.username)
+	name = request.form.get('name', '').strip()
+	school = request.form.get('school', '').strip()
+	major = request.form.get('major', '').strip()
+
+	if request.method == 'POST':
+		if name:
+			users_query = users_query.filter(
+				(User.firstName.ilike(f'%{name}%')) | (User.lastName.ilike(f'%{name}%')) | (User.username.ilike(f'%{name}%'))
+			)
+		if school:
+			users_query = users_query.filter(User.school.ilike(f'%{school}%'))
+		if major:
+			users_query = users_query.filter(User.major == major)
+	users = users_query.all()
+	return render_template("friends-portal.html", users=users, majors=majors)
 
 #friend request logic
 @friends.route('/add-friend', methods=['POST'])
@@ -44,31 +64,82 @@ def search_users():
 def addFriend():
 	user_id = request.form.get('user_id')
 	if not user_id:
-		return jsonify({'success': False, 'message': 'User ID is required'}), 400
-	
+		flash('User ID is required', 'error')
+		return redirect(url_for('friends.friendsList'))
 	try:
 		user_id = int(user_id)
 		user = User.query.get(user_id)
 		if not user:
-			return jsonify({'success': False, 'message': 'User not found'}), 404
-		
-		friend_request = current_user.send_friend_request(user_id)
-		
+			flash('User not found', 'error')
+			return redirect(url_for('friends.friendsList'))
+		print(f"user_id: {user_id}, user: {user}")
+		friend_request = current_user.send_friend_request(user)
 		if friend_request:
-			return jsonify({'success': True, 'message': f'Friend request sent to {user.firstName}!'})
+			flash(f'Friend request sent to {user.firstName}!', 'success')
 		else:
-			return jsonify({'success': False, 'message': f'You are already friends with {user.firstName}!'})
+			flash(f'You already sent a request to {user.firstName}!', 'info')
+		return redirect(url_for('friends.limited_profile', username=user.username))
 	except ValueError:
-		return jsonify({'success': False, 'message': 'Invalid user ID'}), 400
+		flash('Invalid user ID', 'error')
+		return redirect(url_for('friends.friendsList'))
 	except Exception as e:
-		return jsonify({'success': False, 'message': 'An error occurred'}), 500
+		flash('An error occurred', 'error')
+		return redirect(url_for('friends.friendsList'))
 
 
 
+#cancel friend request
+@friends.route('/cancel-friend-request', methods=['POST'])
+@login_required
+def cancelRequest():
+	
+	user_id = request.form.get('user_id')
+	if not user_id:
+		flash('User ID is required', 'error')
+		return redirect(url_for('friends.friendsList'))
+	try:
+		user_id = int(user_id)
+		user = User.query.get(user_id)
+		if not user:
+			flash('User not found', 'error')
+			return redirect(url_for('friends.friendsList'))
+		cancelled = current_user.cancel_friend_request(user)
+		if cancelled:
+			flash('Friend request cancelled', 'success')
+		else:
+			flash('No pending request to cancel', 'info')
+		return redirect(url_for('friends.limited_profile', username=user.username))
+	except Exception as e:
+		flash('An error occurred', 'error')
+		return redirect(url_for('friends.friendsList'))
 
 
+# Accept friend request endpoint
+@friends.route('/accept-friend-request', methods=['POST'])
+@login_required
+def acceptFriendRequest():
+	user_id = request.form.get('user_id')
+	if not user_id:
+		flash('User ID is required', 'error')
+		return redirect(url_for('friends.friendsList'))
+	try:
+		user_id = int(user_id)
+		user = User.query.get(user_id)
+		if not user:
+			flash('User not found', 'error')
+			return redirect(url_for('friends.friendsList'))
 
-
+		req = FriendRequest.query.filter_by(sender_id=user.id, receiver_id=current_user.id, status='pending').first()
+		if req:
+			req.accept()
+			flash('Friend request accepted!', 'success')
+			return redirect(url_for('friends.friend_profile', username=user.username))
+		else:
+			flash('No pending request to accept', 'error')
+			return redirect(url_for('friends.friendsList'))
+	except Exception as e:
+		flash('An error occurred', 'error')
+		return redirect(url_for('friends.friendsList'))
 
 
 

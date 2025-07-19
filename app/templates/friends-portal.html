@@ -16,26 +16,26 @@
 	</div>
 </section>
  <section class="searchbar-section">
-	<form action="{{ search_friends }}" method="POST">
-		<div class="search-section">
-			<label for="user_name">Name: </label>
-			<input type="text" name="user_name" placeholder="Promise Tinubu">
-		</div>
-		<div class="search-section">
-			<label for="user_name">School: </label>
-			<input type="text" name="user_name" placeholder="Southern Miss">
-		</div>
-		<div class="search-section">
-			<label for="user_name">Major: </label>
-			<select class="js-example-basic-single" name="state" title="Search by Majors">
-				<option value="AL">Alabama</option>
-					...
-				<option value="WY">Wyoming</option>
-			</select>
-		</div>
-
-		<button type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search </button>
-	</form>
+   <form action="{{ url_for('friends.search_users') }}" method="POST">
+	   <div class="search-section">
+		   <label for="name">Name: </label>
+		   <input type="text" name="name" id="name" placeholder="Promise Tinubu" value="{{ request.form.name or '' }}">
+	   </div>
+	   <div class="search-section">
+		   <label for="school">School: </label>
+		   <input type="text" name="school" id="school" placeholder="Southern Miss" value="{{ request.form.school or '' }}">
+	   </div>
+	   <div class="search-section">
+		   <label for="major">Major: </label>
+		   <select class="js-example-basic-single" name="major" id="major" title="Search by Majors">
+			   <option value="">-- Select Major --</option>
+			   {% for m in majors %}
+				   <option value="{{ m }}" {% if request.form.major == m %}selected{% endif %}>{{ m }}</option>
+			   {% endfor %}
+		   </select>
+	   </div>
+	   <button type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search </button>
+   </form>
 </section>
 <section class="users">
 	<div class="users-grid">
@@ -50,6 +50,11 @@
 						<h3>{{user.firstName}} {{user.lastName}}</h3>
 						<p>{{user.username}}</p>
 					</div>
+					{%if current_user.is_friend_with(user)%}
+					<div class="isfriends">
+						Friends
+					</div>
+					{%endif%}
 				</div>
 				<div class="user-card-body">
 					<p>School: {{user.school or 'Not Assigned'}}</p><hr>
@@ -71,5 +76,5 @@
 </section>
 {%endblock%}
 {% block extra_js %}
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 {%endblock%}

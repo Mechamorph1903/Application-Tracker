@@ -9,22 +9,25 @@
 <div class="friends-container">
   <h1 class="page-title">Friends</h1>
   <div class="friends-search-bar">
-    <input type="text" id="friend-search" placeholder="Search friends by name, school, or status..." autocomplete="off">
+    <input type="text" id="friend-search" placeholder="Search friends by name, school, or status..." autocomplete="on">
     <a class="add-friend-btn" href="{{ url_for('friends.search_users') }}">+ Add Friends</a>
   </div>
   <div class="friends-grid">
     <!-- Friend Card 1 - Clickable -->
     {%if friends%}
-    {% for friend in friend %}
-      <div class="friend-card clickable-card" data-profile-url="{{ url_for('friends.friend_profile', username='mikechen') }}">>
+    {% for friend in friends %}
+      <div class="friend-card clickable-card" data-profile-url="{{ url_for('friends.friend_profile', username=friend.username) }}">
       <div class="friend-main">
-        <img src="https://ui-avatars.com/api/?name=Mike+Chen" alt="Mike Chen" class="friend-avatar">
+        {% if friend.profile_picture and friend.profile_picture not in ['default.jpg', 'default.png', '', None] %}
+          <img src="{{ url_for('static', filename='uploads/profile_pictures/' + friend.profile_picture) }}" alt="{{ friend.firstName }} {{ friend.lastName }}" class="friend-avatar">
+        {% else %}
+          <div class="friend-avatar initials">{{ friend|initials }}</div>
+        {% endif %}
         <div class="friend-info">
           <div class="friend-name-status">
-            <div class="friend-name">Mike Chen</div>
+            <div class="friend-name">{{friend.firstName}} {{friend.lastName}}</div>
           </div>
-          <div class="friend-school">Stanford University</div>
-          <div class="friend-mutual">2 mutual friends</div>
+          <div class="friend-school">{{friend.school}}</div>
         </div>
         <div class="privacy-badge public">Public</div>
       </div>
