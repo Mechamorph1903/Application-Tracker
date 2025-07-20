@@ -122,6 +122,9 @@ def add_application():
             
             application_status = request.form.get('application_status', 'applied')
             application_link = request.form.get('link')
+            if application_link and not application_link.startswith(('http://', 'https://')):
+                application_link = 'https://' + application_link
+            
             application_description = request.form.get('description')
             location = request.form.get('location')
             notes = request.form.get('notes')

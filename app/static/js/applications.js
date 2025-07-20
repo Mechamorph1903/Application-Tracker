@@ -122,25 +122,19 @@ if (saveContactBtn) {
             addContactBtn.style.display = 'flex';
         }
 
-        const contactTitleInput = document.getElementById('contact-title');
-        const contactEmailInput = document.getElementById('contact-email');
-        const contactPhoneInput = document.getElementById('contact-phone');
-        const contactLinkedInInput = document.getElementById('contact-linkedin');
-        const contactNotesInput = document.getElementById('contact-notes');
-
-        const contactTitle = contactTitleInput ? contactTitleInput.value.trim() : '';
-        const contactEmail = contactEmailInput ? contactEmailInput.value : "Not Assigned";
-        const contactPhone = contactPhoneInput ? contactPhoneInput.value : "Not Assigned";
-        const contactLinkedIn = contactLinkedInInput ? contactLinkedInInput.value : "Not Assigned";
-        const contactNotes = contactNotesInput ? contactNotesInput.value : "Not Assigned";
+        // Get LinkedIn URL and ensure it has https://
+        let contactLinkedIn = document.getElementById('contact-linkedin')?.value || "Not Assigned";
+        if (contactLinkedIn !== "Not Assigned" && !contactLinkedIn.startsWith('http')) {
+            contactLinkedIn = 'https://' + contactLinkedIn;
+        }
 
         const contact = {
             name: contactName ? toTitleCase(contactName) : "Not Assigned",
-            position: contactTitle || "Not Assigned",
-            phone: contactPhone,
-            email: contactEmail,
+            position: document.getElementById('contact-title')?.value || "Not Assigned",
+            phone: document.getElementById('contact-phone')?.value || "Not Assigned",
+            email: document.getElementById('contact-email')?.value || "Not Assigned",
             linkedin: contactLinkedIn,
-            notes: contactNotes
+            notes: document.getElementById('contact-notes')?.value || "Not Assigned"
         };
         
         contacts.push(contact);
@@ -479,3 +473,14 @@ if (statusForm) {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const linkInput = document.querySelector('input[name="link"]');
+    if (linkInput) {
+        linkInput.addEventListener('blur', function() {
+            if (this.value && !this.value.startsWith('http')) {
+                this.value = 'https://' + this.value;
+            }
+        });
+    }
+});

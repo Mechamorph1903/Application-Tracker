@@ -113,7 +113,11 @@
 									{% if contact.linkedin and contact.linkedin != "Not Assigned" %}
 										<p class="contact-detail">
 											<i class="fab fa-linkedin"></i>
-											<a href="{{ contact.linkedin }}" target="_blank">LinkedIn Profile</a>
+											<a href="{{ contact.linkedin if contact.linkedin.startswith('http') else 'https://' + contact.linkedin }}" 
+											target="_blank" 
+											rel="noopener noreferrer">
+												LinkedIn Profile
+											</a>
 										</p>
 									{% endif %}
 									
@@ -132,7 +136,9 @@
 				{% endif %}
 			</div>
 
-			<a href="{{ internship.application_link }}" target="_blank" rel="noopener noreferrer">
+			<a href="{{ internship.application_link if internship.application_link.startswith('http') else 'https://' + internship.application_link }}" 
+			target="_blank" 
+			rel="noopener noreferrer">
 				Application
 				<i class="fa-solid fa-link"></i>
 			</a>
