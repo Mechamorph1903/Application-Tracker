@@ -115,8 +115,7 @@ html, body {
     overflow-x: hidden;
     padding: 0 20px;
     box-sizing: border-box;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
+    /* Custom scrollbars for Firefox removed for compatibility; Webkit styles below handle Chrome, Safari, Edge */
 }
 
 /* Webkit scrollbar styling for Chrome/Safari */

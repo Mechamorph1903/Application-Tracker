@@ -18,8 +18,8 @@ body {
     align-items: center;
     padding: 1rem 2rem;
     background: linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(67, 45, 124, 0.3) 100%);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     margin-bottom: 2rem;
@@ -97,8 +97,8 @@ body {
     margin: 0 auto;
     padding: 1rem;
     background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(67, 45, 124, 0.2) 100%);
-    backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 8px 32px rgba(124, 58, 237, 0.15);
@@ -151,8 +151,8 @@ body {
     justify-content: space-between;
     gap: 15px;
     background: linear-gradient(135deg, rgba(162, 89, 255, 0.3) 0%, rgba(124, 58, 237, 0.3) 100%);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #f5e8ff;
     text-decoration: none;
@@ -200,8 +200,8 @@ body {
     
     /* ✅ Blurry background */
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     
     /* ✅ Center the popup */
     display: none;
@@ -222,8 +222,8 @@ body {
     position: relative;
 	font-family: 'Nunito', sans-serif;
     /* ✅ Glass morphism effect */
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     
     /* ✅ Smooth animation */
@@ -349,8 +349,8 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     padding: 1.5rem;
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     box-shadow: 0 4px 15px rgba(124, 58, 237, 0.1);
     transition: all 0.3s ease;
 }
@@ -620,8 +620,8 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 }
 
 /* Description Button Styling */
@@ -676,14 +676,14 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 }
 
 .modal-content {
     background: linear-gradient(135deg, rgba(124, 58, 237, 0.95) 0%, rgba(67, 45, 124, 0.95) 100%);
-    backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     width: 90%;

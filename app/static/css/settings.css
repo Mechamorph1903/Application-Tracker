@@ -373,8 +373,8 @@ nav > div:first-child {
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     display: none;
     justify-content: center;
     align-items: center;
@@ -390,8 +390,8 @@ nav > div:first-child {
     width: 90%;
     position: relative;
     font-family: 'Nunito', sans-serif;
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     animation: popupSlideIn 0.3s ease-out;
     display: flex;

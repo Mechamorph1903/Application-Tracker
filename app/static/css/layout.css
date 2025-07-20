@@ -452,8 +452,8 @@ input[type="text"] {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 
      transition: all 0.3s ease;
 }

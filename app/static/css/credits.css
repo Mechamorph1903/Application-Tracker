@@ -28,8 +28,8 @@ body {
 /* Header Section */
 .credits-header {
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     padding: 2rem 0;
     color: white;
@@ -301,8 +301,8 @@ body {
 /* Footer */
 .credits-footer {
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     padding: 2rem 0;
     margin-top: auto;
