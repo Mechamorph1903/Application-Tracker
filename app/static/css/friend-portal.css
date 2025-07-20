@@ -1,42 +1,46 @@
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
 .header {
-	display: flex;
-	align-items: center;
-	gap: 15px;
-	padding: 20px;
-	background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
-	border-radius: 12px;
-	margin: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
+    border-radius: 12px;
+    margin: 20px;
 }
 
 .header button {
-	background: #7c3aed;
-	color: white;
-	border: none;
-	border-radius: 8px;
-	padding: 12px 15px;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	font-size: 16px;
-	box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
+    background: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
 }
 
 .header button:hover {
-	background: #6d28d9;
-	transform: translateY(-1px);
-	box-shadow: 0 4px 8px rgba(124, 58, 237, 0.4);
+    background: #6d28d9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(124, 58, 237, 0.4);
 }
 
 .header .text h1 {
-	margin: 0;
-	color: #ffffff;
-	font-size: 24px;
-	font-weight: 700;
+    margin: 0;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 700;
 }
 
 .header .text p {
-	margin: 5px 0 0 0;
-	color: #e5e7eb;
-	font-size: 14px;
+    margin: 5px 0 0 0;
+    color: #e5e7eb;
+    font-size: 14px;
 }
 
 .searchbar-section {
@@ -102,13 +106,15 @@
     background: #6d28d9;
 }
 
+/* Users container: prevent horizontal scroll */
 .users {
     width: 100%;
-    height: calc(100vh - 200px); /* Adjust height to fit better */
-    overflow-y: auto; /* Change from scroll to auto (hides scrollbar when not needed) */
+    max-width: 100vw;
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 0 20px;
-    
-    /* Custom scrollbar styling */
+    box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
 }
@@ -132,11 +138,14 @@
 }
 
 .users-grid{
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-	gap: 24px;
-	padding: 20px;
-	justify-content: center;
+    display: grid;
+    box-sizing: border-box;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+    justify-content: center;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 .name-logo {
@@ -156,17 +165,19 @@
 }
 
 .user-card{
-	display: flex;
+    display: flex;
     flex-direction: column;
     justify-content: space-between;
-	align-items: center;
+    align-items: center;
     padding: 20px;
     background: white;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border: 1px solid #e5e7eb;
-	max-width: 320px;
-	width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -178,7 +189,7 @@
 }
 
 .user-card-head{
-	display: flex;
+    display: flex;
     align-items: center;
     gap: 12px;
     width: 100%;
@@ -212,10 +223,10 @@
 }
 
 .user-card-body{
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
     width: 100%;
 }
 
@@ -234,27 +245,27 @@
 }
 
 .view-profile {
-	margin-top: 12px;
-	width: 100%;
+    margin-top: 12px;
+    width: 100%;
 }
 
 .view-profile a {
-	display: inline-block;
-	background: #7c3aed;
-	color: white;
-	text-decoration: none;
-	padding: 8px 16px;
-	border-radius: 6px;
-	font-size: 14px;
-	font-weight: 600;
-	transition: all 0.3s ease;
-	text-align: center;
-	width: 100%;
-	box-sizing: border-box;
+    display: inline-block;
+    background: #7c3aed;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .view-profile a:hover {
-	background: #6d28d9;
-	transform: translateY(-1px);
-	box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+    background: #6d28d9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
 }

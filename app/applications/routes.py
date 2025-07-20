@@ -28,6 +28,83 @@ def application_details(internship_id):
     
     return render_template('application-details.html', internship=internship)
 
+@applications.route('/friend/<username>/application-details/<int:internship_id>')
+@login_required
+def friend_application_details(username,internship_id):
+    """Display detailed view of a friend's internship application"""
+    # Get the internship for the user
+    user =  User.query.filter_by(username=username).first()
+    internship = Internship.query.filter_by(id=internship_id, user_id=user.id).first()
+    
+    if not internship:
+        flash('Internship not found or you do not have permission to view it.', 'error')
+        return redirect(url_for('applications.applicationsList'))
+    
+
+    
+    if internship.visibility == 'private':
+        flash('You do not have permission to view this internship.', 'error')
+        return 
+    
+    return render_template('friend-application-details.html', user=user, internship=internship)
+
+@applications.route('/copy-application')
+@login_required
+def copy_application():
+    try:
+        internship_id = request.args.get('internship_id', type=int)
+        if not internship_id:
+            flash('Missing user or internship ID.', 'error')
+            return redirect(url_for('home'))
+
+
+        friendInternship = Internship.query.filter_by(id=internship_id).first()
+        if not friendInternship:
+            flash('Internship Not Found!')
+            return redirect(url_for('applications.applicationsList'))
+
+        # Get friend's username for redirect
+        friend_user = User.query.get(friendInternship.user_id)
+        friend_username = friend_user.username if friend_user else None
+
+        # Check if current user already has this internship (by company and job name)
+        existing = Internship.query.filter_by(
+            user_id=current_user.id,
+            company_name=friendInternship.company_name,
+            job_name=friendInternship.job_name
+        ).first()
+        if existing:
+            flash('You already have this internship in your applications.', 'warning')
+            if friend_username:
+                return redirect(url_for('friends.friend_profile', username=friend_username))
+            return redirect(url_for('applications.applicationsList'))
+
+        internship = Internship(
+            job_name=friendInternship.job_name,
+            company_name=friendInternship.company_name,
+            position=friendInternship.position,
+            application_link=friendInternship.application_link,
+            application_description=friendInternship.application_description,
+            location=friendInternship.location,
+            applied_date=date.today(),
+            deadline_date=friendInternship.deadline_date,
+            user_id=current_user.id,
+            application_status='applied'
+        )
+        db.session.add(internship)
+        db.session.commit()
+
+        flash('Added to your applications successfully')
+        if friend_username:
+            return redirect(url_for('friends.friend_profile', username=friend_username))
+        return redirect(url_for('applications.applicationsList'))
+    except Exception as e:
+        flash(f'Error copying internship: {str(e)}', 'error')
+        return redirect(url_for('home'))
+
+
+
+
 @applications.route('/add', methods=['GET', 'POST'])
 @login_required
 def add_application():

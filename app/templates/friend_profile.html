@@ -1,56 +1,85 @@
 {% extends "layout.html" %}
 
 {% block title %}{{ user.firstName }} {{ user.lastName }} - Profile{% endblock %}
+{% block extra_css%} 
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/friend_profile.css') }}">
 
+{% endblock%}
 {% block content %}
-<div class="friend-profile-container">
-    <div class="friend-profile-header">
-        <div class="back-button">
-            <a href="{{ url_for('friends.friendsList') }}" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to Friends
-            </a>
-        </div>
-        
-        <div class="friend-profile-info">
-            <div class="friend-avatar-large">
-                {% if user.profile_picture and user.profile_picture != 'default.jpg' %}
-                    <img src="{{ url_for('static', filename='uploads/profile_pictures/' + user.profile_picture) }}" alt="Profile Picture" class="friend-profile-img">
-                {% else %}
-                    <div class="friend-profile-initials">{{ user | initials }}</div>
-                {% endif %}
+<div class="profile-container">
+        <!-- Cover Image Section -->
+        <div class="cover-section">
+            <div class="cover-overlay"></div>
+            <div class="back-button">
+                <a href="javascript:void(0)" onclick="goBackToLastPage()" title="Go back to previous page">
+                    <i class="fas fa-arrow-left"></i>
+                </a> 
             </div>
-            
-            <div class="friend-details">
-                <h1 class="friend-name">{{ user.firstName }} {{ user.lastName }}</h1>
-                <p class="friend-username">@{{ user.username }}</p>
-                <p class="friend-school">{{ user.school or 'School not specified' }}</p>
-                <p class="friend-major">{{ user.major or 'Major not specified' }}</p>
-				<p class="friend-major">{{ user.year or 'Year not specfied' }}</p>
+            <div class="settings">
+                <a href="{{ url_for('settings.settings_page') }}" class="settings-link" onclick="storeCurrentPage(event)">
+                    <img src="{{ url_for('static', filename='images/settings.png') }}" alt="Settings Icon" class="settings-icon">
+                     <i class="settings-text">Settings</i>
+                </a>
+               
             </div>
         </div>
-    </div>
-    
-    <div class="friend-profile-content">
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-info">
+                <div class="profile-picture">
+                    {% if user.profile_picture and user.profile_picture != 'default.jpg' %}
+                        <img src="{{ url_for('static', filename='uploads/profile_pictures/' + user.profile_picture) }}" alt="Profile Picture" class="friend-profile-img">
+                    {% else %}
+                        <div class="profile-initials">{{ user | initials }}</div>
+                    {% endif %}
+                </div>
+                <div class="profile-details">
+                    <h1 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h1>
+                    <div class="school-info">
+                        <div id="school">School: {{ user.school }}</div>
+                        <div id="year">Class: {{ user.year }}</div>
+                        <div id="major">Major: {{ user.major }}</div>
+                    </div>
+                    <div class="social-links">
+                        {%if user.parsed_social_media %}
+                            {% for social_link in user.parsed_social_media %}
+                                <a href="{{ social_link.url }}" class="social-link" target="_blank" rel="noopener noreferrer">
+                                    <i class="{{ social_link.platform|social_icon }}"></i>
+                                     <span>{{ social_link.platform }}</span>
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <p>No Social Media Added</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="friend-profile-content">
         <div class="profile-section">
             <h2>Friend's Applications</h2>
             </div>
-			<div class="applications-search-bar">
+            <div class="applications-search-bar">
         <input type="text" id="application-search" placeholder="Search applications..." autocomplete="off">
     </div>
-
+ 
     {% if internships %}
     <div class="applications-grid"> <!--three equal columns-->
-
+ 
         {% for internship in internships %}
         <!--the cards are clickable to see their details-->
-        <div class="application-card" onclick="window.location.href='{{ url_for('applications.application_details', internship_id=internship.id) }}'" style="cursor: pointer;">
+        <div class="application-card" onclick="window.location.href='{{ url_for('applications.friend_application_details', username=user.username, internship_id=internship.id) }}'" style="cursor: pointer;">
             <div class="application-status">
                 <!--depending on what part of the code this comes from, color coding is dependent on it. idk it-->
                 <span class="status-{{ internship.application_status }}">
                     {{ internship.application_status.title() }}
                 </span>
             </div>
-
+ 
             <div class="application-header">
                 <p class="company-name">{{ internship.company_name }}</p>
                 <p class="position">{{ internship.job_name }}</p>
@@ -61,10 +90,10 @@
                     </p>
                 {% endif %}
             </div>
-
+ 
             <!--the buttons for see details, edit, trash-->
-                
-        
+               
+       
         <div class="application-details">
             {% if internship.applied_date %}
                 <div class="app-detail-item-1">
@@ -72,10 +101,10 @@
                     <span>applied: {{ internship.applied_date.strftime('%B %d, %Y') }}</span>
                 </div>
             {% endif %}
-
-			<div class="addApplication">
-				<button>Add to My Applications</button>
-			</div>
+ 
+            <div class="addApplication">
+                <a href="{{ url_for('applications.copy_application', internship_id=internship.id) }}" class="add-to-applications-link">Add to My Applications</a>
+            </div>
         </div>
         </div>
     {% endfor %}
@@ -86,341 +115,69 @@
         <p>User hasn't applied to anything yet!</p>
     </div>
 {% endif %}
-</div>
         </div>
     </div>
-</div>
-
-<style>
-/* Basic styling for friend profile - customize as needed */
-.friend-profile-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    min-height: calc(100vh - 100px);
-}
-
-.friend-profile-header {
-    margin-bottom: 2rem;
-}
-
-.back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    transition: color 0.3s ease;
-}
-
-.back-link:hover {
-    color: #764ba2;
-}
-
-.friend-profile-info {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.friend-avatar-large {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f0f0f0;
-    border: 4px solid #667eea;
-}
-
-.friend-profile-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.friend-profile-initials {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: white;
-    font-size: 2.5rem;
-    text-transform: uppercase;
-}
-
-.friend-details h1 {
-    margin: 0 0 0.5rem 0;
-    color: #333;
-    font-size: 2.5rem;
-}
-
-.friend-username {
-    color: #666;
-    font-size: 1.2rem;
-    margin: 0 0 0.5rem 0;
-}
-
-.friend-school, .friend-major {
-    color: #777;
-    margin: 0.25rem 0;
-}
-
-.friend-profile-content {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    min-height: 600px;
-    display: flex;
-    flex-direction: column;
-}
-
-.profile-section h2 {
-    color: #333;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.placeholder-content {
-    display: grid;
-    gap: 1.5rem;
-    margin-top: 2rem;
-}
-
-.placeholder-card {
-    background: rgba(255, 255, 255, 0.8);
-    padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-}
-
-.placeholder-card h3 {
-    color: #333;
-    margin: 0 0 1rem 0;
-}
-
-.placeholder-card p {
-    color: #666;
-    margin: 0;
-}
-
-/* Applications styling */
-.applications-search-bar {
-    margin-bottom: 1.5rem;
-}
-
-.applications-search-bar input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid rgba(102, 126, 234, 0.2);
-    border-radius: 12px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.3s ease;
-}
-
-.applications-search-bar input:focus {
-    border-color: #667eea;
-}
-
-.applications-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-    flex: 1;
-    overflow-y: auto;
-    max-height: 500px;
-    padding-right: 8px;
-}
-
-/* Custom scrollbar for applications grid */
-.applications-grid::-webkit-scrollbar {
-    width: 6px;
-}
-
-.applications-grid::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
-}
-
-.applications-grid::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.3);
-    border-radius: 3px;
-}
-
-.applications-grid::-webkit-scrollbar-thumb:hover {
-    background: rgba(102, 126, 234, 0.5);
-}
-
-.application-card {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    position: relative;
-}
-
-.application-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-.application-status {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.application-status span {
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-applied { background: #e3f2fd; color: #1976d2; }
-.status-interviewing { background: #fff3e0; color: #f57c00; }
-.status-rejected { background: #ffebee; color: #d32f2f; }
-.status-offer { background: #e8f5e8; color: #388e3c; }
-.status-waitlist { background: #f3e5f5; color: #7b1fa2; }
-
-.delete-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-}
-
-.delete-btn:hover {
-    background: rgba(244, 67, 54, 0.1);
-}
-
-.delete-btn .icon {
-    width: 18px;
-    height: 18px;
-}
-
-.application-header {
-    margin-bottom: 1rem;
-}
-
-.company-name {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #333;
-    margin: 0 0 0.5rem 0;
-}
-
-.position {
-    font-size: 1.1rem;
-    color: #555;
-    margin: 0 0 0.5rem 0;
-}
-
-.location {
-    color: #777;
-    font-size: 0.95rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.application-details {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding-top: 1rem;
-}
-
-.app-detail-item-1 {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-}
-
-.addApplication {
-    margin-top: 1rem;
-    text-align: center;
-}
-
-.addApplication button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.addApplication button:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
-}
-
-.no-applications {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: #666;
-}
-
-.no-applications h2 {
-    margin-bottom: 1rem;
-    color: #333;
-}
-
-.btn {
-    display: inline-block;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: transform 0.3s ease;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-    .friend-profile-info {
-        flex-direction: column;
-        text-align: center;
-    }
     
-    .friend-profile-container {
-        padding: 1rem;
-    }
-}
-</style>
+    <script>
+        // Set dynamic status colors
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusElements = document.querySelectorAll('.activity-status[data-status-color]');
+            statusElements.forEach(element => {
+                const color = element.getAttribute('data-status-color');
+                if (color) {
+                    element.style.backgroundColor = color;
+                }
+            });
+        });
+
+        // Navigation state management using stack
+        function goBackToLastPage() {
+            const lastPage = popFromNavigationStack();
+            
+            if (lastPage && lastPage !== window.location.href) {
+                window.location.href = lastPage;
+            } else {
+                window.location.href = '/home';
+            }
+        }
+        
+        // Store navigation when arriving at profile
+        document.addEventListener('DOMContentLoaded', function() {
+            // Push current page to navigation stack if coming from valid pages
+            if (document.referrer) {
+                const referrerPath = new URL(document.referrer).pathname;
+                if (['/home', '/friends', '/applications/applications-list', '/calendar'].includes(referrerPath)) {
+                    pushToNavigationStack(document.referrer);
+                }
+            }
+        });
+        
+        // Navigation stack functions (defined in layout.html)
+        function pushToNavigationStack(page) {
+            const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
+            if (stack.length === 0 || stack[stack.length - 1] !== page) {
+                stack.push(page);
+                if (stack.length > 5) {
+                    stack.shift();
+                }
+                sessionStorage.setItem('navigationStack', JSON.stringify(stack));
+            }
+        }
+        
+        function popFromNavigationStack() {
+            const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
+            if (stack.length > 0) {
+                stack.pop();
+                sessionStorage.setItem('navigationStack', JSON.stringify(stack));
+                return stack[stack.length - 1];
+            }
+            return null;
+        }
+        
+        // Store current page when navigating TO settings
+        function storeCurrentPage(event) {
+            pushToNavigationStack(window.location.href);
+        }
+    </script>
 
 {% endblock %}

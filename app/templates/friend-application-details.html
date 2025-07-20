@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Application for {{ internship.job_name }}</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/application-details.css') }}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+	<nav class="details-nav">
+		<div class="back" onclick="javascript:history.back()" id="application-back">
+			<i class="fa-solid fa-arrow-left"></i>
+			<p>Back</p>
+		</div>
+		<h1>{{ internship.job_name }}</h1>
+			<div class="actions">
+				<div class="edit" title="Add Application to My Applications">
+				<a href="{{ url_for('applications.copy_application', internship_id=internship.id) }}">
+					<i class="fa-solid fa-plus"></i>
+				</a>
+			</div>
+		</div>
+	</nav>
+	<section class="details-card">
+		
+		<!-- 2-column grid for basic details -->
+		<div class="details-grid">
+			<p><i class="fa-solid fa-building"></i> <strong> Company:</strong> {{ internship.company_name }}</p>
+			{% if internship.location %}
+			<p><i class="fa-solid fa-location-dot"></i> <strong> Location:</strong> {{ internship.location }}</p>
+			{%endif%}
+			{% if internship.position %}
+			<p> <i class="fa-solid fa-helmet-safety"></i><strong> Role:</strong> {{ internship.position }}</p>
+			{%endif%}
+			<p>Date Applied: {{ internship.applied_date.strftime('%B %d, %Y') }}</p>
+			{% if internship.deadline_date%}
+			<p><strong class="delete-indicator">Deadline:</strong> {{ internship.deadline_date.strftime('%B %d, %Y') }}</p>
+			{%endif%}
+			{% if internship.next_action %}
+				<p><strong>Next Action:</strong> {{ internship.get_next_action_display() }}</p>
+			{%endif%}
+		</div>
+		
+	
+		<div class="description-section">
+			<button class="description-btn" onclick="showDescription()" title="View Job Description">
+				<i class="fa-solid fa-info-circle"></i>
+				View Job Description
+			</button>
+		</div>
+	
+		
+		<!-- Single column for notes, contacts, and link -->
+		<div class="details-single">
+			<a href="{{ internship.application_link }}" target="_blank" rel="noopener noreferrer">
+				Application
+				<i class="fa-solid fa-link"></i>
+			</a>
+		</div>
+	</section>
+
+	<div id="pop-up-back">
+		<div id="pop-up">
+			<i class="fa-solid fa-xmark" id="pop-up-cancel"></i>
+			<p id="pop-up-message">hey</p>
+			<div class="pop-up-buttons">
+				<button class="confirmation-buttons" id="yes">Yes</button>
+				<button class="confirmation-buttons" id="no">No</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Description Popup Modal -->
+	<div id="description-modal" class="modal-overlay">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3><i class="fa-solid fa-info-circle"></i> Job Description</h3>
+				<button class="modal-close" onclick="hideDescription()">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="description-content">
+					{{ internship.application_description or 'No description available.' }}
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="modal-btn" onclick="hideDescription()">Close</button>
+			</div>
+		</div>
+	</div>
+	
+	<script src="{{ url_for('static', filename="js/friend-application-details.js")}}"></script>
+</body>
+</html>

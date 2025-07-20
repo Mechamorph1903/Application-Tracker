@@ -26,7 +26,7 @@
     <div class="user-info">
       <div class="user-header">
         <h2>{{user.firstName}} {{user.lastName}}</h2>
-        <p class="user-details">{{user.year}} <strong>@</strong> {{user.school}} <strong>studying</strong> {{user.major}}</p>
+        <p class="user-details">Class of {{user.year}} <strong>@</strong> {{user.school}} <i><strong>studying</strong></i> {{user.major}}</p>
         <p class="friendship-status">
           {% if current_user.has_pending_request_with(user) %}
             Friend request sent
