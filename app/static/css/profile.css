@@ -118,23 +118,25 @@
         }
 
         .profile-picture {
-            width: 160px;
+            width: 160px; /* or your desired size */
             height: 160px;
             border-radius: 50%;
-            border: 6px solid white;
+            border: 4px solid white;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             overflow: hidden;
+            position: relative;
+            background: #f0f0f0; /* fallback background */
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f0f0f0;
         }
 
         .profile-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 50%;
+            display: block;
+        }
         }
 
         .profile-initials {

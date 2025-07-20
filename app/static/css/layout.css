@@ -162,6 +162,7 @@ main {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
+    gap: 5px;
 }
 
 .profile-card-avatar {

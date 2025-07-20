@@ -16,10 +16,12 @@
     <div class="avatar-section">
       {% if user.profile_picture and user.profile_picture not in ['default.jpg', 'default.png', '', None] %}
         <div class="profile-avatar">
-          <img src="{{ url_for('static', filename='uploads/profile_pictures/' + user.profile_picture) }}" alt="Profile Picture">
+          <img src="{{ user.profile_picture }}" alt="Profile Picture" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
         </div>
       {% else %}
-        <div class="profile-avatar">{{user | initials}}</div>
+        <div class="profile-avatar">
+          <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Default Profile Picture" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+        </div>
       {% endif %}
     </div>
     <!-- Right: Info Column -->

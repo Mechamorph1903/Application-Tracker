@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <title>Settings - InternIn</title>
 </head>
 <body>
-	<nav>
-		<div class="back-button">
-			<a href="javascript:void(0)" onclick="goBackToLastPage()" title="Go back to previous page">
-				<i class="fas fa-arrow-left"></i>
-			</a>
-		</div>
+    <nav>
+        <div class="back-button">
+            <a href="javascript:void(0)" onclick="goBackToLastPage()" title="Go back to previous page">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
 
-		<div class="settings-tabs">
-		<div class="tab active" id="user-settings-tab">User Settings</div>
-		<div class="tab" id="app-settings-tab">App Settings</div>
-		</div>
-	</nav>
+        <div class="settings-tabs">
+        <div class="tab active" id="user-settings-tab">User Settings</div>
+        <div class="tab" id="app-settings-tab">App Settings</div>
+        </div>
+    </nav>
 
 <!-- User Settings Tab -->
 <div class="tab-content" id="user-settings">
@@ -40,11 +40,11 @@
                 <label>Profile Picture:</label>
                 <div class="profile-pic-display">
                     {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-                        <img src="{{ url_for('static', filename='uploads/profile_pictures/' + current_user.profile_picture) }}" alt="Profile Picture" class="profile-thumb">
+                        <img src="{{ current_user.profile_picture }}" alt="Profile Picture" class="profile-thumb" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
                     {% else %}
                         <div class="profile-thumb-initials">{{ current_user | initials }}</div>
                     {% endif %}
-                    <span>{{ current_user.profile_picture or 'default.jpg' }}</span>
+                        <span>{{ current_user.profile_picture or 'default.jpg' }}</span>
                 </div>
             </div>
             <div class="info-item">
@@ -184,7 +184,7 @@
                 <button type="button" onclick="addSocialMediaLink()" class="btn-add-social" id="add-social-btn">
                     <i class="fas fa-plus"></i> Add Social Link
                 </button>
-                <input type="hidden" id="social_media" name="social_media" value="">
+            <input type="hidden" id="social_media" name="social_media" value="{{ current_user.social_media | tojson | safe }}">
             </div>
             <div class="form-actions">
                 <button type="button" class="btn-cancel" onclick="cancelEdit('education')">Cancel</button>

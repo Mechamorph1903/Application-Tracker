@@ -5,26 +5,26 @@ const app_settings = document.querySelector('#app-settings');
 const tabButtons = document.querySelectorAll('.tab');
 
 function switchTab(tab){
-	console.log(`Switching from ${tab.id}....`)
-	tabButtons.forEach(t => {
-		t.classList.remove("active");
-	});
+    console.log(`Switching from ${tab.id}....`)
+    tabButtons.forEach(t => {
+        t.classList.remove("active");
+    });
 
-	tab.classList.add('active');
+    tab.classList.add('active');
 
-	if (tab.id === "user-settings-tab"){
-		user_settings.style.display = 'block';
-		app_settings.style.display = 'none';
-	} else{
-		user_settings.style.display = 'none';
-		app_settings.style.display = 'block';
-	}
+    if (tab.id === "user-settings-tab"){
+        user_settings.style.display = 'block';
+        app_settings.style.display = 'none';
+    } else{
+        user_settings.style.display = 'none';
+        app_settings.style.display = 'block';
+    }
 }
 
 tabButtons.forEach(btn => {
-	btn.addEventListener('click', function() {
-		switchTab(btn);
-	});
+    btn.addEventListener('click', function() {
+        switchTab(btn);
+    });
 });
 
 // Popup functionality
@@ -145,6 +145,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add form submit listeners
     document.querySelectorAll('form[id$="-form"]').forEach(form => {
         form.addEventListener('submit', function(e) {
+            const socialInput = form.querySelector('#social_media');
+            if (socialInput) {
+                if ((socialInput.value === '' || socialInput.value === '[]') && window._initialSocialMediaValue && window._initialSocialMediaValue !== '[]') {
+                    socialInput.value = window._initialSocialMediaValue;
+                }
+            }
             e.preventDefault();
             const sectionName = form.id.replace('-form', '').replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
             handleFormSubmit(form, sectionName);
@@ -236,15 +242,15 @@ const socialPlatforms = [
 
 function initializeSocialMedia() {
     // Load existing social media links from the template
-    const socialDataElement = document.getElementById('social-media-data');
-    if (socialDataElement) {
+    const socialInput = document.getElementById('social_media');
+    if (socialInput) {
         try {
-            socialMediaLinks = JSON.parse(socialDataElement.textContent) || [];
+            socialMediaLinks = JSON.parse(socialInput.value) || [];
         } catch (e) {
             socialMediaLinks = [];
         }
     }
-    renderSocialLinks();
+    // renderSocialLinks();
 }
 
 function addSocialMediaLink() {
@@ -591,6 +597,11 @@ function initializePasswordFeatures() {
 
 // Initialize everything when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    window._initialSocialMediaValue = '';
+    const socialInputInit = document.getElementById('social_media');
+    if (socialInputInit) {
+        window._initialSocialMediaValue = socialInputInit.value;
+    }
     // Initialize social media and majors
     initializeSocialMedia();
     initializeMajors();

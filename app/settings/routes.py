@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, Blueprint, jsonify, send_file
+from flask import render_template, request, redirect, url_for, flash, Blueprint, jsonify, send_file, current_app
 from flask_login import current_user, login_required
 from app.models import db, User, UserSettings, Internship
 import json
@@ -8,6 +8,15 @@ import os
 import uuid
 from datetime import datetime, timezone
 from werkzeug.utils import secure_filename
+
+from supabase import create_client
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+SUPABASE_BUCKET = os.getenv('SUPABASE_BUCKET', 'profile-pics')
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
 
 # Try to import pandas for Excel export, fallback to CSV if not available
 try:
@@ -36,7 +45,7 @@ def settings_page():
 def update_user_settings():
     """Update user personal information"""
     try:
-        # Handle profile picture upload
+        # Handle profile picture upload (Supabase)
         if 'profile_picture' in request.files:
             file = request.files['profile_picture']
             if file and file.filename:
@@ -44,22 +53,15 @@ def update_user_settings():
                 file.seek(0, os.SEEK_END)
                 file_size = file.tell()
                 file.seek(0)
-                
                 if file_size > MAX_FILE_SIZE:
                     return jsonify({'success': False, 'error': 'File size too large. Maximum 5MB allowed.'}), 400
-                
-                # Save new profile picture
-                new_filename = save_profile_picture(file)
-                if new_filename:
-                    # Delete old profile picture if it exists and is not default
-                    if current_user.profile_picture and current_user.profile_picture != 'default.jpg':
-                        old_file_path = os.path.join('app', 'static', 'uploads', 'profile_pictures', current_user.profile_picture)
-                        if os.path.exists(old_file_path):
-                            os.remove(old_file_path)
-                    
-                    current_user.profile_picture = new_filename
+                # Save to Supabase
+                supa_url = upload_profile_picture_to_supabase(file, current_user.id)
+                if supa_url:
+                    # Optionally: delete old file from Supabase if you want to manage storage
+                    current_user.profile_picture = supa_url
                 else:
-                    return jsonify({'success': False, 'error': 'Invalid file type. Please upload JPG, PNG, or GIF files.'}), 400
+                    return jsonify({'success': False, 'error': 'Failed to upload to Supabase or invalid file type.'}), 400
         
         # Update User model fields
         current_user.firstName = request.form.get('firstName', current_user.firstName)
@@ -73,11 +75,12 @@ def update_user_settings():
         current_user.major = request.form.get('major', current_user.major)
         
         # Handle social media JSON
-        social_media_json = request.form.get('social_media', '[]')
-        try:
-            current_user.social_media = json.loads(social_media_json)
-        except json.JSONDecodeError:
-            current_user.social_media = []
+        if 'social_media' in request.form:
+            try:
+                social_media_json = request.form.get('social_media', '[]')
+                current_user.social_media = json.loads(social_media_json)
+            except json.JSONDecodeError:
+                current_user.social_media = []
         
         # Ensure user has settings
         if not current_user.settings:
@@ -252,21 +255,29 @@ def allowed_file(filename):
     """Check if file extension is allowed"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def save_profile_picture(file):
-    """Save uploaded profile picture and return filename"""
+def upload_profile_picture_to_supabase(file, user_id):
+    """Upload profile picture to Supabase Storage and return public URL"""
+    if not supabase:
+        return None
     if file and allowed_file(file.filename):
-        # Generate unique filename
         file_extension = file.filename.rsplit('.', 1)[1].lower()
-        unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
-        
-        # Create upload path
-        upload_folder = os.path.join('app', 'static', 'uploads', 'profile_pictures')
-        if not os.path.exists(upload_folder):
-            os.makedirs(upload_folder)
-        
-        file_path = os.path.join(upload_folder, unique_filename)
-        
-        # Save file
-        file.save(file_path)
-        return unique_filename
+        unique_filename = f"{user_id}_{uuid.uuid4().hex}.{file_extension}"
+        file.seek(0)
+        # Upload to Supabase Storage
+        try:
+            file_bytes = file.read()
+            res = supabase.storage.from_(SUPABASE_BUCKET).upload(unique_filename, file_bytes, {'content-type': file.mimetype})
+            print("Supabase upload response:", res)
+            # Check for error attribute or fallback to data
+            if hasattr(res, "error") and res.error:
+                print("Supabase upload error:", res.error)
+                return None
+            if hasattr(res, "data") and res.data is None:
+                print("Supabase upload failed, no data returned.")
+                return None
+            public_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(unique_filename)
+            return public_url
+        except Exception as e:
+            print('Supabase upload exception:', e)
+            return None
     return None
