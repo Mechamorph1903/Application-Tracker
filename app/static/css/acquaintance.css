@@ -160,8 +160,8 @@
   color: #cbb6da;
   font-size: 0.95rem;
   line-height: 1.6;
-  backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
 }
 
 .bio p {
@@ -190,8 +190,8 @@
   justify-content: center;
   gap: 8px;
   min-width: 120px;
-  backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
 }
 
 /* Add Friend Button */
