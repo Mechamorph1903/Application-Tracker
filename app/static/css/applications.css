@@ -140,7 +140,7 @@
 #application-search {
   flex: 1;
   padding: 12px 16px;
-  border: 2px solid #e2e8f0;
+  border: 1px solid #ffffff2b;
   border-radius: 12px;
   font-size: 1rem;
   background: rgba(255, 255, 255, 0.1);
@@ -205,4 +205,24 @@
   background: #b993fd;
   color: #3b1366;
   box-shadow: 0 0 8px 2px #b993fd44;
+}
+
+.no-applications{
+  display: grid;
+  justify-items: center;
+}
+
+.no-applications h2{
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0;
+  text-shadow: 0 2px 10px rgba(124, 58, 237, 0.3);
+}
+
+.no-applications p{
+  font-size: 1.5rem;
+  color: #ffffffaf;
+  margin-bottom: 2rem;
+  font-weight: 600;
 }
