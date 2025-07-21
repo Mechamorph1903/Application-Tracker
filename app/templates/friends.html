@@ -19,7 +19,7 @@
       <div class="friend-card clickable-card" data-profile-url="{{ url_for('friends.friend_profile', username=friend.username) }}">
       <div class="friend-main">
         {% if friend.profile_picture and friend.profile_picture not in ['default.jpg', 'default.png', '', None] %}
-          <img src="{{ url_for('static', filename='uploads/profile_pictures/' + friend.profile_picture) }}" alt="{{ friend.firstName }} {{ friend.lastName }}" class="friend-avatar">
+          <img src="{{ friend.profile_picture }}" alt="{{ friend.firstName }} {{ friend.lastName }}" class="friend-avatar">
         {% else %}
           <div class="friend-avatar initials">{{ friend|initials }}</div>
         {% endif %}

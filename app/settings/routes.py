@@ -48,19 +48,25 @@ def update_user_settings():
         # Handle profile picture upload (Supabase)
         if 'profile_picture' in request.files:
             file = request.files['profile_picture']
+            print(f"[DEBUG] Received profile_picture: {getattr(file, 'filename', None)}")
             if file and file.filename:
                 # Check file size
                 file.seek(0, os.SEEK_END)
                 file_size = file.tell()
+                print(f"[DEBUG] Uploaded file size: {file_size}")
                 file.seek(0)
                 if file_size > MAX_FILE_SIZE:
+                    print(f"[DEBUG] File too large: {file_size} > {MAX_FILE_SIZE}")
                     return jsonify({'success': False, 'error': 'File size too large. Maximum 5MB allowed.'}), 400
                 # Save to Supabase
+                print("[DEBUG] Calling upload_profile_picture_to_supabase...")
                 supa_url = upload_profile_picture_to_supabase(file, current_user.id)
+                print(f"[DEBUG] supa_url returned: {supa_url}")
                 if supa_url:
                     # Optionally: delete old file from Supabase if you want to manage storage
                     current_user.profile_picture = supa_url
                 else:
+                    print("[DEBUG] Failed to upload to Supabase or invalid file type.")
                     return jsonify({'success': False, 'error': 'Failed to upload to Supabase or invalid file type.'}), 400
         
         # Update User model fields
@@ -255,29 +261,39 @@ def allowed_file(filename):
     """Check if file extension is allowed"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# --- DEBUG ENHANCED ---
 def upload_profile_picture_to_supabase(file, user_id):
     """Upload profile picture to Supabase Storage and return public URL"""
+    print("[DEBUG] upload_profile_picture_to_supabase called")
+    print(f"[DEBUG] supabase is None: {supabase is None}")
+    print(f"[DEBUG] file: {file}")
     if not supabase:
+        print("[DEBUG] Supabase client is not initialized!")
         return None
     if file and allowed_file(file.filename):
+        print(f"[DEBUG] Allowed file: {file.filename}")
         file_extension = file.filename.rsplit('.', 1)[1].lower()
         unique_filename = f"{user_id}_{uuid.uuid4().hex}.{file_extension}"
+        print(f"[DEBUG] unique_filename: {unique_filename}")
         file.seek(0)
-        # Upload to Supabase Storage
         try:
             file_bytes = file.read()
+            print(f"[DEBUG] file_bytes length: {len(file_bytes)}")
+            print(f"[DEBUG] Uploading to bucket: {SUPABASE_BUCKET}")
             res = supabase.storage.from_(SUPABASE_BUCKET).upload(unique_filename, file_bytes, {'content-type': file.mimetype})
-            print("Supabase upload response:", res)
-            # Check for error attribute or fallback to data
+            print("[DEBUG] Supabase upload response:", res)
             if hasattr(res, "error") and res.error:
-                print("Supabase upload error:", res.error)
+                print("[DEBUG] Supabase upload error:", res.error)
                 return None
             if hasattr(res, "data") and res.data is None:
-                print("Supabase upload failed, no data returned.")
+                print("[DEBUG] Supabase upload failed, no data returned.")
                 return None
             public_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(unique_filename)
+            print(f"[DEBUG] public_url: {public_url}")
             return public_url
         except Exception as e:
-            print('Supabase upload exception:', e)
+            print('[DEBUG] Supabase upload exception:', e)
             return None
+    else:
+        print(f"[DEBUG] File not allowed or missing: {getattr(file, 'filename', None)}")
     return None
