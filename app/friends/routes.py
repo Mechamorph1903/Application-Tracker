@@ -9,11 +9,24 @@ def friendsList():
 	friends_list = current_user.get_friends()
 	pending_received = current_user.get_pending_friend_requests()
 	pending_sent = current_user.get_sent_friend_requests()
-	
+
+	interview_counts = {}
+	offer_counts = {}
+	for friend in friends_list:
+		interview_counts[friend.id] = sum(
+			1 for internship in friend.internships
+			if internship.application_status and internship.application_status.lower() == 'interview'
+		)
+		offer_counts[friend.id] = sum(
+			1 for internship in friend.internships
+			if internship.application_status and internship.application_status.lower() == 'offer'
+		)
 	return render_template('friends.html', 
-						 friends=friends_list,
-						 pending_received=pending_received,
-						 pending_sent=pending_sent)
+		friends=friends_list,
+		pending_received=pending_received,
+		pending_sent=pending_sent,
+		interview_counts=interview_counts,
+		offer_counts=offer_counts)
 
 # not friends
 @friends.route('/users/<username>')
@@ -39,7 +52,7 @@ def search_users():
 	majors_path = 'app/static/js/majors.json'
 	with open(majors_path, encoding='utf-8') as f:
 		majors_data = json.load(f)
-	majors = [m['major'] for m in majors_data['Majors']]
+	majors = sorted([m['major'] for m in majors_data['Majors']])
 
 	users_query = User.query.filter(User.username != current_user.username)
 	name = request.form.get('name', '').strip()

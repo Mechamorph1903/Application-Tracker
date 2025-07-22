@@ -114,11 +114,17 @@ def create_app():
 		total_applications = len(applications)
 		status_counts = {}
 		for app in applications:
-			status = app.application_status.lower()
+			status = app.application_status.lower() if app.application_status else ''
 			status_counts[status] = status_counts.get(status, 0) + 1
-		
-		interviews = status_counts.get('interviewing', 0) + status_counts.get('interview scheduled', 0)
-		offers = status_counts.get('offered', 0) + status_counts.get('accepted', 0)
+		# Case-insensitive and robust interview/offer stats
+		interviews = 0
+		for key in status_counts:
+			if key in ['interview', 'interviewing', 'interview scheduled']:
+				interviews += status_counts[key]
+		offers = 0
+		for key in status_counts:
+			if key in ['offer', 'offered', 'accepted']:
+				offers += status_counts[key]
 		
 		stats = {
 			'total_applications': total_applications,
