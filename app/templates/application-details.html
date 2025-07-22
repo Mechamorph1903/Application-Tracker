@@ -46,9 +46,9 @@
 			{% if internship.job_type %}
 			<p><i class="fa-solid fa-briefcase"></i> <strong> Work Type:</strong> {{ internship.job_type.title() }}</p>
 			{%endif%}
-			<p>Date Applied: {{ internship.applied_date.strftime('%B %d, %Y') }}</p>
+			<p><i class="fa-solid fa-calendar-days"></i> Date Applied: {{ internship.applied_date.strftime('%B %d, %Y') }}</p>
 			{% if internship.deadline_date%}
-			<p><strong class="delete-indicator">Deadline:</strong> {{ internship.deadline_date.strftime('%B %d, %Y') }}</p>
+			<p><strong class="delete-indicator"><i class="fa-solid fa-triangle-exclamation"></i> Deadline:</strong> {{ internship.deadline_date.strftime('%B %d, %Y') }}</p>
 			{%endif%}
 			{% if internship.next_action %}
 				<p><strong>Next Action:</strong> {{ internship.get_next_action_display() }}</p>
