@@ -15,11 +15,13 @@ def friendsList():
 	for friend in friends_list:
 		interview_counts[friend.id] = sum(
 			1 for internship in friend.internships
-			if internship.application_status and internship.application_status.lower() == 'interview'
+			if (internship.application_status and internship.application_status.lower() == 'interview' 
+				and internship.visibility != 'private')
 		)
 		offer_counts[friend.id] = sum(
 			1 for internship in friend.internships
-			if internship.application_status and internship.application_status.lower() == 'offer'
+			if (internship.application_status and internship.application_status.lower() == 'offer'
+				and internship.visibility != 'private')
 		)
 	return render_template('friends.html', 
 		friends=friends_list,
@@ -134,23 +136,17 @@ def cancelRequest():
 
 
 # Accept friend request endpoint
-@friends.route('/accept-friend-request', methods=['POST'])
+@friends.route('/accept-friend-request/<int:user_id>', methods=['GET'])
 @login_required
-def acceptFriendRequest():
-	user_id = request.form.get('user_id')
-	if not user_id:
-		flash('User ID is required', 'error')
-		return redirect(url_for('friends.friendsList'))
+def acceptFriendRequest(user_id):
 	try:
-		user_id = int(user_id)
 		user = User.query.get(user_id)
 		if not user:
 			flash('User not found', 'error')
 			return redirect(url_for('friends.friendsList'))
 
-		req = FriendRequest.query.filter_by(sender_id=user.id, receiver_id=current_user.id, status='pending').first()
+		req = current_user.accept_friend_request(user)
 		if req:
-			req.accept()
 			flash('Friend request accepted!', 'success')
 			return redirect(url_for('friends.friend_profile', username=user.username))
 		else:
@@ -159,6 +155,47 @@ def acceptFriendRequest():
 	except Exception as e:
 		flash('An error occurred', 'error')
 		return redirect(url_for('friends.friendsList'))
+
+#Reject friend_request
+@friends.route('/decline-friend-request/<int:user_id>')
+@login_required
+def declineFriendRequest(user_id):
+	try:
+		user = User.query.get(user_id)
+		if not user:
+			flash('User not found', 'error')
+			return redirect(url_for('profile.profile'))
+
+		req = current_user.reject_friend_request(user)
+		if req:
+			flash('Friend request declined', 'info')
+			return redirect(url_for('profile.profile'))
+		else:
+			flash('No pending request to decline', 'error')
+			return redirect(url_for('profile.profile'))
+	except Exception as e:
+		flash('An error occurred', 'error')
+		return redirect(url_for('profile.profile'))
+
+# Block user route
+@friends.route('/block-user/<int:user_id>')
+@login_required
+def blockUser(user_id):
+	try:
+		user = User.query.get(user_id)
+		if not user:
+			flash('User not found', 'error')
+			return redirect(url_for('profile.profile'))
+
+		blocked = current_user.block_user(user)
+		if blocked:
+			flash(f'{user.firstName} has been blocked', 'info')
+		else:
+			flash(f'{user.firstName} is already blocked', 'warning')
+		return redirect(url_for('profile.profile'))
+	except Exception as e:
+		flash('An error occurred', 'error')
+		return redirect(url_for('profile.profile'))
 
 
 
@@ -174,7 +211,51 @@ def friend_profile(username):
 			flash('User not found.', 'error')
 			return redirect(url_for('friends.friendsList'))
 	
-	# Get the user's internship applications
-	internships = Internship.query.filter_by(user_id=user.id).order_by(Internship.applied_date.desc()).all()
+	# Get the user's internship applications (exclude private ones for friends)
+	internships = Internship.query.filter(
+		Internship.user_id == user.id,
+		Internship.visibility != 'private'
+	).order_by(Internship.applied_date.desc()).all()
 	
 	return render_template('friend_profile.html', user=user, internships=internships)
+
+# Notification management routes
+@friends.route('/mark-notification-read/<int:notification_id>')
+@login_required
+def mark_notification_read(notification_id):
+	from app.models import Notification
+	try:
+		notification = Notification.query.filter_by(id=notification_id, user_id=current_user.id).first()
+		if notification:
+			notification.mark_as_read()
+			flash('Notification marked as read', 'success')
+		else:
+			flash('Notification not found', 'error')
+	except Exception as e:
+		flash('An error occurred', 'error')
+	return redirect(url_for('profile.profile'))
+
+@friends.route('/delete-notification/<int:notification_id>')
+@login_required
+def delete_notification(notification_id):
+	from app.models import Notification
+	try:
+		notification = Notification.query.filter_by(id=notification_id, user_id=current_user.id).first()
+		if notification:
+			notification.delete()
+			flash('Notification deleted', 'success')
+		else:
+			flash('Notification not found', 'error')
+	except Exception as e:
+		flash('An error occurred', 'error')
+	return redirect(url_for('profile.profile'))
+
+@friends.route('/clear-all-notifications')
+@login_required
+def clear_all_notifications():
+	try:
+		current_user.clear_all_notifications()
+		flash('All notifications cleared', 'success')
+	except Exception as e:
+		flash('An error occurred', 'error')
+	return redirect(url_for('profile.profile'))

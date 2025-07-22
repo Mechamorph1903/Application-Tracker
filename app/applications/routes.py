@@ -129,6 +129,7 @@ def add_application():
             location = request.form.get('location')
             notes = request.form.get('notes')
             visibility = request.form.get('visibility', 'friends')
+            job_type = request.form.get('job_type', 'on-site')
             contacts_json = request.form.get('contacts', '[]')
             
             # Parse contacts JSON
@@ -166,6 +167,7 @@ def add_application():
                 location=location,
                 notes=notes,
                 visibility=visibility,
+                job_type=job_type,
                 applied_date=applied_date,
                 deadline_date=deadline_date,
                 contacts=contacts,
@@ -275,6 +277,7 @@ def edit_application(internship_id):
             internship.location = request.form.get('location')
             internship.notes = request.form.get('notes')
             internship.visibility = request.form.get('visibility', 'friends')
+            internship.job_type = request.form.get('job_type', 'on-site')
             internship.applied_date = applied_date
             internship.deadline_date = deadline_date
             internship.contacts = contacts

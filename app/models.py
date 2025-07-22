@@ -134,6 +134,10 @@ class User(db.Model, UserMixin): # User model for managing user data
 			FriendRequest.status == 'pending'
 		).first() is not None
 	
+	def has_sent_request_to(self, user):
+		"""Check if this user has sent a pending request to another user"""
+		return FriendRequest.query.filter_by(sender_id=self.id, receiver_id=user.id, status='pending').first() is not None
+	
 	def has_pending_request_from(self, user):
 		"""Check if there is a pending friend request from 'user' to 'self'."""
 		return FriendRequest.query.filter_by(sender_id=user.id, receiver_id=self.id, status='pending').first() is not None
@@ -199,16 +203,56 @@ class User(db.Model, UserMixin): # User model for managing user data
 		req = FriendRequest.query.filter_by(sender_id=user.id, receiver_id=self.id, status='pending').first()
 		if req:
 			req.accept()
+			# Create notification for the sender that their request was accepted
+			Notification.create_friend_accepted_notification(user.id, self.id)
 			return True
 		return False
 	
 	def reject_friend_request(self, user):
-		"""Reject a pending friend request from 'user' to 'self'."""
+		"""Reject a pending friend request from 'user' to 'self' - just delete the request."""
 		req = FriendRequest.query.filter_by(sender_id=user.id, receiver_id=self.id, status='pending').first()
 		if req:
-			req.decline()
+			db.session.delete(req)  # Delete instead of setting to declined
+			db.session.commit()
 			return True
 		return False
+	
+	def block_user(self, user):
+		"""Block a user and remove any existing friend requests"""
+		# Check if already blocked
+		existing_block = BlockedUser.query.filter_by(blocker_id=self.id, blocked_id=user.id).first()
+		if existing_block:
+			return False
+		
+		# Create block record
+		block = BlockedUser(blocker_id=self.id, blocked_id=user.id)
+		db.session.add(block)
+		
+		# Remove any existing friend requests between these users
+		FriendRequest.query.filter(
+			((FriendRequest.sender_id == self.id) & (FriendRequest.receiver_id == user.id)) |
+			((FriendRequest.sender_id == user.id) & (FriendRequest.receiver_id == self.id))
+		).delete(synchronize_session='fetch')
+		
+		db.session.commit()
+		return True
+	
+	def is_blocked_by(self, user):
+		"""Check if this user is blocked by another user"""
+		return BlockedUser.query.filter_by(blocker_id=user.id, blocked_id=self.id).first() is not None
+	
+	def has_blocked(self, user):
+		"""Check if this user has blocked another user"""
+		return BlockedUser.query.filter_by(blocker_id=self.id, blocked_id=user.id).first() is not None
+	
+	def get_unread_notifications(self):
+		"""Get all unread notifications for this user"""
+		return Notification.query.filter_by(user_id=self.id, is_read=False).order_by(Notification.created_at.desc()).all()
+	
+	def clear_all_notifications(self):
+		"""Delete all notifications for this user"""
+		Notification.query.filter_by(user_id=self.id).delete()
+		db.session.commit()
 
 class Internship(db.Model): # Internship model for managing internship applications
 	__tablename__ = 'internships'  # Use plural table name to match existing Supabase data
@@ -469,3 +513,79 @@ class UserSettings(db.Model):
 			'show_application_stats': self.show_application_stats,
 			'two_factor_enabled': self.two_factor_enabled
 		}
+
+class Notification(db.Model):
+	"""Model for storing user notifications"""
+	id = db.Column(db.Integer, primary_key=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+	title = db.Column(db.String(200), nullable=False)
+	message = db.Column(db.Text, nullable=False)
+	type = db.Column(db.String(50), default='info')  # info, success, warning, error, friend_request
+	is_read = db.Column(db.Boolean, default=False)
+	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+	
+	# Optional: Link to related objects
+	related_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # For friend request notifications
+	
+	# Relationships
+	user = db.relationship('User', foreign_keys=[user_id], backref='notifications')
+	related_user = db.relationship('User', foreign_keys=[related_user_id])
+	
+	def mark_as_read(self):
+		"""Mark notification as read"""
+		self.is_read = True
+		db.session.commit()
+	
+	def delete(self):
+		"""Delete this notification"""
+		db.session.delete(self)
+		db.session.commit()
+	
+	@staticmethod
+	def create_friend_request_notification(receiver_id, sender_id):
+		"""Create a friend request notification"""
+		from app.models import User
+		sender = User.query.get(sender_id)
+		notification = Notification(
+			user_id=receiver_id,
+			title="New Friend Request",
+			message=f"{sender.firstName} {sender.lastName} sent you a friend request!",
+			type="friend_request",
+			related_user_id=sender_id
+		)
+		db.session.add(notification)
+		db.session.commit()
+		return notification
+	
+	@staticmethod
+	def create_friend_accepted_notification(user_id, friend_id):
+		"""Create a friend request accepted notification"""
+		from app.models import User
+		friend = User.query.get(friend_id)
+		notification = Notification(
+			user_id=user_id,
+			title="Friend Request Accepted",
+			message=f"{friend.firstName} {friend.lastName} accepted your friend request!",
+			type="success",
+			related_user_id=friend_id
+		)
+		db.session.add(notification)
+		db.session.commit()
+		return notification
+
+class BlockedUser(db.Model):
+	"""Model for storing blocked users"""
+	id = db.Column(db.Integer, primary_key=True)
+	blocker_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+	blocked_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+	
+	# Relationships
+	blocker = db.relationship('User', foreign_keys=[blocker_id], backref='blocked_users')
+	blocked = db.relationship('User', foreign_keys=[blocked_id], backref='blocked_by')
+	
+	# Prevent users from blocking themselves and duplicate blocks
+	__table_args__ = (
+		db.CheckConstraint('blocker_id != blocked_id'),
+		db.UniqueConstraint('blocker_id', 'blocked_id')
+	)

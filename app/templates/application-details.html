@@ -43,6 +43,9 @@
 			{% if internship.position %}
 			<p> <i class="fa-solid fa-helmet-safety"></i><strong> Role:</strong> {{ internship.position }}</p>
 			{%endif%}
+			{% if internship.job_type %}
+			<p><i class="fa-solid fa-briefcase"></i> <strong> Work Type:</strong> {{ internship.job_type.title() }}</p>
+			{%endif%}
 			<p>Date Applied: {{ internship.applied_date.strftime('%B %d, %Y') }}</p>
 			{% if internship.deadline_date%}
 			<p><strong class="delete-indicator">Deadline:</strong> {{ internship.deadline_date.strftime('%B %d, %Y') }}</p>

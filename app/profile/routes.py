@@ -41,7 +41,18 @@ def profile():
         'offers': offers,
         'response_rate': f"{response_rate}%"
     }
+
+    pending = current_user.get_pending_friend_requests()
+
+    pending_list = []
+
+    for request in pending:
+        user = User.query.filter_by(id=request.sender_id).first()
+        pending_list.append(user)
     
-    return render_template('profile.html', user=current_user, stats=stats)
+    # Get notifications for the user
+    notifications = current_user.get_unread_notifications()
+    
+    return render_template('profile.html', user=current_user, stats=stats, pending=pending_list, notifications=notifications)
 
 
