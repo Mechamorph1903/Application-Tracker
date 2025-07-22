@@ -1,10 +1,18 @@
+html, body {
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0;
+    padding: 0;
+}
+
 nav {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-    align-items: center;
-    padding: 1rem;
-	background-color: black;
-	color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to right, #20003a 0%, #432d7c 100%);
+  padding: 0 32px;
+  height: 70px;
+  box-shadow: 0 4px 20px 0 rgba(30, 0, 51, 0.15);
 }
 
 nav > div:first-child {
@@ -33,6 +41,7 @@ nav > div:first-child {
     gap: 2rem;
     border-bottom: 2px solid #e2e8f0;
     margin-bottom: 2rem;
+    background: linear-gradient(to bottom, #2d044d 0%, #432d7c 100%);
 }
 
 .tab {
@@ -70,7 +79,6 @@ nav > div:first-child {
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border: 1px solid #e2e8f0;
 }
 
 .settings-section h3 {
@@ -653,4 +661,9 @@ input[type="password"]:focus {
 
 .password-requirements li.valid {
     color: #059669;
+}
+
+.tab-content {
+    background: linear-gradient(to bottom, #2d044d 0%, #432d7c 100%);
+    padding: 16px;
 }
