@@ -33,6 +33,12 @@ def friendsList():
 @login_required
 def limited_profile(username):
 	user = User.query.filter_by(username=username).first()
+	current_user_friends = set(current_user.get_friends())
+	acquaintance_friends = set(user.get_friends())
+	mutual_friends = current_user_friends & acquaintance_friends
+
+
+
 	if not user:
 		flash('User not found.', 'error')
 		return redirect(url_for('friends.friendsList'))
@@ -42,7 +48,7 @@ def limited_profile(username):
 	isFriends = user.is_friend_with(current_user)
 	if isFriends:
 		return redirect(url_for('friends.friend_profile', username=username))
-	return render_template('prospective.html', user=user, isFriends=isFriends)
+	return render_template('prospective.html', user=user, isFriends=isFriends, mutual_friends=mutual_friends)
 
 #user pool
 @friends.route('/friends-portal', methods=['GET', 'POST'])

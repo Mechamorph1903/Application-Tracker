@@ -1,3 +1,16 @@
+/* Style for 'No mutual friends' message in mutual friends section */
+.no-mutuals {
+  display: inline-block;
+  color: #6d28d9;
+  background: #f3e8ff;
+  border-radius: 16px;
+  padding: 6px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 8px 0;
+  box-shadow: 0 1px 4px rgba(124, 58, 237, 0.08);
+  letter-spacing: 0.02em;
+}
 /* Acquaintance Profile Page Styles */
 
 /* Outer wrapper spacing - top spacing only, no vertical centering */

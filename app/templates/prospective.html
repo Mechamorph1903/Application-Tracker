@@ -71,9 +71,14 @@
       <div class="mutual-friends-section">
         <h3>Mutual Friends</h3>
         <div class="mutual-friends">
-          {% for friend in ['MC', 'SJ', 'AD'] %}
-          <div title="{{ friend }}" class="friend-avatar">{{ friend }}</div>
-          {% endfor %}
+          {% set mutual_friends = mutual_friends | list %}
+          {% if mutual_friends|length == 0 %}
+            <span class="no-mutuals">No mutual friends</span>
+          {% else %}
+            {% for mutual in mutual_friends[:6] %}
+              <div title="{{ mutual.firstName }} {{ mutual.lastName }}" class="friend-avatar">{{ mutual | initials }}</div>
+            {% endfor %}
+          {% endif %}
         </div>
       </div>
       <p class="info-message">

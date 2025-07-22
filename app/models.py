@@ -201,6 +201,14 @@ class User(db.Model, UserMixin): # User model for managing user data
 			req.accept()
 			return True
 		return False
+	
+	def reject_friend_request(self, user):
+		"""Reject a pending friend request from 'user' to 'self'."""
+		req = FriendRequest.query.filter_by(sender_id=user.id, receiver_id=self.id, status='pending').first()
+		if req:
+			req.decline()
+			return True
+		return False
 
 class Internship(db.Model): # Internship model for managing internship applications
 	__tablename__ = 'internships'  # Use plural table name to match existing Supabase data
