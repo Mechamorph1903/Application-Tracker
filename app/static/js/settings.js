@@ -402,6 +402,7 @@ function initializeProfilePicturePreview() {
     const previewContainer = document.getElementById('profile-preview');
     const previewImage = document.getElementById('preview-image');
     const previewFilename = document.getElementById('preview-filename');
+    const cropBtn = document.getElementById('crop-photo-btn');
     
     if (fileInput) {
         fileInput.addEventListener('change', function(event) {
@@ -424,10 +425,15 @@ function initializeProfilePicturePreview() {
                 // Create preview
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    if (previewImage && previewFilename && previewContainer) {
+                    if (previewImage && previewFilename && previewContainer && cropBtn) {
                         previewImage.src = e.target.result;
                         previewFilename.textContent = file.name;
                         previewContainer.classList.remove('hidden');
+                        cropBtn.classList.remove('hidden');
+                        
+                        // Store the image data for cropping
+                        window.selectedImageData = e.target.result;
+                        window.selectedFileName = file.name;
                     }
                 };
                 reader.readAsDataURL(file);
@@ -607,6 +613,144 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeMajors();
     initializeProfilePicturePreview();
     initializePasswordFeatures();
+    
+    // Initialize crop photo button
+    const cropBtn = document.getElementById('crop-photo-btn');
+    if (cropBtn) {
+        cropBtn.addEventListener('click', openCropModal);
+    }
 });
 
 switchTab(document.querySelector('#user-settings-tab'));
+
+// Photo Cropper Variables
+let cropper = null;
+
+// Open crop modal
+function openCropModal() {
+    if (!window.selectedImageData) {
+        alert('Please select an image first.');
+        return;
+    }
+    
+    const modal = document.getElementById('crop-modal');
+    const cropImage = document.getElementById('crop-image');
+    
+    if (modal && cropImage) {
+        cropImage.src = window.selectedImageData;
+        modal.classList.remove('hidden');
+        
+        // Initialize cropper after modal is shown
+        setTimeout(() => {
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(cropImage, {
+                aspectRatio: 1, // Square crop
+                viewMode: 2,
+                dragMode: 'move',
+                autoCropArea: 0.8,
+                responsive: true,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+            });
+        }, 100);
+    }
+}
+
+// Close crop modal
+function closeCropModal() {
+    const modal = document.getElementById('crop-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+    
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+// Apply crop and upload
+function applyCrop() {
+    if (!cropper) {
+        alert('No cropper instance found.');
+        return;
+    }
+    
+    // Show loading state
+    const applyBtn = document.querySelector('.crop-modal-footer .btn-primary');
+    if (applyBtn) {
+        applyBtn.disabled = true;
+        applyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    }
+    
+    // Get cropped canvas
+    const canvas = cropper.getCroppedCanvas({
+        width: 400,
+        height: 400,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high',
+    });
+    
+    // Convert to blob and upload
+    canvas.toBlob(function(blob) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const base64Data = reader.result;
+            
+            // Upload cropped image
+            fetch('/settings/upload-cropped-profile-picture', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    image: base64Data
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Profile picture updated successfully!');
+                    
+                    // Update the current profile picture display
+                    const currentProfilePic = document.querySelector('.profile-pic-display img');
+                    if (currentProfilePic) {
+                        currentProfilePic.src = data.new_image_url;
+                    }
+                    
+                    // Clear the file input and preview
+                    const fileInput = document.getElementById('profile_picture');
+                    const previewContainer = document.getElementById('profile-preview');
+                    const cropBtn = document.getElementById('crop-photo-btn');
+                    
+                    if (fileInput) fileInput.value = '';
+                    if (previewContainer) previewContainer.classList.add('hidden');
+                    if (cropBtn) cropBtn.classList.add('hidden');
+                    
+                    closeCropModal();
+                } else {
+                    alert('Error uploading image: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error uploading image. Please try again.');
+            })
+            .finally(() => {
+                // Reset button state
+                if (applyBtn) {
+                    applyBtn.disabled = false;
+                    applyBtn.innerHTML = '<i class="fas fa-check"></i> Apply Crop';
+                }
+            });
+        };
+        reader.readAsDataURL(blob);
+    }, 'image/jpeg', 0.9);
+}

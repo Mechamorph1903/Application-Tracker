@@ -6,8 +6,10 @@ import csv
 import io
 import os
 import uuid
+import base64
 from datetime import datetime, timezone
 from werkzeug.utils import secure_filename
+from PIL import Image
 
 from supabase import create_client
 from dotenv import load_dotenv
@@ -58,13 +60,28 @@ def update_user_settings():
                 if file_size > MAX_FILE_SIZE:
                     print(f"[DEBUG] File too large: {file_size} > {MAX_FILE_SIZE}")
                     return jsonify({'success': False, 'error': 'File size too large. Maximum 5MB allowed.'}), 400
+                
+                # Store old profile picture URL to potentially delete later
+                old_profile_picture = current_user.profile_picture
+                
                 # Save to Supabase
                 print("[DEBUG] Calling upload_profile_picture_to_supabase...")
                 supa_url = upload_profile_picture_to_supabase(file, current_user.id)
                 print(f"[DEBUG] supa_url returned: {supa_url}")
                 if supa_url:
-                    # Optionally: delete old file from Supabase if you want to manage storage
+                    # Update user's profile picture (this overrides any existing one in database)
                     current_user.profile_picture = supa_url
+                    
+                    # Optional: Delete old file from Supabase storage to save space
+                    if old_profile_picture and old_profile_picture != 'default.jpg' and old_profile_picture.startswith('http'):
+                        try:
+                            # Extract filename from old URL for deletion
+                            old_filename = old_profile_picture.split('/')[-1]
+                            if old_filename:
+                                supabase.storage.from_(SUPABASE_BUCKET).remove([old_filename])
+                                print(f"[DEBUG] Deleted old profile picture: {old_filename}")
+                        except Exception as e:
+                            print(f"[DEBUG] Could not delete old profile picture: {e}")
                 else:
                     print("[DEBUG] Failed to upload to Supabase or invalid file type.")
                     return jsonify({'success': False, 'error': 'Failed to upload to Supabase or invalid file type.'}), 400
@@ -102,6 +119,81 @@ def update_user_settings():
         db.session.commit()
         
         return jsonify({'success': True, 'message': 'User settings updated successfully!'})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@settings.route('/upload-cropped-profile-picture', methods=['POST'])
+@login_required
+def upload_cropped_profile_picture():
+    """Handle cropped profile picture upload"""
+    try:
+        data = request.get_json()
+        if not data or 'image' not in data:
+            return jsonify({'success': False, 'error': 'No image data provided'}), 400
+        
+        # Extract base64 image data
+        image_data = data['image']
+        if image_data.startswith('data:image/'):
+            # Remove data URL prefix
+            image_data = image_data.split(',')[1]
+        
+        # Decode base64 image
+        try:
+            image_bytes = base64.b64decode(image_data)
+        except Exception as e:
+            return jsonify({'success': False, 'error': 'Invalid image data'}), 400
+        
+        # Check file size
+        if len(image_bytes) > MAX_FILE_SIZE:
+            return jsonify({'success': False, 'error': 'Image too large after cropping'}), 400
+        
+        # Store old profile picture URL
+        old_profile_picture = current_user.profile_picture
+        
+        # Create a unique filename
+        file_extension = 'jpg'  # We'll standardize cropped images as JPG
+        unique_filename = f"{current_user.id}_cropped_{uuid.uuid4().hex}.{file_extension}"
+        
+        # Upload to Supabase
+        try:
+            res = supabase.storage.from_(SUPABASE_BUCKET).upload(
+                unique_filename, 
+                image_bytes, 
+                {'content-type': 'image/jpeg'}
+            )
+            
+            if hasattr(res, "error") and res.error:
+                print("[DEBUG] Supabase upload error:", res.error)
+                return jsonify({'success': False, 'error': 'Failed to upload cropped image'}), 500
+            
+            # Get public URL
+            public_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(unique_filename)
+            
+            # Update user's profile picture
+            current_user.profile_picture = public_url
+            db.session.commit()
+            
+            # Delete old profile picture from storage
+            if old_profile_picture and old_profile_picture != 'default.jpg' and old_profile_picture.startswith('http'):
+                try:
+                    old_filename = old_profile_picture.split('/')[-1]
+                    if old_filename:
+                        supabase.storage.from_(SUPABASE_BUCKET).remove([old_filename])
+                        print(f"[DEBUG] Deleted old profile picture: {old_filename}")
+                except Exception as e:
+                    print(f"[DEBUG] Could not delete old profile picture: {e}")
+            
+            return jsonify({
+                'success': True, 
+                'message': 'Profile picture updated successfully!',
+                'new_image_url': public_url
+            })
+            
+        except Exception as e:
+            print(f"[DEBUG] Supabase upload exception: {e}")
+            return jsonify({'success': False, 'error': 'Failed to upload to cloud storage'}), 500
         
     except Exception as e:
         db.session.rollback()
