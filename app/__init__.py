@@ -6,9 +6,12 @@ Licensed under Apache 2.0 License
 
 # "This folder is a package — and you can import from it."
 import datetime
+import os
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
+from flask_mail import Mail
+from dotenv import load_dotenv
 from .models import db, User
 from .auth.routes import auth
 from .profile.routes import userprofile
@@ -18,6 +21,11 @@ from .friends import friends
 from .friends.routes import friends
 
 import os
+
+mail = Mail()
+
+# Load environment variables
+load_dotenv()
 
 def create_app():
 	app = Flask(__name__)
@@ -53,6 +61,14 @@ def create_app():
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # Disable track modifications to save resources
 	app.config['SECRET_KEY'] = 'Tinubu'  # Change this to a secure key
 
+	# Flask-Mail configuration
+	app.config['MAIL_SERVER'] = 'smtp-mail.outlook.com'
+	app.config['MAIL_PORT'] = 587
+	app.config['MAIL_USE_TLS'] = True
+	app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')  # Set this environment variable
+	app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')  # Set this environment variable
+	app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')  # Use the same email as sender
+
 	# Print database information
 	db_uri = app.config['SQLALCHEMY_DATABASE_URI']
 	if 'sqlite' in db_uri:
@@ -62,6 +78,7 @@ def create_app():
 		print("Database URI:", db_uri[:50] + "..." if len(db_uri) > 50 else db_uri)
 
 
+
 	# Initialize extensions
 	db.init_app(app)
 	login_manager = LoginManager()
@@ -69,6 +86,7 @@ def create_app():
 	login_manager.login_message = 'Please log in to access this page.'
 	login_manager.login_message_category = 'info'
 	login_manager.init_app(app)
+	mail.init_app(app)
 
 	@login_manager.user_loader
 	def load_user(user_id):
