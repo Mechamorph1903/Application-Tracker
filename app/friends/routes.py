@@ -10,18 +10,20 @@ def friendsList():
 	pending_received = current_user.get_pending_friend_requests()
 	pending_sent = current_user.get_sent_friend_requests()
 
+	interview_statuses = {'interview', 'interviewing', 'interview scheduled'}
+	offer_statuses = {'offer', 'offered', 'accepted'}
 	interview_counts = {}
 	offer_counts = {}
 	for friend in friends_list:
 		interview_counts[friend.id] = sum(
 			1 for internship in friend.internships
-			if (internship.application_status and internship.application_status.lower() == 'interview' 
-				and internship.visibility != 'private')
+			if internship.application_status and internship.visibility != 'private'
+			and internship.application_status.strip().lower() in interview_statuses
 		)
 		offer_counts[friend.id] = sum(
 			1 for internship in friend.internships
-			if (internship.application_status and internship.application_status.lower() == 'offer'
-				and internship.visibility != 'private')
+			if internship.application_status and internship.visibility != 'private'
+			and internship.application_status.strip().lower() in offer_statuses
 		)
 	return render_template('friends.html', 
 		friends=friends_list,
