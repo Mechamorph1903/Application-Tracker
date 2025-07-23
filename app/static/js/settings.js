@@ -169,6 +169,15 @@ function toggleEdit(sectionId) {
     if (displayDiv && formDiv) {
         displayDiv.classList.add('hidden');
         formDiv.classList.remove('hidden');
+        
+        // Special handling for education section to reload social media links
+        if (sectionId === 'education') {
+            console.log('Toggling education edit mode, re-initializing social media');
+            const socialInput = document.getElementById('social_media');
+            console.log('Social input value before init:', socialInput ? socialInput.value : 'no input found');
+            initializeSocialMedia();
+            renderSocialLinks();
+        }
     }
 }
 
@@ -180,6 +189,17 @@ function cancelEdit(sectionId) {
     if (displayDiv && formDiv) {
         displayDiv.classList.remove('hidden');
         formDiv.classList.add('hidden');
+        
+        // Special handling for education section to reset social media links
+        if (sectionId === 'education') {
+            // Reset social media input to original value
+            const socialInput = document.getElementById('social_media');
+            if (socialInput && window._initialSocialMediaValue) {
+                socialInput.value = window._initialSocialMediaValue;
+                initializeSocialMedia();
+                renderSocialLinks();
+            }
+        }
     }
 }
 
@@ -241,25 +261,88 @@ const socialPlatforms = [
 ];
 
 function initializeSocialMedia() {
-    // Load existing social media links from the template
-    const socialInput = document.getElementById('social_media');
-    if (socialInput) {
+    // Load existing social media links from the script tag first, then fallback to hidden input
+    let socialData = [];
+    
+    // Try to get data from the script tag first (more reliable)
+    const scriptTag = document.getElementById('social-media-data');
+    if (scriptTag) {
         try {
-            socialMediaLinks = JSON.parse(socialInput.value) || [];
+            const scriptContent = scriptTag.textContent.trim();
+            console.log('Loading social media from script tag:', scriptContent);
+            socialData = JSON.parse(scriptContent) || [];
+            console.log('Parsed social media from script tag:', socialData);
         } catch (e) {
-            socialMediaLinks = [];
+            console.error('Error parsing social media from script tag:', e);
         }
     }
-    // renderSocialLinks();
+    
+    // If we got data from script tag, use it and update the hidden input
+    if (socialData && socialData.length > 0) {
+        socialMediaLinks = socialData;
+        const socialInput = document.getElementById('social_media');
+        if (socialInput) {
+            socialInput.value = JSON.stringify(socialMediaLinks);
+            console.log('Updated hidden input with script tag data');
+        }
+    } else {
+        // Fallback: try to load from hidden input
+        const socialInput = document.getElementById('social_media');
+        if (socialInput) {
+            console.log('Initializing social media from hidden input, current value:', socialInput.value);
+            
+            const rawValue = socialInput.value.trim();
+            if (!rawValue) {
+                console.log('Empty social media value, initializing with empty array');
+                socialMediaLinks = [];
+            } else if (rawValue === '[]' || rawValue === 'null') {
+                console.log('Social media value is empty array or null');
+                socialMediaLinks = [];
+            } else {
+                try {
+                    socialMediaLinks = JSON.parse(rawValue) || [];
+                    console.log('Parsed social media links from hidden input:', socialMediaLinks);
+                } catch (e) {
+                    console.error('Error parsing social media JSON from hidden input:', e);
+                    console.error('Raw value that failed to parse:', rawValue);
+                    socialMediaLinks = [];
+                    socialInput.value = '[]';
+                }
+            }
+        }
+    }
+    
+    // Only render the social links if the education form is visible (in edit mode)
+    const educationForm = document.getElementById('education-form');
+    if (educationForm && !educationForm.classList.contains('hidden')) {
+        renderSocialLinks();
+    }
 }
 
 function addSocialMediaLink() {
+    console.log('Adding social media link, current socialMediaLinks:', socialMediaLinks);
+    
+    // Safety check: if socialMediaLinks is empty but the hidden input has data, reload from input
+    if (socialMediaLinks.length === 0) {
+        const socialInput = document.getElementById('social_media');
+        if (socialInput && socialInput.value && socialInput.value !== '[]') {
+            console.log('Reloading social media links from hidden input before adding new one');
+            try {
+                socialMediaLinks = JSON.parse(socialInput.value) || [];
+                console.log('Reloaded socialMediaLinks:', socialMediaLinks);
+            } catch (e) {
+                console.error('Error parsing social media JSON:', e);
+            }
+        }
+    }
+    
     if (socialMediaLinks.length >= maxSocialLinks) {
         alert(`You can only add up to ${maxSocialLinks} social media links.`);
         return;
     }
     
     socialMediaLinks.push({ platform: '', url: '' });
+    console.log('After adding, socialMediaLinks:', socialMediaLinks);
     renderSocialLinks();
 }
 
@@ -272,11 +355,17 @@ function renderSocialLinks() {
     const container = document.getElementById('social-media-container');
     const addBtn = document.getElementById('add-social-btn');
     
-    if (!container) return;
+    if (!container) {
+        console.log('Social media container not found, skipping render');
+        return;
+    }
+    
+    console.log('renderSocialLinks called with socialMediaLinks:', socialMediaLinks);
     
     container.innerHTML = '';
     
     socialMediaLinks.forEach((link, index) => {
+        console.log(`Rendering link ${index}:`, link);
         const linkDiv = document.createElement('div');
         linkDiv.className = 'social-link-item';
         linkDiv.innerHTML = `
@@ -303,11 +392,29 @@ function renderSocialLinks() {
         container.appendChild(linkDiv);
     });
     
-    // Update hidden input
-    document.getElementById('social_media').value = JSON.stringify(socialMediaLinks);
+    // Update hidden input only if we actually have social media content or if we're actively editing
+    const hiddenInput = document.getElementById('social_media');
+    const jsonValue = JSON.stringify(socialMediaLinks);
+    console.log('Setting hidden input value to:', jsonValue);
+    
+    // Only update the hidden input if:
+    // 1. We have social media links to show, OR
+    // 2. The current hidden input value is empty/null, OR  
+    // 3. We're in active edit mode (form is visible)
+    const educationForm = document.getElementById('education-form');
+    const isInEditMode = educationForm && !educationForm.classList.contains('hidden');
+    
+    if (socialMediaLinks.length > 0 || !hiddenInput.value || hiddenInput.value === '[]' || isInEditMode) {
+        hiddenInput.value = jsonValue;
+        console.log('Updated hidden input value');
+    } else {
+        console.log('Preserving existing hidden input value:', hiddenInput.value);
+    }
     
     // Show/hide add button
-    addBtn.style.display = socialMediaLinks.length >= maxSocialLinks ? 'none' : 'block';
+    if (addBtn) {
+        addBtn.style.display = socialMediaLinks.length >= maxSocialLinks ? 'none' : 'block';
+    }
 }
 
 function updateSocialPlatform(index, platform) {
@@ -603,13 +710,20 @@ function initializePasswordFeatures() {
 
 // Initialize everything when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize social media first so we have the data available
+    console.log('About to call initializeSocialMedia on page load');
+    initializeSocialMedia();
+    
+    // Store the properly loaded social media value as initial value
     window._initialSocialMediaValue = '';
     const socialInputInit = document.getElementById('social_media');
     if (socialInputInit) {
         window._initialSocialMediaValue = socialInputInit.value;
+        console.log('Initial social media value after initialization:', window._initialSocialMediaValue);
+        console.log('Length of initial value:', window._initialSocialMediaValue.length);
     }
-    // Initialize social media and majors
-    initializeSocialMedia();
+    
+    // Initialize other components
     initializeMajors();
     initializeProfilePicturePreview();
     initializePasswordFeatures();

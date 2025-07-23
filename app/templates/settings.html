@@ -173,14 +173,6 @@
                     <option value="">Select Major...</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="profile_picture">Profile Picture:</label>
-                <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
-                <div id="profile-preview" class="profile-preview" style="display: none;">
-                    <img id="preview-image" src="" alt="Preview" class="preview-thumb">
-                    <span id="preview-filename"></span>
-                </div>
-            </div>
             <div class="form-group full-width">
                 <label>Social Media Links (Max 4):</label>
                 <div id="social-media-container">
@@ -189,7 +181,7 @@
                 <button type="button" onclick="addSocialMediaLink()" class="btn-add-social" id="add-social-btn">
                     <i class="fas fa-plus"></i> Add Social Link
                 </button>
-            <input type="hidden" id="social_media" name="social_media" value="{{ current_user.social_media | tojson | safe }}">
+            <input type="hidden" id="social_media" name="social_media" value="">
             </div>
             <div class="form-actions">
                 <button type="button" class="btn-cancel" onclick="cancelEdit('education')">Cancel</button>
