@@ -7,11 +7,15 @@
 
 {% block content %}
 <div class="friends-container">
-  <h1 class="page-title">Friends</h1>
-  <div class="friends-search-bar">
-    <input type="text" id="friend-search" placeholder="Search friends by name, school, or status..." autocomplete="on">
+  <div class="friends-actions-bar">
+    <h1 class="page-title">Friends</h1>
     <a class="add-friend-btn" href="{{ url_for('friends.search_users') }}">+ Add Friends</a>
   </div>
+
+  <div class="friends-search-bar">
+    <input type="text" id="friend-search" placeholder="Search friends by name, school, or status..." autocomplete="on">
+  </div>
+
   <div class="friends-grid">
     <!-- Friend Card 1 - Clickable -->
     {%if friends%}
@@ -29,7 +33,6 @@
           </div>
           <div class="friend-school">{{friend.school}}</div>
         </div>
-        <div class="privacy-badge public">Public</div>
       </div>
       <hr class="card-separator">
       <div class="friend-stats-row">
