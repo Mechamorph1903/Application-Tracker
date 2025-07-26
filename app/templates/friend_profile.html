@@ -32,11 +32,6 @@
                 </div>
                 <div class="profile-details">
                     <h1 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h1>
-                    <div class="add-friend-wrapper">
-                        <form action="{{ url_for('friends.send_friend_request', username=user.username) }}" method="POST">
-                            <button type="submit" class="btn add-friend-btn">Add Friend</button>
-                        </form>
-                    </div>
 
                     <div class="school-info">
                         <div id="school">School: {{ user.school }}</div>
