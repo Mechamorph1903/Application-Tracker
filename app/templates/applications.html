@@ -29,7 +29,7 @@
                     {{ internship.application_status.title() }}
                 </span>
                 <form method="POST" action="{{ url_for('applications.delete_internship', internship_id=internship.id) }}" onsubmit="return confirm('Are you sure you want to delete this application?')">
-                    <button class="delete-btn" type="submit" title="Delete">
+                    <button class="delete-btn" type="submit" title="Delete" onclick="event.stopPropagation();">
                         <img class="icon" src="{{ url_for('static', filename='images/trashCanOpen.svg') }}" alt="Delete">
                     </button>
                 </form>
