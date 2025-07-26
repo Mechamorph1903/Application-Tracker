@@ -37,8 +37,10 @@
       <!--Login-->
       <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm" class="active">
         <h2>Login</h2>
-        <input type="email" name="email" placeholder="Email" required><br><br>
-        <input type="password" name="password" placeholder="Password" required><br><br>
+        <label>Email:</label>
+        <input type="email" name="email" placeholder="delusion@gunners.com" required><br>
+        <label>Password:</label>
+        <input type="password" name="password" placeholder="2nd_aG@!n" required><br><br>
         <button type="submit">Login</button>
         <!-- <div class="forgot-password-link" style="text-align:center; margin-top:1em;">
             <a href="{{ url_for('auth.forgot_password') }}">Forgot your password?</a>
@@ -50,22 +52,22 @@
         <h2>Sign Up!</h2>
 
         <div class="name-container">
-          <div><label>First Name:</label><br>
+          <div><label>First Name:</label>
           <input type="text" name="First Name" required title="Enter your first name" placeholder="Trump"><br><br></div>
 
           <div>
-            <label>Last Name:</label><br>
+            <label>Last Name:</label>
           <input type="text" name="Last Name" required title="Enter your last name" placeholder="Tinubu"><br><br>
           </div>
         </div>
 
-        <label>Username:</label><br>
+        <label>Username:</label>
         <input type="text" name="username" required title="Enter your username" placeholder="Username"><br><br>
 
-        <label>Email:</label><br>
+        <label>Email:</label>
         <input type="email" name="email" required title="Enter your email address" placeholder="Email address"><br><br>
 
-        <label>Password:</label><br>
+        <label>Password:</label>
         <input type="password" name="password" required title="Enter your password" placeholder="Password"><br><br>
 
         <button type="submit">Register</button>
