@@ -34,6 +34,7 @@ A modern, feature-rich Flask web application designed to help students and job s
 - Secure user registration and login system
 - Password hashing with Werkzeug security
 - Session management with Flask-Login
+- **Email-Based Password Reset**: Secure forgot password functionality with token-based verification
 - Password change functionality with strength validation
 
 ### 📊 **Application Tracking**
@@ -257,6 +258,7 @@ internship-tracker/
 ## 🔒 Security Features
 
 - **Password Security**: Werkzeug hashing with salt
+- **Email-Based Password Reset**: Secure token-based password reset with expiration
 - **Input Validation**: Server-side validation for all forms
 - **File Upload Security**: Secure file handling for profile pictures
 - **Session Management**: Secure session handling with Flask-Login

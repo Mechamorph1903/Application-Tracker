@@ -1,3 +1,16 @@
+/* Style for 'No mutual friends' message in mutual friends section */
+.no-mutuals {
+  display: inline-block;
+  color: #6d28d9;
+  background: #f3e8ff;
+  border-radius: 16px;
+  padding: 6px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 8px 0;
+  box-shadow: 0 1px 4px rgba(124, 58, 237, 0.08);
+  letter-spacing: 0.02em;
+}
 /* Acquaintance Profile Page Styles */
 
 /* Outer wrapper spacing - top spacing only, no vertical centering */
@@ -357,4 +370,26 @@
   .bio {
     min-height: 60px;
   }
+}
+
+/* Decline Friend Button Style */
+.decline-friend-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  margin-left: 10px;
+}
+
+.decline-friend-btn:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }

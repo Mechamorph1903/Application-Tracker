@@ -126,30 +126,6 @@
   color: #d8b3ff;
 }
 
-.privacy-badge {
-  position: absolute;
-  top: 32px;
-  right: 32px;
-  padding: 7px 18px;
-  border-radius: 13px;
-  font-size: 1.03rem;
-  font-weight: 500;
-  background: #d1b3ff22;
-  color: #38ffb2;
-  border: 1.5px solid #38ffb2;
-  letter-spacing: 0.2px;
-  text-align: center;
-}
-.privacy-badge.public {
-  background: #b4ffdf44;
-  color: #38ffb2;
-  border-color: #38ffb2;
-}
-.privacy-badge.private {
-  background: #ffe5e5cc;
-  color: #fd6c81;
-  border-color: #fd6c81;
-}
 
 .friend-card:focus-within {
   outline: 2.5px solid #b993fd;
@@ -274,4 +250,17 @@
   background: #b993fd;
   color: #3b1366;
   box-shadow: 0 0 8px 2px #b993fd44;
+}
+
+.friends-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.friends-actions-bar .page-title {
+  margin: 0;
+  font-size: 2rem;
+  color: #ffe3fa;
 }

@@ -268,3 +268,10 @@ html, body {
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
 }
+
+.select2-container--default .select2-selection--single {
+    color: #000 !important;
+}
+.select2-container--default .select2-results__option {
+    color: #000 !important;
+}

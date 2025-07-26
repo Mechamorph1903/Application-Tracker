@@ -13,26 +13,46 @@ def profile():
     # Calculate real stats
     total_applications = len(applications)
     
-    # Count by status
+    # Count by status (case-insensitive and robust)
     status_counts = {}
     for app in applications:
-        status = app.application_status.lower()
+        status = app.application_status.lower() if app.application_status else ''
         status_counts[status] = status_counts.get(status, 0) + 1
-    
-    interviews = status_counts.get('interviewing', 0) + status_counts.get('interview scheduled', 0)
-    offers = status_counts.get('offered', 0) + status_counts.get('accepted', 0)
-    
-    # Calculate response rate (interviews + offers + rejections / total)
-    responses = interviews + offers + status_counts.get('rejected', 0)
+
+    interviews = 0
+    for key in status_counts:
+        if key in ['interview', 'interviewing', 'interview scheduled']:
+            interviews += status_counts[key]
+    offers = 0
+    for key in status_counts:
+        if key in ['offer', 'offered', 'accepted']:
+            offers += status_counts[key]
+
+    # Calculate response rate (interviews + offers + rejections + assessments / total)
+    assessments = sum(
+        count for key, count in status_counts.items() if 'assessment' in key
+    )
+    responses = interviews + offers + status_counts.get('rejected', 0) + assessments
     response_rate = round((responses / total_applications * 100) if total_applications > 0 else 0)
-    
+
     stats = {
         'total_applications': total_applications,
         'interviews': interviews,
         'offers': offers,
         'response_rate': f"{response_rate}%"
     }
+
+    pending = current_user.get_pending_friend_requests()
+
+    pending_list = []
+
+    for request in pending:
+        user = User.query.filter_by(id=request.sender_id).first()
+        pending_list.append(user)
     
-    return render_template('profile.html', user=current_user, stats=stats)
+    # Get notifications for the user
+    notifications = current_user.get_unread_notifications()
+    
+    return render_template('profile.html', user=current_user, stats=stats, pending=pending_list, notifications=notifications)
 
 

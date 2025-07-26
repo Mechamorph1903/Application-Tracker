@@ -4,6 +4,7 @@ Flask-SQLAlchemy==3.1.1
 Flask-Login==0.6.2
 Flask-WTF==1.2.1
 Flask-Migrate==4.0.5
+Flask-Mail==0.9.1
 Werkzeug==2.3.7
 
 # Database Support

@@ -7,11 +7,15 @@
 
 {% block content %}
 <div class="friends-container">
-  <h1 class="page-title">Friends</h1>
-  <div class="friends-search-bar">
-    <input type="text" id="friend-search" placeholder="Search friends by name, school, or status..." autocomplete="on">
+  <div class="friends-actions-bar">
+    <h1 class="page-title">Friends</h1>
     <a class="add-friend-btn" href="{{ url_for('friends.search_users') }}">+ Add Friends</a>
   </div>
+
+  <div class="friends-search-bar">
+    <input type="text" id="friend-search" placeholder="Search friends by name, school, or status..." autocomplete="on">
+  </div>
+
   <div class="friends-grid">
     <!-- Friend Card 1 - Clickable -->
     {%if friends%}
@@ -29,23 +33,21 @@
           </div>
           <div class="friend-school">{{friend.school}}</div>
         </div>
-        <div class="privacy-badge public">Public</div>
       </div>
-      <div class="friend-activity">Applied to Meta 3h ago</div>
       <hr class="card-separator">
       <div class="friend-stats-row">
         <div class="stat-block">
-          <div class="stat-number">10</div>
+          <div class="stat-number">{{ friend.internships|length }}</div>
           <div class="stat-label">Applications</div>
         </div>
         <div class="vertical-separator"></div>
         <div class="stat-block">
-          <div class="stat-number">3</div>
+          <div class="stat-number">{{ interview_counts[friend.id] }}</div>
           <div class="stat-label">Interviews</div>
         </div>
         <div class="vertical-separator"></div>
         <div class="stat-block">
-          <div class="stat-number">1</div>
+          <div class="stat-number">{{ offer_counts[friend.id] }}</div>
           <div class="stat-label">Offers</div>
         </div>
       </div>

@@ -15,12 +15,8 @@
                     <i class="fas fa-arrow-left"></i>
                 </a> 
             </div>
-            <div class="settings">
-                <a href="{{ url_for('settings.settings_page') }}" class="settings-link" onclick="storeCurrentPage(event)">
-                    <img src="{{ url_for('static', filename='images/settings.png') }}" alt="Settings Icon" class="settings-icon">
-                     <i class="settings-text">Settings</i>
-                </a>
-               
+            <div class="options">
+                
             </div>
         </div>
 
@@ -29,13 +25,19 @@
             <div class="profile-info">
                 <div class="profile-picture">
                     {% if user.profile_picture and user.profile_picture != 'default.jpg' %}
-                        <img src="{{ user.profile_picture }}" alt="Profile Picture" class="friend-profile-img" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+                        <img src="{{ user.profile_picture }}" alt="Profile Picture" class="friend-profile-img">
                     {% else %}
                         <div class="profile-initials">{{ user | initials }}</div>  
                     {% endif %}
                 </div>
                 <div class="profile-details">
                     <h1 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h1>
+                    <div class="add-friend-wrapper">
+                        <form action="{{ url_for('friends.send_friend_request', username=user.username) }}" method="POST">
+                            <button type="submit" class="btn add-friend-btn">Add Friend</button>
+                        </form>
+                    </div>
+
                     <div class="school-info">
                         <div id="school">School: {{ user.school }}</div>
                         <div id="year">Class: {{ user.year }}</div>
@@ -141,15 +143,8 @@
             }
         }
         
-        // Store navigation when arriving at profile
         document.addEventListener('DOMContentLoaded', function() {
-            // Push current page to navigation stack if coming from valid pages
-            if (document.referrer) {
-                const referrerPath = new URL(document.referrer).pathname;
-                if (['/home', '/friends', '/applications/applications-list', '/calendar'].includes(referrerPath)) {
-                    pushToNavigationStack(document.referrer);
-                }
-            }
+            pushToNavigationStack(window.location.href);
         });
         
         // Navigation stack functions (defined in layout.html)
@@ -157,19 +152,18 @@
             const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
             if (stack.length === 0 || stack[stack.length - 1] !== page) {
                 stack.push(page);
-                if (stack.length > 5) {
-                    stack.shift();
-                }
+                if (stack.length > 10) stack.shift();
                 sessionStorage.setItem('navigationStack', JSON.stringify(stack));
             }
         }
         
         function popFromNavigationStack() {
             const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
-            if (stack.length > 0) {
-                stack.pop();
+            if (stack.length > 1) {
+                stack.pop(); // Remove current page
+                const lastPage = stack[stack.length - 1];
                 sessionStorage.setItem('navigationStack', JSON.stringify(stack));
-                return stack[stack.length - 1];
+                return lastPage;
             }
             return null;
         }

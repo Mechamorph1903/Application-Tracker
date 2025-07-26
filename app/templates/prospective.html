@@ -30,7 +30,7 @@
         <h2>{{user.firstName}} {{user.lastName}}</h2>
         <p class="user-details">Class of {{user.year}} <strong>@</strong> {{user.school}} <i><strong>studying</strong></i> {{user.major}}</p>
         <p class="friendship-status">
-          {% if current_user.has_pending_request_with(user) %}
+          {% if current_user.has_sent_request_to(user) %}
             Friend request sent
           {% elif current_user.has_pending_request_from(user) %}
             {{ user.firstName }} sent you a friend request
@@ -38,42 +38,53 @@
             You're not yet friends
           {% endif %}
         </p>
-      </div>
-      <div class="bio-section">
-        <h3>Bio:</h3>
-        <div class="bio">
-          <p>{{user.bio or 'Nothing to see here... 🤷‍♂️'}}</p>
+
+        <!-- ✅ Friend Buttons placed directly under status -->
+        <div class="button-container">
+          {% if not current_user.has_sent_request_to(user) and not current_user.has_pending_request_from(user) %}
+            <form action="{{ url_for('friends.addFriend') }}" method="POST" style="display: inline;">
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <button type="submit" class="action-btn add-friend-btn">
+                <i class="fa-solid fa-user-plus"></i>
+                <span class="btn-text">Add Friend</span>
+              </button>
+            </form>
+          {% endif %}
+
+          {% if current_user.has_pending_request_from(user) %}
+            <a href="{{ url_for('friends.acceptFriendRequest', user_id=user.id) }}" class="action-btn accept-friend-btn">
+              <i class="fa-solid fa-user-check"></i>
+              <span class="btn-text">Accept Friend Request</span>
+            </a>
+            <a href="{{ url_for('friends.declineFriendRequest', user_id=user.id) }}" class="action-btn decline-friend-btn">
+              <i class="fa-solid fa-user-xmark"></i>
+              <span class="btn-text">Decline Request</span>
+            </a>
+          {% endif %}
+
+          {% if current_user.has_sent_request_to(user) %}
+            <form action="{{ url_for('friends.cancelRequest') }}" method="POST" style="display: inline;">
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <button type="submit" class="action-btn cancel-request-btn">
+                <i class="fa-solid fa-user-minus"></i>
+                <span class="btn-text">Cancel Request</span>
+              </button>
+            </form>
+          {% endif %}
         </div>
       </div>
-      <div class="button-container">
-        <form action="{{ url_for('friends.addFriend') }}" method="POST" id="friend-request-form">
-          <input type="hidden" name="user_id" value="{{ user.id }}">
-          <button type="submit" class="action-btn add-friend-btn{% if current_user.has_pending_request_with(user) or current_user.has_pending_request_from(user) %} hidden{% endif %}" id="add-friend-btn" data-user-firstname="{{ user.firstName }}">
-            <i class="fa-solid fa-user-plus"></i>
-            <span class="btn-text">Add Friend</span>
-          </button>
-        </form>
-        <form action="{{ url_for('friends.acceptFriendRequest') }}" method="POST" id="accept-friend-form" style="display: inline;">
-          <input type="hidden" name="user_id" value="{{ user.id }}">
-          <button type="submit" class="action-btn accept-friend-btn{% if not current_user.has_pending_request_from(user) %} hidden{% endif %}" id="accept-friend-btn">
-            <i class="fa-solid fa-user-check"></i>
-            <span class="btn-text">Accept Friend Request</span>
-          </button>
-        </form>
-        <form action="{{ url_for('friends.cancelRequest') }}" method="POST" id="cancel-request-form" style="display: inline;">
-          <input type="hidden" name="user_id" value="{{ user.id }}">
-          <button type="submit" class="action-btn cancel-request-btn{% if not current_user.has_pending_request_with(user) %} hidden{% endif %}" id="cancel-request-btn">
-            <i class="fa-solid fa-user-xmark"></i>
-            <span class="btn-text">Cancel Request</span>
-          </button>
-        </form>
-      </div>
+
       <div class="mutual-friends-section">
         <h3>Mutual Friends</h3>
         <div class="mutual-friends">
-          {% for friend in ['MC', 'SJ', 'AD'] %}
-          <div title="{{ friend }}" class="friend-avatar">{{ friend }}</div>
-          {% endfor %}
+          {% set mutual_friends = mutual_friends | list %}
+          {% if mutual_friends|length == 0 %}
+            <span class="no-mutuals">No mutual friends</span>
+          {% else %}
+            {% for mutual in mutual_friends[:6] %}
+              <div title="{{ mutual.firstName }} {{ mutual.lastName }}" class="friend-avatar">{{ mutual | initials }}</div>
+            {% endfor %}
+          {% endif %}
         </div>
       </div>
       <p class="info-message">

@@ -67,8 +67,39 @@
                     <h2 class="section-title">
                         <i class="fas fa-bell"></i>
                         Notifications
+                        {% if notifications %}
+                        <a href="{{ url_for('friends.clear_all_notifications') }}" class="clear-all-btn" onclick="return confirm('Are you sure you want to clear all notifications?')">
+                            <i class="fas fa-trash"></i> Clear All
+                        </a>
+                        {% endif %}
                     </h2>
                     <div class="notifications-container">
+                        {% if notifications %}
+                            {% for notification in notifications %}
+                            <div class="notification-item">
+                                <div class="notification-icon">
+                                    <i class="fas fa-{% if notification.type == 'success' %}check-circle{% elif notification.type == 'friend_request' %}user-plus{% elif notification.type == 'warning' %}exclamation-triangle{% elif notification.type == 'error' %}times-circle{% else %}info-circle{% endif %}"></i>
+                                </div>
+                                <div class="notification-content{% if notification.type == 'friend_request' %} clickable-notification{% endif %}" 
+                                     {% if notification.type == 'friend_request' %}
+                                     title="Click to view profile" 
+                                     onclick="window.location.href='{{ url_for('friends.friend_profile', username=notification.related_user.username) }}'"
+                                     style="cursor: pointer;"
+                                     {% endif %}>
+                                    <div class="notification-title">{{ notification.title }}</div>
+                                    <div class="notification-details">{{ notification.message }}</div>
+                                    <div class="notification-actions">
+                                        <a href="{{ url_for('friends.mark_notification_read', notification_id=notification.id) }}" class="notification-btn mark-read">
+                                            <i class="fas fa-check"></i> Mark Read
+                                        </a>
+                                        <a href="{{ url_for('friends.delete_notification', notification_id=notification.id) }}" class="notification-btn delete">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
                         <div class="notification-item">
                             <div class="notification-icon">
                                 <i class="fas fa-info-circle"></i>
@@ -78,7 +109,48 @@
                                 <div class="notification-details">Check back later for updates</div>
                             </div>
                         </div>
-                        <!-- Placeholder for future notifications -->
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-bell"></i>
+                        Friend Requests
+                    </h2>
+                    <div class="notifications-container">
+                        {%if pending %}
+                            {% for request in pending %}
+                            <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="notification-content" title="Click to View Profile" onclick="window.location.href='{{ url_for('friends.limited_profile', username=request.username)}}'">
+                                <div class="notification-title">{{ request.firstName }} {{request.lastName}} sent you a friend request!</div>
+                                <div class="notification-buttons">
+                                    <a href="{{ url_for('friends.acceptFriendRequest', user_id=request.id) }}" class="notification-btn accept">
+                                        <i class="fa-solid fa-check"></i> Accept
+                                    </a>
+                                    <a href="{{ url_for('friends.declineFriendRequest', user_id=request.id) }}" class="notification-btn decline">
+                                        <i class="fa-solid fa-times"></i> Decline
+                                    </a>
+                                    <a href="{{ url_for('friends.blockUser', user_id=request.id) }}" class="notification-btn block" onclick="return confirm('Are you sure you want to block {{ request.firstName }}? This will remove any friend requests and prevent future contact.')">
+                                        <i class="fa-solid fa-ban"></i> Block
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                            {%endfor%}
+                        {%else%}
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">No new friend requests</div>
+                                <div class="notification-details">Eventually =-]</div>
+                            </div>
+                        </div>
+                        {%endif%}
                     </div>
                 </div>
             </div>
