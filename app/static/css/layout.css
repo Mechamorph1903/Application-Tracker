@@ -1012,23 +1012,7 @@ input[type="text"] {
 }
 
 
-/* Application Status Colors (all variants) */
-.status-applied { background: #e3f2fd; color: #1976d2; }
-.status-application { background: #e3f2fd; color: #1976d2; }
-.status-waitlist { background: #e3f2fd; color: #cfd219; }
-.status-waitlisted { background: #e3f2fd; color: #cfd219; }
-.status-interview { background: #fff3e0; color: #f57c00; }
-.status-interviewing { background: #fff3e0; color: #f57c00; }
-.status-interview-scheduled { background: #fff3e0; color: #f57c00; }
-.status-assessment { background: #fff3e0; color: #3e1d38; }
-.status-offer { background: #e8f5e8; color: #388e3c; }
-.status-offered { background: #e8f5e8; color: #388e3c; }
-.status-accepted { background: #e8f5e8; color: #388e3c; }
-.status-reject { background: #ffebee; color: #d32f2f; }
-.status-rejected { background: #ffebee; color: #d32f2f; }
-.status-withdrawn { background: #f3e8ff; color: #a259ff; }
-.status-pending { background: #e0e7ff; color: #6366f1; }
-.status-under-review { background: #e0e7ff; color: #6366f1; }
+
 
 
 .view-all-btn {
