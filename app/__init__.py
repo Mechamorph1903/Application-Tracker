@@ -11,6 +11,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
 from flask_mail import Mail
+from datetime import date
 from dotenv import load_dotenv
 from .models import db, User
 from .auth.routes import auth
@@ -26,6 +27,8 @@ mail = Mail()
 
 # Load environment variables
 load_dotenv()
+
+
 
 def create_app():
 	app = Flask(__name__)
@@ -143,8 +146,49 @@ def create_app():
 			'offers': offers,
 			'pending': status_counts.get('applied', 0) + status_counts.get('under review', 0)
 		}
+
+		MOTIVATIONALS = [
+			   {"message": "Every rejection is just a redirection to something better. Keep applying!", "author": "Aisha Patel", "remark": "her resume has more stamps than her passport"},
+			   {"message": "Your dream job is out there, and it’s looking for someone who doesn’t give up.", "author": "Liam O’Connor", "remark": "once interviewed in pajamas by accident"},
+			   {"message": "Persistence beats resistance. One more application could be the one!", "author": "Chen Wei", "remark": "has a spreadsheet longer than his thesis"},
+			   {"message": "You miss 100% of the shots you don’t take. Apply anyway!", "author": "Maria Gonzalez", "remark": "sent so many cover letters, she dreams in templates"},
+			   {"message": "Every ‘no’ brings you closer to a ‘yes’. Don’t lose hope!", "author": "Segun Chibuzor", "remark": "applied to Google so many times they sent him a care package for effort. Did not still get an offer."},
+			   {"message": "The journey is tough, but so are you. Keep moving forward!", "author": "Elena Popov", "remark": "her inbox is a graveyard of ‘We regret to inform you’ emails"},
+			   {"message": "Success is built on a mountain of rejections. Climb higher!", "author": "Priya Singh", "remark": "once got ghosted by an AI recruiter"},
+			   {"message": "Your effort will pay off, even if it’s not today. Stay strong!", "author": "David Kim", "remark": "has a collection of ‘Thank you for your interest’ mugs"},
+			   {"message": "Don’t let a setback set you back. Tomorrow is another chance.", "author": "Fatima Al-Farsi", "remark": "her LinkedIn is now her diary"},
+			   {"message": "The best opportunities often come after the hardest struggles.", "author": "Lucas Müller", "remark": "applied to so many places, he’s on a first-name basis with HR bots"},
+			   {"message": "Keep applying, keep learning, keep growing. Your time will come.", "author": "Sara Ahmed", "remark": "her motivational playlist is just recruiter voicemails"},
+			   {"message": "Every application is a step closer to your breakthrough.", "author": "Tomoko Sato", "remark": "once got rejected by a company she didn’t apply to"},
+			   {"message": "Don’t measure your journey by the rejections, but by your resilience.", "author": "Jean-Pierre Dubois", "remark": "his cover letter is now a cry for help"},
+			   {"message": "The right job is waiting for your persistence to pay off.", "author": "Nia Johnson", "remark": "her interview suit has frequent flyer miles"},
+			   {"message": "You’re not alone—every student is hustling. Keep at it!", "author": "Mateo Silva", "remark": "his reference list is longer than his resume"},
+			   {"message": "Rejection is just proof you’re trying. That’s already a win.", "author": "Anya Ivanova", "remark": "once got a rejection email addressed to someone else"},
+			   {"message": "Your future self will thank you for not giving up today.", "author": "Omar Hassan", "remark": "has a folder called ‘Maybe Next Year’"},
+			   {"message": "Every application is a seed. Some take time to grow.", "author": "Emily Brown", "remark": "could probably start a podcast based on the number of her daily affirmations"},
+			   {"message": "The job market is tough, but you’re tougher. Keep going!", "author": "Rajesh Kumar", "remark": "applied to so many jobs, his browser autofills everything"},
+			   {"message": "Celebrate small wins—every step counts!", "author": "Isabella Rossi", "remark": "her cat is now her mock interviewer"},
+			   {"message": "Your persistence is your superpower. Use it!", "author": "Kwame Mensah", "remark": "once got an interview invite at 3am"},
+			   {"message": "Don’t let today’s ‘no’ stop tomorrow’s ‘yes’.", "author": "Sofia Petrova", "remark": "her coffee budget is now a line item in her job search spreadsheet"},
+			   {"message": "You’re building skills and stories with every application.", "author": "Jin Park", "remark": "his resume has more versions than Windows"},
+			   {"message": "The right fit is worth the wait. Keep searching!", "author": "Leila Haddad", "remark": "her interview shoes are now her lucky charm"},
+			   {"message": "Every effort counts, even if it feels invisible now.", "author": "Carlos Ramirez", "remark": "once got a rejection in comic sans"},
+			   {"message": "You’re not failing, you’re learning. That’s progress!", "author": "Mia Andersen", "remark": "her ‘apply’ button is starting to look worn out"},
+			   {"message": "Stay curious, stay brave, stay applying!", "author": "Ahmed Nour", "remark": "his motivational playlist is just elevator music from hold calls"},
+			   {"message": "Your journey is unique—don’t compare, just continue.", "author": "Chloe Dubois", "remark": "her dog now recognizes the Zoom ringtone"},
+			   {"message": "Keep your head up—your breakthrough could be one click away.", "author": "Yusuf Demir", "remark": "once got a job offer by replying to a spam email—by accident"},
+			   {"message": "You’re closer than you think. Don’t stop now!", "author": "Hannah Lee", "remark": "her calendar is just color-coded interviews and rejections"},
+			   {"message": "Keep watering your dreams—one day they’ll bloom into opportunities!", "author": "Kirabo Njoroge", "remark": "her Resume, Transcript and CV have all traveled more than she has"}
+		]
+
+		def getDailyMotivation():
+			index = date.today().toordinal() % len(MOTIVATIONALS)
+			return MOTIVATIONALS[index]
 		
-		return render_template('home.html', stats=stats, recent_applications=recent_applications)
+		motivation = getDailyMotivation()
+
+
+		return render_template('home.html', stats=stats, recent_applications=recent_applications, motivation=motivation)
 	
 	@app.route('/calendar')
 	@login_required

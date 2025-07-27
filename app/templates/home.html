@@ -101,10 +101,11 @@
                 </h3>
                 <div class="motivation-card">
                     <div class="motivation-text">
-                        "There's always next season!"
+                        "{{ motivation.message }}"
                     </div>
                     <div class="motivation-footer">
-                        💪Gooners
+                        {{motivation.author}}<hr>
+                        <i>{{motivation.remark}}</i>
                     </div>
                 </div>
             </div>
