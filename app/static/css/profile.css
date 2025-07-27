@@ -30,6 +30,29 @@
             background-position: center;
         }
 
+        .bio{
+           
+            color: white;
+            position: relative;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            padding: 40px;
+        }
+
+        .bio-content{
+            
+            width: 40em;
+            background: linear-gradient(135deg, rgba(162, 89, 255, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-height: 6rem;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.1);
+        }
+
         .settings {
             position: absolute;
             top: 20px;
@@ -137,7 +160,7 @@
             object-fit: cover;
             display: block;
         }
-        }
+        
 
         .profile-initials {
             width: 100%;

@@ -59,6 +59,17 @@
             </div>
         </div>
 
+        <div class="bio">
+            <h3>Bio: </h3>
+            <div class="bio-content">
+                {% if user.bio %}
+                <p>{{user.bio}}</p>
+                {%else%}
+                <p>Nothing To see Here...</p>
+                {% endif %}
+            </div>
+        </div>
+
         <!-- Main Content -->
         <div class="main-content">
             <div class="left-column">
@@ -182,38 +193,7 @@
                     </div>
                 </div>
 
-                <!-- Calendar Heatmap -->
-                <div class="section">
-                    <h2 class="section-title">
-                        Activity Calendar
-                    </h2>
-                    <div class="heatmap-container">
-                        <div class="heatmap-header">
-                            <span>Application activity over the past year</span>
-                        </div>
-                        <div class="heatmap-grid">
-                        </div>
-                        <div class="heatmap-legend">
-                            <span>Less</span>
-                            <div class="legend-item">
-                                <div class="heatmap-cell"></div>
-                            </div>
-                            <div class="legend-item">
-                                <div class="heatmap-cell level-1"></div>
-                            </div>
-                            <div class="legend-item">
-                                <div class="heatmap-cell level-2"></div>
-                            </div>
-                            <div class="legend-item">
-                                <div class="heatmap-cell level-3"></div>
-                            </div>
-                            <div class="legend-item">
-                                <div class="heatmap-cell level-4"></div>
-                            </div>
-                            <span>More</span>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>
