@@ -17,7 +17,7 @@
 		<h1>{{ internship.job_name }}</h1>
 			<div class="actions">
 				<div class="edit" title="Add Application to My Applications">
-				<a href="{{ url_for('applications.copy_application', internship_id=internship.id) }}">
+				<a title="Add to Your Applications" href="{{ url_for('applications.copy_application', internship_id=internship.id) }}">
 					<i class="fa-solid fa-plus"></i>
 				</a>
 			</div>

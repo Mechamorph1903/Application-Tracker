@@ -9,7 +9,7 @@
 {% block content %}
 
 <section class="header">
-	<button><i class="fa-solid fa-arrow-left"></i></button>
+	<button title="Back" onclick="window.location.href='{{url_for('friends.friendsList')}}'"><i class="fa-solid fa-arrow-left"></i><span hidden>i</span></button>
 	<div class="text">
 		<h1>Friend Portal</h1>
 		<p>Find like minded students from anywhere</p>

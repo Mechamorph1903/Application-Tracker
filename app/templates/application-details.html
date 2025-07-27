@@ -17,19 +17,19 @@
 		<h1>{{ internship.job_name }}</h1>
 			<div class="actions">
 				<div class="edit" title="Edit Application">
-				<a href="{{ url_for('applications.edit_application', internship_id=internship.id) }}">
-					<i class="fa-solid fa-pen-to-square"></i>
+				<a title="Edit Application" href="{{ url_for('applications.edit_application', internship_id=internship.id) }}">
+					<i class="fa-solid fa-pen-to-square"></i><span hidden>i</span>
 				</a>
 			</div>
 			<div class="delete" title="Delete Application">
-				<button type="button" data-internship-id="{{ internship.id }}" id="delete"><i class="fa-solid fa-trash"></i></button>
+				<button type="button" data-internship-id="{{ internship.id }}" id="delete" title="Delete Application"><i class="fa-solid fa-trash"></i><span hidden>i</span></button>
 			</div>
 		</div>
 	</nav>
 	<section class="details-card">
 		<!-- Header with status -->
 		<div class="details-header">
-			<div class="status-badge" style="background-color: {{ internship.get_status_color() or '#cccccc' }}">
+			<div class="status-badge" style="background-color: '{{ internship.get_status_color() or '#cccccc' }}';">
 				{%if internship.application_status == 'copied' %}
 				{{ internship.application_status }} <i>(Still Need to Apply Manually)</i>
 				{%else%}

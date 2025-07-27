@@ -135,6 +135,11 @@
                         <button class="goal-action">Start</button>
                     </li>
                 </ul>
+                <div id="add-goal">
+                    <button id="add-goal-btn">
+                        New Goal
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -166,5 +171,38 @@
         </div>
     </div>
 </div>
+<div id="goals-back">
+    <div id="goals-form" >
+        <div class="section-1">
+            <i class="fa-solid fa-xmark" id="close-goals-form"></i>
+        </div>
+        <div class="section-2">
+            <h2>Select Goal Type</h2>
+            <div class="goal-type-container">
+                <div class="goal-type" id="regular-goal">
+                    <div class="goal-title">
+                        <i class="fa-solid fa-list-check"></i>
+                        <h3>Regular Goal</h3>
+                    </div>
+                    <p>
+                        Any type of goal you may want to track.
+                    </p>
+                </div>
+                <div class="goal-type" id="app-count-goal">
+                    <div class="goal-title">
+                        <i class="fa-solid fa-hashtag"></i>
+                        <h3>Application Target</h3>
+                    </div>
+                    <p>
+                        Set any number of applications you want to hit!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/home.js')}}"></script>
+{%endblock%}

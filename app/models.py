@@ -16,6 +16,7 @@ class User(db.Model, UserMixin): # User model for managing user data
 	password_changed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # When password was last changed
 	is_admin = db.Column(db.Boolean, default=False) # Flag to indicate if the user is an admin
 	profile_picture = db.Column(db.String(150), default='default.jpg') # Path to the user's profile picture
+		
 	
 	# contact fields for friends to see
 	phone = db.Column(db.String(20)) # Phone number for contact
