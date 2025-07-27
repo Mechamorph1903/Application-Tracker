@@ -30,7 +30,11 @@
 		<!-- Header with status -->
 		<div class="details-header">
 			<div class="status-badge" style="background-color: {{ internship.get_status_color() or '#cccccc' }}">
+				{%if internship.application_status == 'copied' %}
+				{{ internship.application_status }} <i>(Still Need to Apply Manually)</i>
+				{%else%}
 				{{ internship.application_status }}
+				{% endif %}
 			</div>
 		</div>
 		

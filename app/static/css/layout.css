@@ -1122,6 +1122,24 @@ input[type="text"] {
     margin-right: 0.5rem;
 }
 
+.status-applied { padding: 6px; border-radius: 12px; background: #e3f2fd; color: #1976d2; }
+.status-application { padding: 6px; border-radius: 12px; background: #e3f2fd; color: #1976d2; }
+.status-waitlist { padding: 6px; border-radius: 12px; background: #e3f2fd; color: #cfd219; }
+.status-waitlisted { padding: 6px; border-radius: 12px; background: #e3f2fd; color: #cfd219; }
+.status-interview { padding: 6px; border-radius: 12px;background: #fff3e0; color: #f57c00; }
+.status-interviewing { padding: 6px; border-radius: 12px; background: #fff3e0; color: #f57c00; }
+.status-interview-scheduled { padding: 6px; border-radius: 12px; background: #fff3e0; color: #f57c00; }
+.status-assessment { padding: 6px; border-radius: 12px; background: #fff3e0; color: #3e1d38; }
+.status-offer { padding: 6px; border-radius: 12px; background: #e8f5e8; color: #388e3c; }
+.status-offered { padding: 6px; border-radius: 12px; background: #e8f5e8; color: #388e3c; }
+.status-accepted { padding: 6px; border-radius: 12px; background: #e8f5e8; color: #388e3c; }
+.status-reject { padding: 6px; border-radius: 12px; background: #ffebee; color: #d32f2f; }
+.status-rejected { padding: 6px; border-radius: 12px; background: #ffebee; color: #d32f2f; }
+.status-withdrawn { padding: 6px; border-radius: 12px; background: #f3e8ff; color: #a259ff; }
+.status-pending { padding: 6px; border-radius: 12px; background: #e0e7ff; color: #6366f1; }
+.status-under-review { padding: 6px; border-radius: 12px; background: #e0e7ff; color: #6366f1; }
+.status-copied { padding: 6px; border-radius: 12px; background: #e0e7ff; color: #8c4343; }
+
 /* Dashboard Responsive */
 @media (max-width: 768px) {
     .dashboard {

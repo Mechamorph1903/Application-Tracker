@@ -243,3 +243,4 @@
 .status-withdrawn { padding: 6px; border-radius: 12px; background: #f3e8ff; color: #a259ff; }
 .status-pending { padding: 6px; border-radius: 12px; background: #e0e7ff; color: #6366f1; }
 .status-under-review { padding: 6px; border-radius: 12px; background: #e0e7ff; color: #6366f1; }
+.status-copied { padding: 6px; border-radius: 12px; background: #ffff00f5; color: #010101; }

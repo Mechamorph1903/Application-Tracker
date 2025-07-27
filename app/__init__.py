@@ -70,13 +70,6 @@ def create_app():
 	app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')  # Use the same email as sender
 
 	# Print database information
-	db_uri = app.config['SQLALCHEMY_DATABASE_URI']
-	if 'sqlite' in db_uri:
-		db_path = db_uri.replace('sqlite:///', '')
-		print("Database file will be at:", os.path.abspath(db_path))
-	else:
-		print("Database URI:", db_uri[:50] + "..." if len(db_uri) > 50 else db_uri)
-
 
 
 	# Initialize extensions

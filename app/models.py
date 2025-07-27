@@ -383,8 +383,10 @@ class Internship(db.Model): # Internship model for managing internship applicati
 	def get_status_color(self):
 		"""Get color code for application status (useful for UI)"""
 		status_colors = {
+			'copied': '#010101',
 			'applied': '#007bff',      # Blue
-			'interviewing': '#ffc107', # Yellow
+			'assessment': '#3e1d38;',
+			'interview': '#ffc107', # Yellow
 			'offered': '#28a745',      # Green
 			'rejected': '#dc3545',     # Red
 			'accepted': '#28a745',     # Green

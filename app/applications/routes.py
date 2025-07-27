@@ -89,7 +89,7 @@ def copy_application():
             applied_date=date.today(),
             deadline_date=friendInternship.deadline_date,
             user_id=current_user.id,
-            application_status='applied'
+            application_status='copied'
         )
         db.session.add(internship)
         db.session.commit()
