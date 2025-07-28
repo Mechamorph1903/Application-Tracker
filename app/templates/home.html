@@ -118,22 +118,21 @@
                     Goals
                 </h3>
                 <ul class="goals-list">
-                    <li>
-                        <span class="goal-name">Apply to 5 internships</span>
-                        <progress value="2" max="5"></progress>
-                    </li>
-                    <li>
-                        <span class="goal-name">Update resume</span>
-                        <span class="goal-status completed">Done</span>
-                    </li>
-                    <li>
-                        <span class="goal-name">Reach out to 3 mentors</span>
-                        <span class="goal-status in-progress">In Progress</span>
-                    </li>
-                    <li>
-                        <span class="goal-name">Git Good</span>
-                        <button class="goal-action">Start</button>
-                    </li>
+                    {% for goal in goals%}
+                        {% if goal['goal-type'] == 'regular' and goal['goal-status'] == 'active' %}
+                            <li>
+                                <span class="goal-name">{{goal['goal-desc']}}</span>
+                                <button>Cancel</button>
+                                <button>Done</button>
+                            </li>
+                        {%else%}
+                            <li>
+                                <span class="goal-name">{{goal['goal-desc']}}</span>
+                                <progress value="{{goal.count}}" max="{{goal.target}}"></progress>
+                                <button title="Complete Goal"><i class="fa-solid fa-square-xmark"></i></button>
+                            </li>
+                        {%endif%}
+                    {%endfor%}
                 </ul>
                 <div id="add-goal">
                     <button id="add-goal-btn">
@@ -194,10 +193,22 @@
                         <h3>Application Target</h3>
                     </div>
                     <p>
-                        Set any number of applications you want to hit!
+                        Set a number of applications you want to hit!
                     </p>
                 </div>
             </div>
+              <!-- Regular Goal Form -->
+            <form id="regular-goal-form" class="goal-slide-form" method="POST" action="{{ url_for('add_goal') }}">
+                <h3>New Regular Goal</h3>
+                <input type="text" placeholder="Goal name" name="regular_goal" required>
+                <button type="submit">Save</button>
+            </form>
+            <!-- Application Target Form -->
+            <form id="app-count-goal-form" class="goal-slide-form" method="POST" action="{{ url_for('add_goal') }}">
+                <h3>Set Application Target</h3>
+                <input type="number" placeholder="Number of applications" min="1" name="app_count_goal" required>
+                <button type="submit">Save</button>
+            </form>
         </div>
     </div>
 </div>

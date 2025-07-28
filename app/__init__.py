@@ -7,7 +7,8 @@ Licensed under Apache 2.0 License
 # "This folder is a package — and you can import from it."
 import datetime
 import os
-from flask import Flask, render_template
+import uuid
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
 from flask_mail import Mail
@@ -186,10 +187,53 @@ def create_app():
 			return MOTIVATIONALS[index]
 		
 		motivation = getDailyMotivation()
+		goals = current_user.goals
 
 
-		return render_template('home.html', stats=stats, recent_applications=recent_applications, motivation=motivation)
+		return render_template('home.html', stats=stats, recent_applications=recent_applications, motivation=motivation, goals=goals)
 	
+	@app.route('/goal', methods=['POST'])
+	@login_required
+	def add_goal():
+		try:
+			regular_goal = request.form.get("regular_goal")
+			app_count_goal = request.form.get("app_count_goal")
+			if regular_goal:
+				goal_obj = {
+					'goal_id': str(uuid.uuid4()),
+					'goal-type': 'regular',
+					'goal-desc': regular_goal,
+					'goal-status': 'active'
+				}
+				# Ensure goals is a list
+				if current_user.goals is None:
+					current_user.goals = []
+				current_user.goals.append(goal_obj)
+				db.session.commit()
+				flash('Successfully added regular goal', 'success')
+			elif app_count_goal:
+				goal_obj = {
+					'goal_id': str(uuid.uuid4()),
+					'goal-type': 'count',
+					'goal-desc': f'Get {app_count_goal} applications',
+					'target': app_count_goal,
+					'count': 0,
+					'goal-status': 'active'
+				}
+				if current_user.goals is None:
+					current_user.goals = []
+				current_user.goals.append(goal_obj)
+				db.session.commit()
+				flash("Let's hit that goal of 1!", 'success')
+			else:
+				flash('Error: No goal data submitted.', 'error')
+		except Exception as e:
+			db.session.rollback()
+			print(f"Error adding goal: {e}")
+			flash(f"Error adding goal: {e}", 'error')
+		return redirect(url_for('home'))
+
+
 	@app.route('/calendar')
 	@login_required
 	def calendar():

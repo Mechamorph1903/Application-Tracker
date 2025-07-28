@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy # Import SQLAlchemy for  ORM functionality
+from sqlalchemy.ext.mutable import MutableList
 from datetime import date, datetime, timezone # Import date for timestamping and datetime
 from flask_login import UserMixin	# Import UserMixin for user management
 from werkzeug.security import generate_password_hash, check_password_hash # Import generate_password_hash for password hashing and check_password_hash for password verification
@@ -16,8 +17,7 @@ class User(db.Model, UserMixin): # User model for managing user data
 	password_changed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # When password was last changed
 	is_admin = db.Column(db.Boolean, default=False) # Flag to indicate if the user is an admin
 	profile_picture = db.Column(db.String(150), default='default.jpg') # Path to the user's profile picture
-		
-	
+	goals = db.Column(MutableList.as_mutable(db.JSON), default=list) 
 	# contact fields for friends to see
 	phone = db.Column(db.String(20)) # Phone number for contact
 	social_media = db.Column(db.JSON, default=lambda: []) # Social media profile URLs
