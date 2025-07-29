@@ -44,17 +44,29 @@ def register():
 				})
 				
 				# Set Supabase user ID and mark as not needing migration
-				new_user.supabase_user_id = auth_user.user.id
-				new_user.needs_migration = False
+				try:
+					new_user.supabase_user_id = auth_user.user.id
+					new_user.needs_migration = False
+				except AttributeError:
+					# Columns don't exist yet, skip setting them
+					pass
 				print("✅ New user created in Supabase Auth")
 			else:
 				# If Supabase is not available, user will need migration later
-				new_user.needs_migration = True
+				try:
+					new_user.needs_migration = True
+				except AttributeError:
+					# Column doesn't exist yet, skip
+					pass
 				print("⚠️  Supabase unavailable, user will need migration")
 		except Exception as e:
 			print(f"⚠️  Supabase user creation failed: {e}")
 			# Continue with local registration, user will need migration later
-			new_user.needs_migration = True
+			try:
+				new_user.needs_migration = True
+			except AttributeError:
+				# Column doesn't exist yet, skip
+				pass
 
 		db.session.add(new_user) # Add the new user to the session
 		db.session.commit() # Commit the session to save the user to the database
@@ -75,8 +87,14 @@ def login():
 
 	currentUser = User.query.filter_by(email=email).first()  # Find user by email
 	if currentUser and currentUser.check_password(password):
-		# Check if user needs migration
-		if getattr(currentUser, 'needs_migration', True):  # Default True for existing users
+		# Check if user needs migration (handle missing column gracefully)
+		try:
+			needs_migration = getattr(currentUser, 'needs_migration', True)
+		except AttributeError:
+			# Column doesn't exist yet, assume user needs migration
+			needs_migration = True
+		
+		if needs_migration:
 			login_user(currentUser)  # Log them in temporarily
 			flash('Please set a new password to complete account migration.', 'info')
 			return redirect(url_for('migrate_account'))

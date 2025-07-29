@@ -310,7 +310,13 @@ def create_app():
 	@login_required
 	def migrate_account():
 		"""Handle Supabase Auth migration for existing users"""
-		if not getattr(current_user, 'needs_migration', True):
+		# Check if user needs migration (handle missing column gracefully)
+		try:
+			needs_migration = getattr(current_user, 'needs_migration', True)
+		except AttributeError:
+			needs_migration = True
+		
+		if not needs_migration:
 			return redirect(url_for('home'))
 		
 		if request.method == 'POST':
@@ -340,8 +346,13 @@ def create_app():
 					})
 					
 					# Update local user record
-					current_user.supabase_user_id = auth_user.user.id
-					current_user.needs_migration = False
+					try:
+						current_user.supabase_user_id = auth_user.user.id
+						current_user.needs_migration = False
+					except AttributeError:
+						# Columns don't exist yet, just update password
+						pass
+					
 					current_user.password_hash = generate_password_hash(new_password)
 					db.session.commit()
 					

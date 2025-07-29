@@ -3,11 +3,11 @@ services:
     name: internin-app
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "python run.py"
+    startCommand: "gunicorn --bind 0.0.0.0:$PORT run:app"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
-      - key: https://yzrfoxjwqlthhmwvqguu.supabase.co
+      - key: SUPABASE_DATABASE_URL
         sync: false
       - key: MAIL_USERNAME
         sync: false
