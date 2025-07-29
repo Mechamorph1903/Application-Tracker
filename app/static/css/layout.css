@@ -1270,7 +1270,6 @@ input[type="text"] {
 
 @media (prefers-color-scheme: dark){
     body{
-        background: black;
-        color: e04aff;
+        background: rgb(25, 25, 25);
     }
 }
