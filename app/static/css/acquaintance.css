@@ -29,8 +29,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid #b993fd;
+  background: rgba(255, 255, 255, 0.188);
   border-radius: 12px;
   color: #cbb6da;
   text-decoration: none;
@@ -107,7 +106,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid rgba(185, 147, 253, 0.3);
+  border: 1px solid rgba(185, 147, 253, 0.3);
   border-radius: 50%;
   flex-shrink: 0;
   box-shadow: 0 4px 16px rgba(185, 147, 253, 0.2);
@@ -209,16 +208,16 @@
 
 /* Add Friend Button */
 .add-friend-btn {
-  background: linear-gradient(135deg, #b993fd, #9575cd);
+  background: rgb(71, 19, 116);
   color: white;
   border: 2px solid transparent;
   box-shadow: 0 4px 16px rgba(185, 147, 253, 0.3);
 }
 
 .add-friend-btn:hover {
-  transform: translateY(-2px);
+  transform: scale(1.001);
   box-shadow: 0 6px 20px rgba(185, 147, 253, 0.4);
-  background: linear-gradient(135deg, #9575cd, #b993fd);
+  background: rgb(71, 19, 116);
 }
 
 .add-friend-btn:active {
@@ -266,7 +265,7 @@
 .friend-avatar {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #b993fd, #cbb6da);
+  background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
   color: #1a1a1a;
   font-size: 0.85rem;
   font-weight: bold;
@@ -392,4 +391,10 @@
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+@media (prefers-color-scheme: dark){
+    .no-mutuals{
+        background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+    }
 }
