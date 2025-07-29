@@ -37,6 +37,16 @@
       <!--Login-->
       <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm" class="active">
         <h2>Login</h2>
+        
+        <!-- Google OAuth Button -->
+        <button type="button" class="google-login-btn" onclick="loginWithGoogle()">
+          <i class="fab fa-google"></i> Continue with Google
+        </button>
+        
+        <div class="divider">
+          <span>or</span>
+        </div>
+        
         <label>Email:</label>
         <input type="email" name="email" placeholder="delusion@gunners.com" required><br>
         <label>Password:</label>
@@ -50,6 +60,15 @@
       <!--Register-->
       <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
         <h2>Sign Up!</h2>
+        
+        <!-- Google OAuth Button -->
+        <button type="button" class="google-login-btn" onclick="signUpWithGoogle()">
+          <i class="fab fa-google"></i> Continue with Google
+        </button>
+        
+        <div class="divider">
+          <span>or</span>
+        </div>
 
         <div class="name-container">
           <div><label>First Name:</label>
@@ -76,6 +95,83 @@
     </div>
     
     <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
+    
+    <!-- Supabase Client for Google OAuth -->
+    <script type="module">
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+      
+      const supabase = createClient(
+        '{{ config.SUPABASE_URL or "https://yzrfoxjwqlthhmwvqguu.supabase.co" }}',
+        '{{ config.SUPABASE_ANON_KEY or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6cmZveGp3cWx0aGhtd3ZxZ3V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzNzM4NTcsImV4cCI6MjA2Nzk0OTg1N30.kX-Ez4vTYL5qKa8F8dylV7YJvCht_66UG7_w1Z6UwfA" }}'
+      )
+      
+      window.loginWithGoogle = async () => {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + '/auth/callback'
+          }
+        })
+        if (error) console.error('Login error:', error)
+      }
+      
+      window.signUpWithGoogle = async () => {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + '/auth/callback'
+          }
+        })
+        if (error) console.error('Signup error:', error)
+      }
+    </script>
+    
+    <style>
+    .google-login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background-color 0.3s;
+    }
+    
+    .google-login-btn:hover {
+      background: #3367d6;
+    }
+    
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+    }
+    
+    .divider:before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #ddd;
+    }
+    
+    .divider span {
+      background: white;
+      padding: 0 15px;
+      color: #666;
+      font-size: 14px;
+    }
+    </style>
     
     <!-- Flash Message Auto-Dismiss -->
     <script>

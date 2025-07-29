@@ -46,24 +46,24 @@ def register():
 				# Set Supabase user ID and mark as not needing migration
 				try:
 					new_user.supabase_user_id = auth_user.user.id
-					new_user.needs_migration = False
+					new_user.needs_migration = False  # New users don't need migration
 				except AttributeError:
 					# Columns don't exist yet, skip setting them
 					pass
 				print("✅ New user created in Supabase Auth")
 			else:
-				# If Supabase is not available, user will need migration later
+				# If Supabase is not available, NEW users still don't need migration
 				try:
-					new_user.needs_migration = True
+					new_user.needs_migration = False  # They're already using the new system
 				except AttributeError:
 					# Column doesn't exist yet, skip
 					pass
-				print("⚠️  Supabase unavailable, user will need migration")
+				print("⚠️  Supabase unavailable, but new user doesn't need migration")
 		except Exception as e:
 			print(f"⚠️  Supabase user creation failed: {e}")
-			# Continue with local registration, user will need migration later
+			# Continue with local registration, NEW users still don't need migration
 			try:
-				new_user.needs_migration = True
+				new_user.needs_migration = False  # They're registering post-migration
 			except AttributeError:
 				# Column doesn't exist yet, skip
 				pass
@@ -124,6 +124,61 @@ def login():
 	else:
 		flash('Invalid email or password.', 'danger')
 		return redirect(url_for('auth.register') + '?tab=login')  # Stay on login tab
+
+@auth.route('/callback')
+def auth_callback():
+	"""Handle OAuth callback from Supabase Auth"""
+	# This route will be called after Google OAuth
+	# The actual user session will be handled by Supabase client-side
+	# We just redirect to a success page that will handle the session client-side
+	return render_template('auth_callback.html')
+
+@auth.route('/oauth-login', methods=['POST'])
+def oauth_login():
+	"""Handle OAuth login from client-side"""
+	try:
+		data = request.get_json()
+		access_token = data.get('access_token')
+		user_data = data.get('user')
+		
+		if not access_token or not user_data:
+			return {'error': 'Missing authentication data'}, 400
+		
+		# Store Supabase token in session
+		session['supabase_access_token'] = access_token
+		
+		# Check if user exists in our database
+		user = User.query.filter_by(email=user_data['email']).first()
+		
+		if not user:
+			# Create new user from OAuth data
+			user = User(
+				firstName=user_data.get('user_metadata', {}).get('first_name', user_data.get('email', '').split('@')[0]),
+				lastName=user_data.get('user_metadata', {}).get('last_name', ''),
+				username=user_data.get('email', '').split('@')[0],  # Use email prefix as username
+				email=user_data['email']
+			)
+			user.set_password('oauth_user')  # Placeholder password for OAuth users
+			
+			try:
+				user.supabase_user_id = user_data['id']
+				user.needs_migration = False  # OAuth users don't need migration
+			except AttributeError:
+				pass
+			
+			db.session.add(user)
+			db.session.commit()
+		
+		# Log the user in
+		login_user(user)
+		user.last_seen = datetime.now()
+		db.session.commit()
+		
+		return {'success': True}
+		
+	except Exception as e:
+		print(f"OAuth login error: {e}")
+		return {'error': str(e)}, 500
 	
 @auth.route('/logout')
 def logout():
