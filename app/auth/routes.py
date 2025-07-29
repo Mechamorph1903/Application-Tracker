@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import render_template, request, redirect, url_for, flash, Blueprint, current_app
+from flask import render_template, request, redirect, url_for, flash, Blueprint, current_app, session
 from flask_login import login_user, logout_user, current_user
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
@@ -29,6 +29,33 @@ def register():
 		new_user = User(firstName=first_name, lastName=last_name, username=username, email=email)
 		new_user.set_password(password)
 
+		# Try to create user in Supabase Auth for new registrations
+		try:
+			if current_app.supabase:
+				auth_user = current_app.supabase.auth.admin.create_user({
+					"email": email,
+					"password": password,
+					"email_confirm": True,
+					"user_metadata": {
+						"first_name": first_name,
+						"last_name": last_name,
+						"username": username
+					}
+				})
+				
+				# Set Supabase user ID and mark as not needing migration
+				new_user.supabase_user_id = auth_user.user.id
+				new_user.needs_migration = False
+				print("✅ New user created in Supabase Auth")
+			else:
+				# If Supabase is not available, user will need migration later
+				new_user.needs_migration = True
+				print("⚠️  Supabase unavailable, user will need migration")
+		except Exception as e:
+			print(f"⚠️  Supabase user creation failed: {e}")
+			# Continue with local registration, user will need migration later
+			new_user.needs_migration = True
+
 		db.session.add(new_user) # Add the new user to the session
 		db.session.commit() # Commit the session to save the user to the database
 		login_user(new_user) # Log in the user after registration
@@ -48,6 +75,29 @@ def login():
 
 	currentUser = User.query.filter_by(email=email).first()  # Find user by email
 	if currentUser and currentUser.check_password(password):
+		# Check if user needs migration
+		if getattr(currentUser, 'needs_migration', True):  # Default True for existing users
+			login_user(currentUser)  # Log them in temporarily
+			flash('Please set a new password to complete account migration.', 'info')
+			return redirect(url_for('migrate_account'))
+		
+		# Normal login flow for migrated users
+		try:
+			# Try to authenticate with Supabase to get token
+			if current_app.supabase:
+				auth_response = current_app.supabase.auth.sign_in_with_password({
+					"email": email,
+					"password": password
+				})
+				
+				# Store Supabase token in session
+				session['supabase_access_token'] = auth_response.session.access_token
+				print("✅ Supabase token stored in session")
+			
+		except Exception as e:
+			print(f"⚠️  Supabase auth error: {e}")
+			# Continue with local login if Supabase fails
+		
 		login_user(currentUser)
 		currentUser.last_seen = datetime.now()
 		db.session.commit()  # Commit the changes to the database

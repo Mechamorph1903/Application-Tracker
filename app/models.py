@@ -24,6 +24,10 @@ class User(db.Model, UserMixin): # User model for managing user data
 	social_media = db.Column(MutableList.as_mutable(db.JSON), default=list) # Social media profile URLs
 	bio = db.Column(db.Text) # Personal bio/description
 	school = db.Column(db.String(100)) # University/school name
+	
+	# Supabase Auth migration fields
+	needs_migration = db.Column(db.Boolean, default=True)  # Flag for users needing migration
+	supabase_user_id = db.Column(db.String(36))  # Store Supabase UUID
 	year = db.Column(db.String(100)) # Graduation year
 	major = db.Column(db.String(100)) # Field of study
 	created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # When user registered

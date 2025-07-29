@@ -7,14 +7,16 @@ Licensed under Apache 2.0 License
 import datetime
 import os
 import uuid
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_required, current_user
+from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_mail import Mail
 from datetime import date
 from dotenv import load_dotenv
 from sqlalchemy.orm.attributes import flag_modified
 from .models import db, User
+from supabase import create_client
+from werkzeug.security import generate_password_hash
 from .auth.routes import auth
 from .profile.routes import userprofile
 from .settings.routes import settings
@@ -72,6 +74,22 @@ def create_app():
 	app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')  # Set this environment variable
 	app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')  # Set this environment variable
 	app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')  # Use the same email as sender
+
+	# Initialize Supabase client for authentication
+	supabase_url = os.getenv('SUPABASE_URL')
+	supabase_service_key = os.getenv('SUPABASE_SERVICE_KEY')
+	
+	if supabase_url and supabase_service_key:
+		try:
+			supabase = create_client(supabase_url, supabase_service_key)
+			app.supabase = supabase
+			print("✅ Supabase Auth client initialized")
+		except Exception as e:
+			print(f"⚠️  Supabase Auth initialization failed: {e}")
+			app.supabase = None
+	else:
+		print("⚠️  Supabase credentials not found")
+		app.supabase = None
 
 	# Print database information
 
@@ -287,6 +305,68 @@ def create_app():
 	def credits():
 		"""Render the credits page with attributions"""
 		return render_template('credits.html')
+	
+	@app.route('/migrate-account', methods=['GET', 'POST'])
+	@login_required
+	def migrate_account():
+		"""Handle Supabase Auth migration for existing users"""
+		if not getattr(current_user, 'needs_migration', True):
+			return redirect(url_for('home'))
+		
+		if request.method == 'POST':
+			new_password = request.form.get('password')
+			confirm_password = request.form.get('confirm_password')
+			
+			if not new_password or len(new_password) < 6:
+				flash('Password must be at least 6 characters long', 'error')
+				return render_template('migrate_account.html')
+				
+			if new_password != confirm_password:
+				flash('Passwords do not match', 'error')
+				return render_template('migrate_account.html')
+			
+			try:
+				if app.supabase:
+					# Create user in Supabase Auth
+					auth_user = app.supabase.auth.admin.create_user({
+						"email": current_user.email,
+						"password": new_password,
+						"email_confirm": True,
+						"user_metadata": {
+							"first_name": current_user.firstName,
+							"last_name": current_user.lastName,
+							"username": current_user.username
+						}
+					})
+					
+					# Update local user record
+					current_user.supabase_user_id = auth_user.user.id
+					current_user.needs_migration = False
+					current_user.password_hash = generate_password_hash(new_password)
+					db.session.commit()
+					
+					flash('Account migrated successfully! Please log in with your new password.', 'success')
+					logout_user()
+					return redirect(url_for('auth.register') + '?tab=login')
+				else:
+					flash('Migration service unavailable. Please try again later.', 'error')
+					return render_template('migrate_account.html')
+					
+			except Exception as e:
+				flash(f'Migration failed: {str(e)}', 'error')
+				return render_template('migrate_account.html')
+		
+		return render_template('migrate_account.html')
+	
+	def get_supabase_headers():
+		"""Get headers for authenticated Supabase requests"""
+		return {
+			"apikey": os.getenv('SUPABASE_ANON_KEY', ''),
+			"Authorization": f"Bearer {session.get('supabase_access_token', '')}"
+		}
+	
+	# Make the helper function available to all routes
+	app.get_supabase_headers = get_supabase_headers
 	
 	@app.template_filter('social_icon')
 	def get_social_icon(platform):
