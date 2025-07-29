@@ -507,7 +507,7 @@ input[type="datetime-local"]:focus {
 }
 
 #submit{
-    position: sticky;
+    position: relative;
     bottom: 0;
     /* Only blur behind the button area */
     background: rgba(240, 237, 243, 0.1);/* or any semi-transparent color */

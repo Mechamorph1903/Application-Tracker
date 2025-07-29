@@ -1270,6 +1270,28 @@ input[type="text"] {
 
 @media (prefers-color-scheme: dark){
     body{
-        background: rgb(25, 25, 25);
+        background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+    }
+
+    .navbar{
+        background: transparent;
+        box-shadow: 0 4px 48px 0 rgb(20, 20, 20);
+    }
+
+    .navbar-links a {
+    color: #ffffffaf;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 8px 20px;
+    border-radius: 8px;
+    transition: background 0.5s;
+    }
+
+    .navbar-links a.active,
+    .navbar-links a:hover {
+    background: rgb(71, 19, 116);
+    color: #fff;
+    transition: all 0.5s;
     }
 }
