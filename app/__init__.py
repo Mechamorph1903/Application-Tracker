@@ -14,6 +14,7 @@ from flask_login import LoginManager, login_required, current_user
 from flask_mail import Mail
 from datetime import date
 from dotenv import load_dotenv
+from sqlalchemy.orm.attributes import flag_modified
 from .models import db, User
 from .auth.routes import auth
 from .profile.routes import userprofile
@@ -203,7 +204,9 @@ def create_app():
 					'goal_id': str(uuid.uuid4()),
 					'goal-type': 'regular',
 					'goal-desc': regular_goal,
-					'goal-status': 'active'
+					'goal-status': 'active',
+					'created_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+					'completed_at': None
 				}
 				# Ensure goals is a list
 				if current_user.goals is None:
@@ -218,8 +221,11 @@ def create_app():
 					'goal-desc': f'Get {app_count_goal} applications',
 					'target': app_count_goal,
 					'count': 0,
-					'goal-status': 'active'
+					'goal-status': 'active',
+					'created_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+					'completed_at': None
 				}
+				
 				if current_user.goals is None:
 					current_user.goals = []
 				current_user.goals.append(goal_obj)
@@ -233,6 +239,43 @@ def create_app():
 			flash(f"Error adding goal: {e}", 'error')
 		return redirect(url_for('home'))
 
+	@app.route('/complete_goal', methods=['POST'])
+	@login_required
+	def complete_goal():
+		try:
+			goal_id = request.form.get('goal_id')
+			if not goal_id or not current_user.goals:
+				return {'success': False, 'error': 'Goal ID not provided or no goals found'}, 400
+			
+			for goal in current_user.goals:
+				if goal.get('goal_id') == goal_id:
+					goal['goal-status'] = 'completed'
+					goal['completed_at'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+					break
+			
+			flag_modified(current_user, "goals")
+			db.session.commit()
+			return {'success': True}, 200
+		except Exception as e:
+			db.session.rollback()
+			return {'success': False, 'error': str(e)}, 500
+
+	@app.route('/remove_goal', methods=['POST'])
+	@login_required
+	def remove_goal():
+		try:
+			goal_id = request.form.get('goal_id')
+			if not goal_id or not current_user.goals:
+				return {'success': False, 'error': 'Goal ID not provided or no goals found'}, 400
+			
+			current_user.goals = [goal for goal in current_user.goals if goal.get('goal_id') != goal_id]
+			
+			flag_modified(current_user, "goals")
+			db.session.commit()
+			return {'success': True}, 200
+		except Exception as e:
+			db.session.rollback()
+			return {'success': False, 'error': str(e)}, 500
 
 	@app.route('/calendar')
 	@login_required

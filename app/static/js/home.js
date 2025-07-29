@@ -50,3 +50,115 @@ appCountGoalBtn.addEventListener('click', () => {
     regularGoalForm.classList.remove('active');
     goalTypeContainer.style.display = 'none';
 });
+
+document.querySelectorAll('.complete-goal-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const li = this.closest('.goal-item');
+        const goalId = li.dataset.goalId;
+        
+        // Send AJAX request to complete the goal
+        fetch('/complete_goal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `goal_id=${goalId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reload the page to show the updated goals
+                window.location.reload();
+            } else {
+                console.error('Error completing goal:', data.error);
+                alert('Error completing goal. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error completing goal. Please try again.');
+        });
+    });
+});
+
+document.querySelectorAll('.cancel-goal-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const li = this.closest('.goal-item');
+        const goalId = li.dataset.goalId;
+        
+        if (confirm('Are you sure you want to cancel this goal?')) {
+            // Send AJAX request to remove the goal
+            fetch('/remove_goal', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `goal_id=${goalId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the goal item with animation
+                    li.style.transform = 'translateX(-100%)';
+                    li.style.opacity = '0';
+                    setTimeout(() => {
+                        li.remove();
+                        // Check if this was the last goal in the section
+                        const goalsList = li.closest('.goals-list');
+                        if (goalsList.children.length === 0) {
+                            window.location.reload();
+                        }
+                    }, 300);
+                } else {
+                    console.error('Error removing goal:', data.error);
+                    alert('Error canceling goal. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error canceling goal. Please try again.');
+            });
+        }
+    });
+});
+
+document.querySelectorAll('.remove-goal-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const li = this.closest('.goal-item');
+        const goalId = li.dataset.goalId;
+        
+        if (confirm('Are you sure you want to remove this completed goal?')) {
+            // Send AJAX request to remove the goal
+            fetch('/remove_goal', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `goal_id=${goalId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the goal item with animation
+                    li.style.transform = 'translateX(-100%)';
+                    li.style.opacity = '0';
+                    setTimeout(() => {
+                        li.remove();
+                        // Check if this was the last goal in the section
+                        const goalsList = li.closest('.goals-list');
+                        if (goalsList.children.length === 0) {
+                            window.location.reload();
+                        }
+                    }, 300);
+                } else {
+                    console.error('Error removing goal:', data.error);
+                    alert('Error removing goal. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error removing goal. Please try again.');
+            });
+        }
+    });
+});

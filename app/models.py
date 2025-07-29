@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy # Import SQLAlchemy for  ORM functionality
 from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.ext.mutable import MutableList
 from datetime import date, datetime, timezone # Import date for timestamping and datetime
 from flask_login import UserMixin	# Import UserMixin for user management
 from werkzeug.security import generate_password_hash, check_password_hash # Import generate_password_hash for password hashing and check_password_hash for password verification
@@ -20,7 +21,7 @@ class User(db.Model, UserMixin): # User model for managing user data
 	goals = db.Column(MutableList.as_mutable(db.JSON), default=list) 
 	# contact fields for friends to see
 	phone = db.Column(db.String(20)) # Phone number for contact
-	social_media = db.Column(db.JSON, default=lambda: []) # Social media profile URLs
+	social_media = db.Column(MutableList.as_mutable(db.JSON), default=list) # Social media profile URLs
 	bio = db.Column(db.Text) # Personal bio/description
 	school = db.Column(db.String(100)) # University/school name
 	year = db.Column(db.String(100)) # Graduation year

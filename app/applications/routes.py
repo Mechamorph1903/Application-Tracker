@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from datetime import datetime, timezone, date
+from sqlalchemy.orm.attributes import flag_modified
 import json
 from ..models import db, Internship, User
 from . import applications
@@ -92,6 +93,16 @@ def copy_application():
             application_status='copied'
         )
         db.session.add(internship)
+
+        for goal in current_user.goals:
+            if goal['goal-type'] == 'count' and goal['goal-status'] == 'active':
+                goal['count'] += 1
+                if int(goal['count']) >= int(goal['target']):
+                    goal['goal-status'] = 'completed'
+                    goal['completed_at'] = datetime.now(timezone.utc).isoformat()
+
+        print(current_user.goals)
+        flag_modified(current_user, "goals")
         db.session.commit()
 
         flash('Added to your applications successfully')
@@ -179,6 +190,16 @@ def add_application():
                 internship.set_next_action(next_action, next_action_date)
             
             db.session.add(internship)
+            for goal in current_user.goals:
+                if goal['goal-type'] == 'count' and goal['goal-status'] == 'active':
+                    goal['count'] += 1
+                    if int(goal['count']) >= int(goal['target']):
+                        goal['goal-status'] = 'completed'
+                        goal['completed_at'] = datetime.now(timezone.utc).isoformat()
+
+            
+            print(current_user.goals)
+            flag_modified(current_user, "goals")
             db.session.commit()
             
             flash(f'Successfully added internship application for {company_name}!', 'success')

@@ -117,25 +117,88 @@
                     <i class="fas fa-bullseye"></i>
                     Goals
                 </h3>
-                <ul class="goals-list">
-                    {% for goal in goals%}
-                        {% if goal['goal-type'] == 'regular' and goal['goal-status'] == 'active' %}
-                            <li>
-                                <span class="goal-name">{{goal['goal-desc']}}</span>
-                                <button>Cancel</button>
-                                <button>Done</button>
+                
+                <!-- Ongoing Goals -->
+                <div class="goals-subsection">
+                    <h4 class="subsection-title">
+                        <i class="fas fa-play-circle"></i>
+                        Ongoing
+                    </h4>
+                    <ul class="goals-list ongoing-goals">
+                        {% set ongoing_goals = goals|selectattr('goal-status', 'equalto', 'active')|list if goals else [] %}
+                        {% if ongoing_goals %}
+                            {% for goal in ongoing_goals %}
+                                <li data-goal-id="{{ goal['goal_id'] }}" class="goal-item ongoing">
+                                    <div class="goal-content">
+                                        <span class="goal-name">{{ goal['goal-desc'] }}</span>
+                                        <span class="goal-date">{{ goal['created_at'][:10] if goal.get('created_at') else 'Unknown' }}</span>
+                                    </div>
+                                    {% if goal['goal-type'] == 'regular' %}
+                                        <div class="goal-actions">
+                                            <button class="goal-action cancel-goal-btn" title="Cancel Goal">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                            <button class="goal-action complete-goal-btn" title="Mark as Done">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        <div class="goal-actions count-goal">
+                                            <progress value="{{ goal.count or 0 }}" max="{{ goal.target }}"></progress>
+                                            <span class="progress-text">{{ goal.count or 0 }}/{{ goal.target }}</span>
+                                            {% if (goal.count or 0)|int >= goal.target|int %}
+                                                <button class="goal-action complete-goal-btn" title="Mark as Complete">
+                                                    <i class="fa-solid fa-check"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="no-goals-msg">
+                                <i class="fa-solid fa-clock"></i>
+                                No ongoing goals. Set one to get started!
                             </li>
-                        {%else%}
-                            <li>
-                                <span class="goal-name">{{goal['goal-desc']}}</span>
-                                <progress value="{{goal.count}}" max="{{goal.target}}"></progress>
-                                <button title="Complete Goal"><i class="fa-solid fa-square-xmark"></i></button>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Completed Goals -->
+                <div class="goals-subsection">
+                    <h4 class="subsection-title">
+                        <i class="fas fa-check-circle"></i>
+                        Completed
+                    </h4>
+                    <ul class="goals-list completed-goals">
+                        {% set completed_goals = goals|selectattr('goal-status', 'equalto', 'completed')|list if goals else [] %}
+                        {% if completed_goals %}
+                            {% for goal in completed_goals %}
+                                <li data-goal-id="{{ goal['goal_id'] }}" class="goal-item completed">
+                                    <div class="goal-content">
+                                        <span class="goal-name">{{ goal['goal-desc'] }}</span>
+                                        <span class="goal-date">Completed: {{ goal['completed_at'][:10] if goal.get('completed_at') else 'Unknown' }}</span>
+                                    </div>
+                                    <div class="goal-actions">
+                                        <span class="goal-completed-badge">Completed</span>
+                                        <button class="remove-goal-btn" title="Remove Goal">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="no-goals-msg">
+                                <i class="fa-solid fa-smile"></i>
+                                No completed goals yet. Keep going!
                             </li>
-                        {%endif%}
-                    {%endfor%}
-                </ul>
+                        {% endif %}
+                    </ul>
+                </div>
+
                 <div id="add-goal">
                     <button id="add-goal-btn">
+                        <i class="fa-solid fa-plus"></i>
                         New Goal
                     </button>
                 </div>
