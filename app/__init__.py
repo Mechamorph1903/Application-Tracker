@@ -3,7 +3,6 @@ InternIn - Personal Internship Tracking Hub
 Copyright © 2025 DEN. All rights reserved.
 Licensed under Apache 2.0 License
 """
-
 # "This folder is a package — and you can import from it."
 import datetime
 import os
@@ -22,10 +21,9 @@ from .settings.routes import settings
 from .applications.routes import applications
 from .friends import friends
 from .friends.routes import friends
-
 import os
 
-mail = Mail()
+
 
 # Load environment variables
 load_dotenv()
@@ -34,6 +32,7 @@ load_dotenv()
 
 def create_app():
 	app = Flask(__name__)
+	mail = Mail(app)
 	# Configure database connection - prioritize Supabase for dynamic sync
 	force_supabase = os.getenv('FORCE_SUPABASE', 'False').lower() == 'true'
 	database_url = os.getenv('SUPABASE_DATABASE_URL')
@@ -64,7 +63,7 @@ def create_app():
 		app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'internships.db')
 		app.config['USE_SUPABASE'] = False
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # Disable track modifications to save resources
-	app.config['SECRET_KEY'] = 'Tinubu'  # Change this to a secure key
+	app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'makenaijagreatgain')  # Change this to a secure key
 
 	# Flask-Mail configuration
 	app.config['MAIL_SERVER'] = 'smtp-mail.outlook.com'
