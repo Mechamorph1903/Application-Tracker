@@ -1,0 +1,90 @@
+🎯 WELCOME TO INTERNIN!
+
+Hi {{ user.firstName }},
+
+Welcome to InternIn - Your Ultimate Internship Journey Companion! 🎉
+
+We're absolutely thrilled to have you join our community of ambitious students and professionals. InternIn is your all-in-one platform to organize, track, and accelerate your internship journey.
+
+🚀 WHAT YOU CAN DO WITH INTERNIN:
+
+📊 APPLICATION MANAGEMENT:
+• Track all your internship applications in one place
+• Monitor application status and progress  
+• Set and track deadlines
+• Upload and organize documents
+• View detailed analytics and success rates
+
+👥 SOCIAL NETWORKING:
+• Connect with peers in your field
+• Send and receive friend requests
+• Build your professional network
+• Share experiences and tips
+
+
+👤 PROFESSIONAL PROFILE:
+• Create a comprehensive profile
+• Showcase your skills and experience
+• Upload professional photos
+• Add social media links
+
+
+🔔 SMART NOTIFICATIONS (Coming Soon):
+• Get deadline reminders
+• Receive friend request notifications
+• Track application status updates
+• Stay updated on new opportunities
+• Customize notification preferences
+
+⚙️ PERSONALIZATION:
+• Customize your dashboard
+• Set privacy preferences  
+• Choose notification settings
+• Personalize your experience
+• Block unwanted connections
+
+📅 COMING SOON:
+• Interactive calendar
+• Interview scheduling
+• Applications pool
+• Friend Groups
+• Progress analytics dashboard
+
+🚀 QUICK START GUIDE:
+
+1. Complete Your Profile
+   Add your photo, education, and experience
+
+2. Add Your First Application  
+   Start tracking your internship applications
+
+3. Connect with Peers
+   Find and connect with other students in your field
+
+
+💡 PRO TIPS FOR SUCCESS:
+
+🎯 Stay Organized: Update your application status regularly to track progress
+📅 Set Deadlines: Never miss an application deadline with our reminder system  
+🤝 Network Actively: Connect with peers to share opportunities and experiences
+📊 Analyze Progress: Use analytics to understand your application patterns
+🔔 Enable Notifications: Stay on top of your game with timely updates
+
+🌟 YOUR SUCCESS STORY STARTS HERE!
+
+Remember, every successful professional once started where you are now. InternIn is here to support you every step of the way. Let's make your internship dreams a reality!
+
+Get started now: {{ app_url }}/home
+
+QUICK LINKS:
+• Dashboard: {{ app_url }}/home
+• Your Profile: {{ app_url }}/profile  
+• Connect with Others: {{ app_url }}/friends/friends-portal
+• Settings: {{ app_url }}/settings
+
+Need help? Reply to this email or visit: {{ app_url }}/support
+Update email preferences: {{ app_url }}/settings
+
+---
+Welcome to the InternIn Family! 🎉
+© 2025 InternIn - Making the internship season a little more fun!

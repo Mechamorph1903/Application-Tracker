@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 auth = Blueprint('auth', __name__)
 
+
 @auth.route('/register', methods=['GET', 'POST']) #GET: Display registration form, POST: Handle form submission
 def register():
 	if request.method == 'POST':
@@ -76,18 +77,15 @@ def register():
 		db.session.add(new_user) # Add the new user to the session
 		db.session.commit() # Commit the session to save the user to the database
 		
-		# Debug: Check what actually got saved
-		saved_user = User.query.filter_by(email=email).first()
-		print(f"📋 User saved to database:")
-		print(f"   - ID: {saved_user.id}")
-		print(f"   - Email: {saved_user.email}")
-		print(f"   - Supabase ID: {getattr(saved_user, 'supabase_user_id', 'COLUMN_NOT_EXISTS')}")
-		print(f"   - Needs Migration: {getattr(saved_user, 'needs_migration', 'COLUMN_NOT_EXISTS')}")
 		
+	
 		login_user(new_user) # Log in the user after registration
+
+		# Send welcome email using centralized function
+		current_app.send_welcome_email(user=new_user)
 		
 		if supabase_success:
-			flash('Registration successful! Your account is fully integrated with our secure system.', 'success')
+			flash(f'Registration successful! Welcome to InternIn {new_user.username}!', 'success')
 		else:
 			flash('Registration successful! You may need to migrate your account later for full functionality.', 'warning')
 		
@@ -136,6 +134,8 @@ def login():
 			# Continue with local login if Supabase fails
 		
 		login_user(currentUser)
+		# Send welcome email for first-time login (if this is intended)
+		
 		currentUser.last_seen = datetime.now()
 		db.session.commit()  # Commit the changes to the database
 		flash('Login successful!', 'success')
@@ -157,36 +157,53 @@ def logout():
 @auth.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
 	if request.method == 'POST':
-		from app import mail
-		s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
 		email = request.form.get('email')
 		user = User.query.filter_by(email=email).first()
+		
 		if user:
-			token = s.dumps(user.email, salt='password-reset-salt')
-			reset_url = url_for('auth.reset_password', token=token, _external=True)
-			# Send email
-			msg = Message(
-				subject='Password Reset - InternIn',
-				recipients=[user.email],
-				sender=current_app.config.get('MAIL_DEFAULT_SENDER', email)
-			)
-			msg.body = (
-				f"Hello {user.firstName},\n\n"
-				f"You requested a password reset. Click the link below to reset your password:\n\n"
-				f"{reset_url}\n\n"
-				"This link will expire in 1 hour.\n\n"
-				"If you did not request this, please ignore this email.\n\n"
-				"Best regards,\nInternIn Team"
-			)
+			# Try Supabase password reset first
 			try:
-				mail.send(msg)
-				flash('Password reset link sent to your email.', 'info')
+				if current_app.supabase:
+					# Use Supabase's built-in password reset
+					app_url = current_app.config.get('APP_URL', 'http://localhost:5000')
+					redirect_to = f"{app_url}/auth/reset-password-callback"
+					
+					supabase_response = current_app.supabase.auth.reset_password_email(
+						email, 
+						{"redirect_to": redirect_to}
+					)
+					
+					print(f"✅ Supabase password reset email sent to {email}")
+					flash('Password reset link sent to your email. Please check your inbox.', 'info')
+					return redirect(url_for('auth.forgot_password'))
+					
 			except Exception as e:
-				print("Error sending email:", e)
-				flash('Error sending email. Please try again later.', 'danger')
+				print(f"⚠️  Supabase password reset failed: {e}")
+				# Fall back to local password reset
+			
+			# Fallback: Local password reset using our email system
+			try:
+				s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+				token = s.dumps(user.email, salt='password-reset-salt')
+				reset_url = url_for('auth.reset_password', token=token, _external=True)
+				
+				# Use centralized email function
+				success = current_app.send_password_reset_email(user.email, reset_url)
+				
+				if success:
+					flash('Password reset link sent to your email.', 'info')
+				else:
+					flash('Error sending email. Please try again later.', 'danger')
+					
+			except Exception as e:
+				print(f"❌ Local password reset error: {e}")
+				flash('Error processing password reset. Please try again later.', 'danger')
 		else:
-			flash('Email not found.', 'danger')
+			# Don't reveal whether email exists or not for security
+			flash('If an account with that email exists, a password reset link has been sent.', 'info')
+		
 		return redirect(url_for('auth.forgot_password'))
+	
 	return render_template('forgot_password.html')
 
 @auth.route('/reset-password/<token>', methods=['GET', 'POST'])
@@ -218,10 +235,102 @@ def reset_password(token):
 		if len(new_password) < 6:
 			flash('Password must be at least 6 characters long.', 'danger')
 			return render_template('reset_password.html', token=token)
+		
+		# Update password in both local database and Supabase
+		try:
+			# Update local password
+			user.set_password(new_password)
 			
-		user.set_password(new_password)
-		db.session.commit()
-		flash('Your password has been updated! You can now log in.', 'success')
-		return redirect(url_for('auth.register') + '?tab=login')
+			# Update Supabase password if user has Supabase ID
+			if current_app.supabase and hasattr(user, 'supabase_user_id') and user.supabase_user_id:
+				try:
+					current_app.supabase.auth.admin.update_user_by_id(
+						user.supabase_user_id,
+						{"password": new_password}
+					)
+					print(f"✅ Supabase password updated for user {user.email}")
+				except Exception as e:
+					print(f"⚠️  Supabase password update failed: {e}")
+					# Continue with local update
+			
+			db.session.commit()
+			flash('Your password has been updated! You can now log in.', 'success')
+			return redirect(url_for('auth.register') + '?tab=login')
+			
+		except Exception as e:
+			print(f"❌ Password reset error: {e}")
+			flash('Error updating password. Please try again.', 'danger')
+			return render_template('reset_password.html', token=token)
 	
 	return render_template('reset_password.html', token=token)
+
+
+@auth.route('/reset-password-callback', methods=['GET'])
+def reset_password_callback():
+	"""Handle Supabase password reset callback"""
+	# Get the access token and type from URL parameters
+	access_token = request.args.get('access_token')
+	token_type = request.args.get('type')
+	
+	if token_type == 'recovery' and access_token:
+		# Store the recovery token in session for the password update form
+		session['recovery_token'] = access_token
+		flash('Please enter your new password below.', 'info')
+		return render_template('reset_password.html', supabase_recovery=True)
+	else:
+		flash('Invalid password reset link.', 'danger')
+		return redirect(url_for('auth.forgot_password'))
+
+
+@auth.route('/update-password', methods=['POST'])
+def update_password():
+	"""Handle Supabase password update from recovery token"""
+	recovery_token = session.get('recovery_token')
+	
+	if not recovery_token:
+		flash('Invalid session. Please request a new password reset.', 'danger')
+		return redirect(url_for('auth.forgot_password'))
+	
+	new_password = request.form.get('password')
+	confirm_password = request.form.get('confirm_password')
+	
+	if not new_password or not confirm_password:
+		flash('Please fill out all fields.', 'danger')
+		return render_template('reset_password.html', supabase_recovery=True)
+		
+	if new_password != confirm_password:
+		flash('Passwords do not match.', 'danger')
+		return render_template('reset_password.html', supabase_recovery=True)
+		
+	if len(new_password) < 6:
+		flash('Password must be at least 6 characters long.', 'danger')
+		return render_template('reset_password.html', supabase_recovery=True)
+	
+	try:
+		if current_app.supabase:
+			# Update password using recovery token
+			response = current_app.supabase.auth.update_user(
+				{"password": new_password},
+				access_token=recovery_token
+			)
+			
+			# Also update local database if user exists
+			user_email = response.user.email
+			local_user = User.query.filter_by(email=user_email).first()
+			if local_user:
+				local_user.set_password(new_password)
+				db.session.commit()
+			
+			# Clear recovery token from session
+			session.pop('recovery_token', None)
+			
+			flash('Your password has been updated successfully! You can now log in.', 'success')
+			return redirect(url_for('auth.register') + '?tab=login')
+		else:
+			flash('Password update service unavailable.', 'danger')
+			return render_template('reset_password.html', supabase_recovery=True)
+			
+	except Exception as e:
+		print(f"❌ Supabase password update error: {e}")
+		flash('Error updating password. Please try again.', 'danger')
+		return render_template('reset_password.html', supabase_recovery=True)

@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy # Import SQLAlchemy for  ORM functionality
 from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy.ext.mutable import MutableList
 from datetime import date, datetime, timezone # Import date for timestamping and datetime
 from flask_login import UserMixin	# Import UserMixin for user management
 from werkzeug.security import generate_password_hash, check_password_hash # Import generate_password_hash for password hashing and check_password_hash for password verification
