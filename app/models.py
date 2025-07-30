@@ -122,6 +122,28 @@ class User(db.Model, UserMixin): # User model for managing user data
 		}
 		return icons.get(platform, 'fa-solid fa-link')
 
+	def get_profile_picture_url(self):
+		"""Get clean profile picture URL without trailing characters"""
+		if not self.profile_picture:
+			return None
+		
+		# Clean up any trailing ? or other unwanted characters
+		clean_url = self.profile_picture.rstrip('?').rstrip()
+		
+		# If it's still the default, return None to trigger initials display
+		if clean_url == 'default.jpg':
+			return None
+			
+		return clean_url
+
+	def update_profile_picture(self, new_url):
+		"""Update profile picture with URL cleanup"""
+		if new_url:
+			# Clean the URL
+			self.profile_picture = new_url.rstrip('?').rstrip()
+		else:
+			self.profile_picture = 'default.jpg'
+
 
 
 

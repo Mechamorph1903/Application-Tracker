@@ -28,16 +28,16 @@
     </div>
     <div class="navbar-user">
       {% if current_user.is_authenticated %}
-        {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-          <img src="{{ current_user.profile_picture }}" alt="Profile Picture" class="profile-img" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+        {% if current_user.get_profile_picture_url() %}
+          <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-img" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
         {% else %}
           <div class="profile-initials">{{ current_user | initials }}</div>
         {% endif %}
         <span class="username">{{ current_user.username }}</span>
         <div class="profile-card">
                     <div class="profile-card-header">
-                        {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-                        <img src="{{ current_user.profile_picture }}" alt="Profile Picture" class="profile-card-avatar" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+                        {% if current_user.get_profile_picture_url() %}
+                        <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-card-avatar" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
                         {% else %}
                           <div class="profile-card-initials">{{ current_user | initials }}</div>
                         {% endif %}

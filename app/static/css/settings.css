@@ -263,6 +263,12 @@ nav > div:first-child {
     border: 2px solid #e5e7eb;
 }
 
+.profile-status {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
 .badge {
     padding: 1rem 0.75rem;
     border-radius: 20px;

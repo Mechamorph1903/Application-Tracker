@@ -25,8 +25,8 @@
            
             <div class="profile-info">
                 <div class="profile-picture">
-                    {% if user.profile_picture and user.profile_picture != 'default.jpg' %}
-                        <img src="{{ user.profile_picture }}" alt="Profile Picture" class="friend-profile-img">
+                    {% if user.get_profile_picture_url() %}
+                        <img src="{{ user.get_profile_picture_url() }}" alt="Profile Picture" class="friend-profile-img">
                     {% else %}
                         <div class="profile-initials">{{ user | initials }}</div>  
                     {% endif %}

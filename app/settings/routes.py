@@ -28,7 +28,7 @@ except ImportError:
     PANDAS_AVAILABLE = False
 
 # File upload configuration
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 settings = Blueprint('settings', __name__)
@@ -61,27 +61,14 @@ def update_user_settings():
                     print(f"[DEBUG] File too large: {file_size} > {MAX_FILE_SIZE}")
                     return jsonify({'success': False, 'error': 'File size too large. Maximum 5MB allowed.'}), 400
                 
-                # Store old profile picture URL to potentially delete later
-                old_profile_picture = current_user.profile_picture
-                
                 # Save to Supabase
                 print("[DEBUG] Calling upload_profile_picture_to_supabase...")
-                supa_url = upload_profile_picture_to_supabase(file, current_user.id)
+                supa_url = upload_profile_picture_to_supabase(file, current_user.id, current_user.username)
                 print(f"[DEBUG] supa_url returned: {supa_url}")
                 if supa_url:
-                    # Update user's profile picture (this overrides any existing one in database)
+                    # Update user's profile picture
                     current_user.profile_picture = supa_url
-                    
-                    # Optional: Delete old file from Supabase storage to save space
-                    if old_profile_picture and old_profile_picture != 'default.jpg' and old_profile_picture.startswith('http'):
-                        try:
-                            # Extract filename from old URL for deletion
-                            old_filename = old_profile_picture.split('/')[-1]
-                            if old_filename:
-                                supabase.storage.from_(SUPABASE_BUCKET).remove([old_filename])
-                                print(f"[DEBUG] Deleted old profile picture: {old_filename}")
-                        except Exception as e:
-                            print(f"[DEBUG] Could not delete old profile picture: {e}")
+                    print(f"[DEBUG] Updated profile_picture to: {supa_url}")
                 else:
                     print("[DEBUG] Failed to upload to Supabase or invalid file type.")
                     return jsonify({'success': False, 'error': 'Failed to upload to Supabase or invalid file type.'}), 400
@@ -149,41 +136,40 @@ def upload_cropped_profile_picture():
         if len(image_bytes) > MAX_FILE_SIZE:
             return jsonify({'success': False, 'error': 'Image too large after cropping'}), 400
         
-        # Store old profile picture URL
-        old_profile_picture = current_user.profile_picture
-        
-        # Create a unique filename
-        file_extension = 'jpg'  # We'll standardize cropped images as JPG
-        unique_filename = f"{current_user.id}_cropped_{uuid.uuid4().hex}.{file_extension}"
+        # Use username with jpg extension for cropped images
+        filename = f"{current_user.username}.jpg"
         
         # Upload to Supabase
         try:
             res = supabase.storage.from_(SUPABASE_BUCKET).upload(
-                unique_filename, 
+                filename, 
                 image_bytes, 
-                {'content-type': 'image/jpeg'}
+                {
+                    'content-type': 'image/jpeg',
+                    'upsert': 'true'  # Replace existing file
+                }
             )
             
             if hasattr(res, "error") and res.error:
                 print("[DEBUG] Supabase upload error:", res.error)
                 return jsonify({'success': False, 'error': 'Failed to upload cropped image'}), 500
             
-            # Get public URL
-            public_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(unique_filename)
+            # Get public URL (bucket should now be public)
+            public_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(filename)
+            
+            # Clean up any trailing ? characters
+            if public_url.endswith('?'):
+                public_url = public_url[:-1]
+                
+            print(f"[DEBUG] Generated public URL for cropped image: {public_url}")
+            
+            # Verify it's actually a public URL
+            if '/public/' not in public_url:
+                print(f"[DEBUG] WARNING: Bucket may not be public! URL: {public_url}")
             
             # Update user's profile picture
             current_user.profile_picture = public_url
             db.session.commit()
-            
-            # Delete old profile picture from storage
-            if old_profile_picture and old_profile_picture != 'default.jpg' and old_profile_picture.startswith('http'):
-                try:
-                    old_filename = old_profile_picture.split('/')[-1]
-                    if old_filename:
-                        supabase.storage.from_(SUPABASE_BUCKET).remove([old_filename])
-                        print(f"[DEBUG] Deleted old profile picture: {old_filename}")
-                except Exception as e:
-                    print(f"[DEBUG] Could not delete old profile picture: {e}")
             
             return jsonify({
                 'success': True, 
@@ -348,41 +334,103 @@ def change_password():
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@settings.route('/cleanup-profile-url', methods=['GET', 'POST'])
+@login_required
+def cleanup_profile_url():
+    """Clean up profile picture URL by removing trailing ? and updating to new format"""
+    try:
+        if current_user.profile_picture:
+            # Remove trailing ?
+            clean_url = current_user.profile_picture.rstrip('?')
+            current_user.profile_picture = clean_url
+            db.session.commit()
+            
+            return jsonify({
+                'success': True, 
+                'message': 'Profile picture URL cleaned up!',
+                'new_url': clean_url
+            })
+        else:
+            return jsonify({'success': False, 'message': 'No profile picture to clean up'})
+            
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@settings.route('/debug-profile-pic')
+@login_required
+def debug_profile_pic():
+    """Debug profile picture issues"""
+    return jsonify({
+        'user_id': current_user.id,
+        'username': current_user.username,
+        'profile_picture': current_user.profile_picture,
+        'profile_picture_length': len(current_user.profile_picture) if current_user.profile_picture else 0,
+        'has_trailing_question': current_user.profile_picture.endswith('?') if current_user.profile_picture else False
+    })
+
 # Helper functions for file upload
 def allowed_file(filename):
     """Check if file extension is allowed"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # --- DEBUG ENHANCED ---
-def upload_profile_picture_to_supabase(file, user_id):
+def upload_profile_picture_to_supabase(file, user_id, username):
     """Upload profile picture to Supabase Storage and return public URL"""
     print("[DEBUG] upload_profile_picture_to_supabase called")
     print(f"[DEBUG] supabase is None: {supabase is None}")
     print(f"[DEBUG] file: {file}")
+    print(f"[DEBUG] username: {username}")
+    
     if not supabase:
         print("[DEBUG] Supabase client is not initialized!")
         return None
+        
     if file and allowed_file(file.filename):
         print(f"[DEBUG] Allowed file: {file.filename}")
+        
+        # Extract file extension from uploaded file
         file_extension = file.filename.rsplit('.', 1)[1].lower()
-        unique_filename = f"{user_id}_{uuid.uuid4().hex}.{file_extension}"
-        print(f"[DEBUG] unique_filename: {unique_filename}")
+        filename = f"{username}.{file_extension}"
+        print(f"[DEBUG] filename: {filename}")
+        
         file.seek(0)
         try:
             file_bytes = file.read()
             print(f"[DEBUG] file_bytes length: {len(file_bytes)}")
             print(f"[DEBUG] Uploading to bucket: {SUPABASE_BUCKET}")
-            res = supabase.storage.from_(SUPABASE_BUCKET).upload(unique_filename, file_bytes, {'content-type': file.mimetype})
+            
+            # Upload with upsert=True to replace existing file
+            res = supabase.storage.from_(SUPABASE_BUCKET).upload(
+                filename, 
+                file_bytes, 
+                {
+                    'content-type': file.mimetype,
+                    'upsert': 'true'  # This replaces existing file with same name
+                }
+            )
+            
             print("[DEBUG] Supabase upload response:", res)
+            
             if hasattr(res, "error") and res.error:
                 print("[DEBUG] Supabase upload error:", res.error)
                 return None
-            if hasattr(res, "data") and res.data is None:
-                print("[DEBUG] Supabase upload failed, no data returned.")
-                return None
-            public_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(unique_filename)
-            print(f"[DEBUG] public_url: {public_url}")
+                
+            # Get public URL (bucket should now be public)
+            public_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(filename)
+            
+            # Clean up any trailing ? characters  
+            if public_url.endswith('?'):
+                public_url = public_url[:-1]
+                
+            print(f"[DEBUG] Generated public URL: {public_url}")
+            
+            # Verify it's actually a public URL
+            if '/public/' not in public_url:
+                print(f"[DEBUG] WARNING: Bucket may not be public! URL: {public_url}")
+                
             return public_url
+            
         except Exception as e:
             print('[DEBUG] Supabase upload exception:', e)
             return None
