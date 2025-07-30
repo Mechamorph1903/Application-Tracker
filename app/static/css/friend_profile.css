@@ -189,14 +189,15 @@
             font-weight: 500;
         }
 
-        .bio{
-           
+        .bio {
             color: white;
+            margin-top: 2rem;
+            padding: 0 40px;
         }
 
-        .bio-content{
-            
+        .bio-content {
             width: 40em;
+            margin: 0 auto;
             background: linear-gradient(135deg, rgba(162, 89, 255, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
@@ -695,4 +696,35 @@
  
 .btn:hover {
     transform: translateY(-2px);
+}
+
+.bio {
+    color: white;
+    margin-top: 2rem;
+    padding: 0 40px;
+}
+
+.bio-content {
+    width: 40em;
+    margin: 0 auto;
+    background: linear-gradient(135deg, rgba(162, 89, 255, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 6rem;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.1);
+}
+
+.applications-wrapper {
+    margin-top: 3rem;
+    padding: 0 40px;
+}
+
+.profile-section h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 1rem;
 }
