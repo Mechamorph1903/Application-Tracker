@@ -84,6 +84,10 @@ nav > div:first-child {
 	display: none;
 }
 
+.tab-content {
+    background: linear-gradient(to bottom, #2d044d 0%, #432d7c 100%);
+    padding: 16px;
+}
 
 .settings-section {
     background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
@@ -257,6 +261,12 @@ nav > div:first-child {
     font-size: 16px;
     text-transform: uppercase;
     border: 2px solid #e5e7eb;
+}
+
+.profile-status {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: italic;
 }
 
 .badge {
@@ -680,10 +690,7 @@ input[type="password"]:focus {
     color: #059669;
 }
 
-.tab-content {
-    background: linear-gradient(to bottom, #2d044d 0%, #432d7c 100%);
-    padding: 16px;
-}
+
 /* Photo Cropper Styles */
 .crop-btn {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
@@ -825,4 +832,127 @@ input[type="password"]:focus {
 .btn-primary:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+@media (prefers-color-scheme: dark){
+    body{
+        background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+    }
+    .tab-content{
+        background: transparent;
+    }
+
+    nav {
+        background: transparent;
+        box-shadow: 0 4px 48px 0 rgb(20, 20, 20);
+    }
+    .settings-section{
+        background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
+    }
+    .settings-tabs .tab {
+    color: #ffffffaf;
+    transition: background 0.5s;
+    }
+    .settings-tabs .tab.active,
+    .settings-tabs .tab:hover {
+        background: rgb(71, 19, 116);
+        color: #fff;
+        transition: all 0.5s;
+    }
+}
+
+/* ===== MOBILE RESPONSIVE STYLES ===== */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        margin: 0;
+        max-width: 100%;
+    }
+    
+    .settings-tabs {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .tab {
+        text-align: center;
+        padding: 12px;
+    }
+    
+    .content-section {
+        padding: 20px 15px;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-width: 400px;
+        margin: 10px;
+        padding: 20px;
+    }
+    
+    .profile-pic-display {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .export-options {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .export-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .content-section {
+        padding: 15px 10px;
+    }
+    
+    .tab {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .profile-thumb,
+    .profile-thumb-initials {
+        width: 60px;
+        height: 60px;
+    }
 }

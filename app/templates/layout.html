@@ -20,24 +20,33 @@
   <!-- NAVBAR (GLOBAL) -->
   <div class="navbar">
     <div class="navbar-logo">InternIn</div>
+    
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Open navigation menu" title="Menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+    
     <div class="navbar-links">
       <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
       <a href="{{ url_for('calendar') }}" class="{% if request.endpoint == 'calendar' %}active{% endif %}">Calendar</a>
       <a href="{{ url_for('friends.friendsList') }}" class="{% if request.endpoint == 'friends.friendsList' %}active{% endif %}">Friends</a>
       <a href="{{ url_for('applications.applicationsList') }}" class="{% if request.endpoint == 'applications.applicationsList' %}active{% endif %}">Applications</a>
     </div>
+    
     <div class="navbar-user">
       {% if current_user.is_authenticated %}
-        {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-          <img src="{{ current_user.profile_picture }}" alt="Profile Picture" class="profile-img" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+        {% if current_user.get_profile_picture_url() %}
+          <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-img" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
         {% else %}
           <div class="profile-initials">{{ current_user | initials }}</div>
         {% endif %}
         <span class="username">{{ current_user.username }}</span>
         <div class="profile-card">
                     <div class="profile-card-header">
-                        {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-                        <img src="{{ current_user.profile_picture }}" alt="Profile Picture" class="profile-card-avatar" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+                        {% if current_user.get_profile_picture_url() %}
+                        <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-card-avatar" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
                         {% else %}
                           <div class="profile-card-initials">{{ current_user | initials }}</div>
                         {% endif %}
@@ -53,6 +62,54 @@
                         <button class="profile-btn logout" onclick="logout()">Logout</button>
                     </div>
                 </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="mobile-nav-overlay" id="mobileNavOverlay">
+    <div class="mobile-nav-content">
+      <div class="mobile-nav-header">
+        <h2>InternIn</h2>
+        <button class="mobile-nav-close" onclick="toggleMobileMenu()">&times;</button>
+      </div>
+      <div class="mobile-nav-links">
+        <a href="{{ url_for('home') }}" class="mobile-nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        <a href="{{ url_for('calendar') }}" class="mobile-nav-link {% if request.endpoint == 'calendar' %}active{% endif %}">
+          <i class="fas fa-calendar"></i>
+          <span>Calendar</span>
+        </a>
+        <a href="{{ url_for('friends.friendsList') }}" class="mobile-nav-link {% if request.endpoint == 'friends.friendsList' %}active{% endif %}">
+          <i class="fas fa-users"></i>
+          <span>Friends</span>
+        </a>
+        <a href="{{ url_for('applications.applicationsList') }}" class="mobile-nav-link {% if request.endpoint == 'applications.applicationsList' %}active{% endif %}">
+          <i class="fas fa-briefcase"></i>
+          <span>Applications</span>
+        </a>
+      </div>
+      {% if current_user.is_authenticated %}
+      <div class="mobile-profile-section">
+        <div class="mobile-profile-info">
+          {% if current_user.get_profile_picture_url() %}
+            <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="mobile-profile-img">
+          {% else %}
+            <div class="mobile-profile-initials">{{ current_user | initials }}</div>
+          {% endif %}
+          <div class="mobile-profile-details">
+            <h3>{{ current_user.username }}</h3>
+            <p>{{ current_user.email }}</p>
+          </div>
+        </div>
+        <div class="mobile-profile-actions">
+          <a href="{{ url_for('profile.profile') }}" class="mobile-profile-btn">View Profile</a>
+          <a href="{{ url_for('settings.settings_page') }}" class="mobile-profile-btn">Settings</a>
+          <button class="mobile-profile-btn logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
       {% endif %}
     </div>
   </div>
@@ -83,6 +140,34 @@
   <!-- Include nav.js for logout functionality -->
   <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
   
+  <!-- Mobile Navigation Scripts -->
+  <script>
+    function toggleMobileMenu() {
+      const overlay = document.getElementById('mobileNavOverlay');
+      const btn = document.querySelector('.mobile-menu-btn');
+      
+      if (overlay.classList.contains('active')) {
+        overlay.classList.remove('active');
+        btn.classList.remove('active');
+        document.body.style.overflow = '';
+      } else {
+        overlay.classList.add('active');
+        btn.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    
+    // Close mobile menu when clicking on overlay
+    document.addEventListener('DOMContentLoaded', function() {
+      const overlay = document.getElementById('mobileNavOverlay');
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+          toggleMobileMenu();
+        }
+      });
+    });
+  </script>
+
   <!-- Navigation state tracking -->
   <script>
     // Store current page for back button functionality
@@ -151,10 +236,10 @@
         <div class="footer-bottom">
             <p class="footer-copyright">
                 <i class="fas fa-copyright"></i>
-                2025 InternIn - A Tinubu Special &trade;
+                2025 InternIn - A DEN Special &trade;
             </p>
             <p class="footer-love">
-                Made with <i class="fas fa-heart footer-heart"></i> for aspiring professionals
+                Made with <i class="fas fa-heart footer-heart"></i> for tired aspiring professionals
             </p>
         </div>
     </div>

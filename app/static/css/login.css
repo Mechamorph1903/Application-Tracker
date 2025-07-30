@@ -289,3 +289,33 @@ form button:hover {
 		transform: translateY(0);
 	}
 }
+
+@media (prefers-color-scheme: dark){
+    body{
+        background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+    }
+}
+
+/* Forgot Password Link Styling */
+.forgot-password-link {
+	text-align: center;
+	margin-top: 1em;
+}
+
+.forgot-password-link a {
+	color: #a855f7;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 500;
+	transition: all 0.3s ease;
+	display: inline-block;
+	padding: 8px 16px;
+	border-radius: 8px;
+}
+
+.forgot-password-link a:hover {
+	color: #7c3aed;
+	background: rgba(168, 85, 247, 0.1);
+	text-decoration: underline;
+	transform: translateY(-1px);
+}

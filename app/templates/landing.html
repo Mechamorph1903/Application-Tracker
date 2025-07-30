@@ -49,17 +49,14 @@
 
                 <div class="hero-stats">
                     <div class="stat">
-                        <span class="stat-number">1000+</span>
+                        <span class="stat-number">{{ landing_stats.total_applications if landing_stats else 0 }}</span>
                         <span class="stat-label">Applications Tracked</span>
                     </div>
                     <div class="stat">
-                        <p class="stat-number">500+</p>
+                        <p class="stat-number">{{ landing_stats.total_users if landing_stats else 0 }}</p>
                         <p class="stat-label">Students Helped</p>
                     </div>
-                    <div class="stat">
-                        <p class="stat-number">95%</p>
-                        <p class="stat-label">Success Rate</p>
-                    </div>
+                   
                    
                 </div>
             </div>

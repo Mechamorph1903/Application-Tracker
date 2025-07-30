@@ -274,7 +274,7 @@
 }
 
 .quick-actions {
-    background: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -290,30 +290,27 @@
 }
 
 .action-btn {
+    border: 0px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background:  rgb(44, 12, 70);
     border-radius: 12px;
     text-decoration: none;
-    color: #333;
+    color: #ffffffaf;
     font-weight: 500;
-    transition: all 0.3s ease;
 }
 
 .action-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: scale(1.01);
+    background:  rgb(44, 12, 70);
 }
 
-.action-btn.primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
+.action-btn:active{
+    transform: scale(0.99);
 }
+
 
 .action-btn i {
     margin-right: 0.5rem;
@@ -533,5 +530,113 @@ progress {
     
     .dashboard-header h1 {
         font-size: 2rem;
+    }
+}
+
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 768px) {
+    .home-page-container {
+        padding: 15px;
+    }
+    
+    .welcome-user {
+        font-size: 2rem;
+    }
+    
+    .welcome-question {
+        font-size: 1.1rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .action-card {
+        padding: 1.25rem;
+    }
+    
+    .recent-applications {
+        padding: 1rem;
+    }
+    
+    .application-item {
+        padding: 1rem;
+    }
+    
+    .goals-section {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-page-container {
+        padding: 10px;
+    }
+    
+    .welcome-user {
+        font-size: 1.75rem;
+    }
+    
+    .welcome-question {
+        font-size: 1rem;
+    }
+    
+    .stats-grid {
+        gap: 0.75rem;
+    }
+    
+    .stat-card {
+        padding: 0.875rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .stat-content {
+        align-items: center;
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+    }
+    
+    .action-card {
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .action-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .action-card p {
+        font-size: 0.9rem;
     }
 }

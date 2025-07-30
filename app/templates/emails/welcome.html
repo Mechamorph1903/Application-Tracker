@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to InternIn!</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .email-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: rgba(255,255,255,0.1);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        .content {
+            background: white;
+            padding: 40px 30px;
+        }
+        .welcome-title {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .welcome-message {
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+            text-align: center;
+            color: #555;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-category {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+        }
+        .feature-category h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 14px;
+            color: #666;
+        }
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        .quick-start {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .quick-start h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .step {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .step-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 10px;
+            font-size: 14px;
+        }
+        .step h4 {
+            color: #333;
+            margin: 10px 0 5px;
+            font-size: 14px;
+        }
+        .step p {
+            color: #666;
+            font-size: 12px;
+            margin: 0;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 18px 40px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        .tips-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .tips-section h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .tip {
+            margin-bottom: 10px;
+            color: #856404;
+            font-size: 14px;
+        }
+        .footer {
+            background: #333;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .footer-links {
+            margin-top: 20px;
+        }
+        .footer-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 14px;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        .social-links {
+            margin-top: 15px;
+        }
+        .social-links a {
+            color: #667eea;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        @media (max-width: 600px) {
+            .features-grid, .steps-grid {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                padding: 30px 20px;
+            }
+            .content {
+                padding: 30px 20px;
+            }
+            .logo {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">🎯 InternIn</div>
+            <p class="tagline">Your Ultimate Internship Journey Companion</p>
+        </div>
+        
+        <div class="content">
+            <h1 class="welcome-title">Welcome to InternIn, {{ user.firstName }}! 🎉</h1>
+            
+            <p class="welcome-message">
+                We're absolutely thrilled to have you join our community of ambitious students and professionals! 
+                InternIn is your all-in-one platform to organize, track, and accelerate your internship journey. 
+                Let's help you land that dream internship! 🚀
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-category">
+                    <h3><span class="feature-icon">📊</span>Application Management</h3>
+                    <ul class="feature-list">
+                        <li>Track all your internship applications in one place</li>
+                        <li>Monitor application status and progress</li>
+                        <li>Keep Personal Notes and relevant information regarding a particular application</li>
+                        <li>Set and track deadlines</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-category">
+                    <h3><span class="feature-icon">👥</span>Social Networking</h3>
+                    <ul class="feature-list">
+                        <li>Connect with peers in your field</li>
+                        <li>Build your professional network</li>
+                        <li>Share experiences and also trade applications</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-category">
+                    <h3><span class="feature-icon">👤</span>Professional Profile</h3>
+                    <ul class="feature-list">
+                        <li>Create a comprehensive profile</li>
+                        <li>Present yourself to others in your bio</li>
+                        <li>Add social media links</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-category">
+                    <h3><span class="feature-icon">🔔</span>Smart Notifications</h3>
+                    <ul class="feature-list">
+                        <li>Get deadline reminders (Coming Soon)</li>
+                        <li>Receive friend request notifications</li>
+                        <li>Track application status updates</li>
+                        <li>Customize notification preferences <strong>(Still under development)</strong></li>
+                    </ul>
+                </div>
+                
+                <div class="feature-category">
+                    <h3><span class="feature-icon">⚙️</span>Personalization <strong>(Under Development)</strong></h3>
+                    <ul class="feature-list">
+                        <li>Customize your dashboard</li>
+                        <li>Set privacy preferences</li>
+                        <li>Choose notification settings</li>
+                        <li>Personalize your experience</li>
+                        <li>Block unwanted connections</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-category">
+                    <h3><span class="feature-icon">📅</span>Future Features</h3>
+                    <ul class="feature-list">
+                        <li>Interactive calendar (coming soon!)</li>
+                        <li>Interview scheduling</li>
+                        <li>Applications Pool</li>
+                        <li>Comprehensive Activity Summary via Email</li>
+                        <li>Progress analytics dashboard</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="quick-start">
+                <h3>🚀 Quick Start Guide</h3>
+                <p>Get the most out of InternIn in just a few simple steps:</p>
+                
+                <div class="steps-grid">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h4>Complete Your Profile</h4>
+                        <p>Add your photo, education, and experience</p>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h4>Add First Application</h4>
+                        <p>Track your first internship application</p>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h4>Connect with Peers</h4>
+                        <p>Find and connect with other students and share applications with each other!</p>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="cta-section">
+                <a href="{{ app_url }}/home" class="cta-button">
+                    🎯 Start Your Journey Now
+                </a>
+            </div>
+            
+            <div class="tips-section">
+                <h3>💡 Pro Tips for Success</h3>
+                <div class="tip">🎯 <strong>Stay Organized:</strong> Update your application status regularly to track your progress effectively</div>
+                <div class="tip">📅 <strong>Set Deadlines:</strong> Never miss an application deadline by setting reminders in your dashboard</div>
+                <div class="tip">🤝 <strong>Network Actively:</strong> Connect with peers in your field to share opportunities and experiences</div>
+                <!-- <div class="tip">📊 <strong>Analyze Your Progress:</strong> Use the analytics to understand your application success patterns</div> -->
+                <div class="tip">🔔 <strong>Enable Notifications:</strong> Stay on top of your game with timely reminders and updates</div>
+            </div>
+            
+            <p style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: center; font-size: 16px; color: #333;">
+                <strong>🌟 Your Success Story Starts Here!</strong><br>
+                Remember, every successful professional once started where you are now. 
+                InternIn is here to support you every step of the way. Let's make your internship dreams a reality!
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p style="font-size: 18px; margin-bottom: 10px;"><strong>Welcome to the InternIn Family! 🎉</strong></p>
+            <p>&copy; 2025 InternIn. Empowering the next generation of professionals.</p>
+            
+            <div class="footer-links">
+                <a href="{{ app_url }}/home">Dashboard</a> |
+                <a href="{{ app_url }}/profile">Profile</a> |
+                <a href="{{ app_url }}/friends/friends-portal">Connect</a> |
+                <a href="{{ app_url }}/settings">Settings</a>
+            </div>
+            
+            <p style="font-size: 12px; margin-top: 20px; opacity: 0.8;">
+                Need help getting started? Reply to this email or visit our 
+                <a href="{{ app_url }}/support" style="color: #667eea;">help center</a>.
+                You can also update your email preferences in your <a href="{{ app_url }}/settings" style="color: #667eea;">settings</a>.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

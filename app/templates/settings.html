@@ -43,12 +43,13 @@
             <div class="info-item">
                 <label>Profile Picture:</label>
                 <div class="profile-pic-display">
-                    {% if current_user.profile_picture and current_user.profile_picture != 'default.jpg' %}
-                        <img src="{{ current_user.profile_picture }}" alt="Profile Picture" class="profile-thumb" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+                    {% if current_user.get_profile_picture_url() %}
+                        <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-thumb" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+                        <span class="profile-status">✓ Custom profile picture uploaded</span>
                     {% else %}
                         <div class="profile-thumb-initials">{{ current_user | initials }}</div>
+                        <span class="profile-status">Using initials (no custom picture)</span>
                     {% endif %}
-                        <span>{{ current_user.profile_picture or 'default.jpg' }}</span>
                 </div>
             </div>
             <div class="info-item">
@@ -193,7 +194,7 @@
     </section>
     
     <!-- Privacy & Visibility -->
-    <section class="settings-section">
+    <!-- <section class="settings-section">
         <div class="section-header">
             <h3>Privacy & Visibility</h3>
             <button class="edit-btn" onclick="toggleEdit('privacy')">
@@ -235,10 +236,10 @@
                 <button type="submit" class="btn-save">Save Changes</button>
             </div>
         </form>
-    </section>
+    </section> -->
     
     <!-- Regional & Time -->
-    <section class="settings-section">
+    <!-- <section class="settings-section">
         <div class="section-header">
             <h3>Regional & Time Preferences</h3>
             <button class="edit-btn" onclick="toggleEdit('regional')">
@@ -268,10 +269,10 @@
                 <button type="submit" class="btn-save">Save Changes</button>
             </div>
         </form>
-    </section>
+    </section> -->
     
     <!-- Security -->
-    <section class="settings-section">
+    <!-- <section class="settings-section">
         <div class="section-header">
             <h3>Security</h3>
             <button class="edit-btn" onclick="toggleEdit('security')">
@@ -310,7 +311,7 @@
                 <button type="submit" class="btn-save">Save Changes</button>
             </div>
         </form>
-    </section>
+    </section> -->
     
     <!-- Change Password -->
     <section class="settings-section">
@@ -359,7 +360,7 @@
 <!-- App Settings Tab -->
 <div class="tab-content" id="app-settings">
     <!-- Display & Interface -->
-    <section class="settings-section">
+    <!-- <section class="settings-section">
         <div class="section-header">
             <h3>Display & Interface</h3>
             <button class="edit-btn" onclick="toggleEdit('display')">
@@ -436,10 +437,10 @@
                 <button type="submit" class="btn-save">Save Changes</button>
             </div>
         </form>
-    </section>
+    </section> -->
     
     <!-- Notifications & Reminders -->
-    <section class="settings-section">
+    <!-- <section class="settings-section">
         <div class="section-header">
             <h3>Notifications & Reminders</h3>
             <button class="edit-btn" onclick="toggleEdit('notifications')">
@@ -513,10 +514,10 @@
                 <button type="submit" class="btn-save">Save Changes</button>
             </div>
         </form>
-    </section>
+    </section> -->
     
     <!-- Application Tracking -->
-    <section class="settings-section">
+    <!-- <section class="settings-section">
         <div class="section-header">
             <h3>Application Tracking</h3>
             <button class="edit-btn" onclick="toggleEdit('tracking')">
@@ -560,7 +561,7 @@
                 <button type="submit" class="btn-save">Save Changes</button>
             </div>
         </form>
-    </section>
+    </section> -->
     
     <!-- Data & Export -->
     <section class="settings-section">

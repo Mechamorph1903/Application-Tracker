@@ -817,3 +817,25 @@ body {
         padding: 12px 20px;
     }
 }
+
+@media (prefers-color-scheme: dark){
+    body{
+        background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+    }
+
+    .details-nav{
+        background: transparent;
+        box-shadow: 0 4px 48px 0 rgb(20, 20, 20);
+    }
+
+    .details-nav .back{
+	background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+	color: #ffffffaf;
+}
+
+.details-nav .back:hover{
+	transform: scale(1.001);
+  box-shadow: 0 6px 20px rgba(185, 147, 253, 0.4);
+  background: rgb(71, 19, 116);
+}
+}

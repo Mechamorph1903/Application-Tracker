@@ -30,8 +30,8 @@
         <div class="profile-header">
             <div class="profile-info">
                 <div class="profile-picture">
-                    {% if current_user.profile_picture and current_user.profile_picture != 'defaullt.jpg'  %}
-                        <img src="{{ current_user.profile_picture }}" alt="Profile Picture" class="profile-img">
+                    {% if current_user.get_profile_picture_url() %}
+                        <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-img">
                     {% else %}
                         <div class="profile-initials">{{ current_user | initials }}</div>
                     {% endif %}
@@ -60,7 +60,7 @@
         </div>
 
         <div class="bio">
-            <h3>Bio: </h3>
+            <h3>Bio:</h3>
             <div class="bio-content">
                 {% if user.bio %}
                 <p>{{user.bio}}</p>

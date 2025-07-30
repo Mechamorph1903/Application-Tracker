@@ -21,10 +21,7 @@ from .auth.routes import auth
 from .profile.routes import userprofile
 from .settings.routes import settings
 from .applications.routes import applications
-from .friends import friends
 from .friends.routes import friends
-import os
-
 
 
 # Load environment variables
@@ -127,7 +124,31 @@ def create_app():
 
 	@app.route('/')
 	def landing():
-		return render_template('landing.html')
+		# Calculate real statistics from the database
+		from .models import User, Internship
+		
+		# Get total number of applications across all users
+		total_applications = Internship.query.count()
+		
+		# Get total number of users (students helped)
+		total_users = User.query.count()
+		
+		# Calculate success rate based on applications with offers/accepted status
+		successful_applications = Internship.query.filter(
+			Internship.application_status.in_(['offer', 'offered', 'accepted', 'hired'])
+		).count()
+		
+		success_rate = 0
+		if total_applications > 0:
+			success_rate = round((successful_applications / total_applications) * 100)
+		
+		landing_stats = {
+			'total_applications': total_applications,
+			'total_users': total_users,
+			'success_rate': success_rate
+		}
+		
+		return render_template('landing.html', landing_stats=landing_stats)
 	
 	@app.route('/home')
 	@app.route('/dashboard')
@@ -312,6 +333,30 @@ def create_app():
 		"""Render the credits page with attributions"""
 		return render_template('credits.html')
 	
+	# Test route for welcome email (remove in production)
+	@app.route('/test-welcome-email')
+	@login_required
+	def test_welcome_email():
+		"""Test route to send welcome email to current user"""
+		try:
+			success = app.send_welcome_email(user=current_user)
+			if success:
+				flash(f'Test welcome email sent to {current_user.email}! Check your inbox.', 'success')
+			else:
+				flash('Failed to send welcome email. Check console for errors.', 'error')
+		except Exception as e:
+			flash(f'Error sending welcome email: {str(e)}', 'error')
+		
+		return redirect(url_for('home'))
+	
+	# Preview route for welcome email (remove in production)
+	@app.route('/preview-welcome-email')
+	@login_required
+	def preview_welcome_email():
+		"""Preview the welcome email HTML template"""
+		app_url = os.getenv('APP_URL', 'http://localhost:5000')
+		return render_template('emails/welcome.html', user=current_user, app_url=app_url)
+	
 	def send_password_reset_email(user_email, reset_link):
 		"""Send password reset email to user"""
 		try:
@@ -381,73 +426,59 @@ def create_app():
 			
 		except Exception as e:
 			print(f"❌ Password reset email error: {str(e)}")
+			import traceback
+			traceback.print_exc()
 			return False
 	
-	def send_welcome_email(user_email, user_name):
-		"""Send welcome email to new users"""
+	def send_welcome_email(user=None, user_email=None, user_name=None):
+		"""Send welcome email to new users using email templates
+		
+		Args:
+			user: User object (preferred) OR
+			user_email: Email address (if user object not available)
+			user_name: User's first name (if user object not available)
+		"""
 		try:
 			from flask_mail import Message
 			
 			# Get app URL from environment variable
 			app_url = os.getenv('APP_URL', 'http://localhost:5000')
 			
+			# Handle both user object and separate parameters
+			if user:
+				email = user.email
+				name = user.firstName
+				user_data = user
+			else:
+				email = user_email
+				name = user_name
+				# Create a user-like object for template rendering
+				user_data = type('User', (), {
+					'firstName': name,
+					'email': email
+				})()
+			
+			if not email or not name:
+				raise ValueError("Email and name are required")
+			
 			msg = Message(
-				subject='Welcome to InternIn! 🎉',
-				recipients=[user_email],
+				subject=f'Welcome to InternIn, {name}! 🎉',
+				recipients=[email],
 				sender=current_app.config.get('MAIL_DEFAULT_SENDER')
 			)
 			
-			msg.html = f"""
-			<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-				<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
-					<h1 style="color: white; margin: 0;">Welcome to InternIn!</h1>
-					<p style="color: white; margin: 5px 0;">Your Internship Tracking Journey Begins</p>
-				</div>
-				
-				<div style="padding: 30px; background-color: #f9f9f9;">
-					<h2 style="color: #333;">Hi {user_name}! 👋</h2>
-					<p style="color: #666; line-height: 1.6;">
-						Welcome to InternIn - your personal internship tracking hub! We're excited to help you organize and track your internship applications.
-					</p>
-					
-					<div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
-						<h3 style="color: #333; margin-top: 0;">What you can do with InternIn:</h3>
-						<ul style="color: #666; line-height: 1.8;">
-							<li>📋 Track all your internship applications</li>
-							<li>📅 Set deadlines and reminders</li>
-							<li>👥 Connect with friends and share progress</li>
-							<li>📊 Visualize your application statistics</li>
-							<li>🎯 Set and achieve your goals</li>
-						</ul>
-					</div>
-					
-					<div style="text-align: center; margin: 30px 0;">
-						<a href="{app_url}/home" 
-						   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-								  color: white; padding: 12px 30px; text-decoration: none; 
-								  border-radius: 25px; display: inline-block; font-weight: bold;">
-							Get Started Now
-						</a>
-					</div>
-					
-					<p style="color: #999; font-size: 14px; text-align: center;">
-						Happy job hunting! 🚀
-					</p>
-				</div>
-				
-				<div style="background-color: #333; padding: 20px; text-align: center;">
-					<p style="color: #999; margin: 0; font-size: 14px;">
-						© 2025 InternIn. All rights reserved.
-					</p>
-				</div>
-			</div>
-			"""
+			# Use email templates instead of hardcoded HTML
+			msg.html = render_template('emails/welcome.html', user=user_data, app_url=app_url)
+			msg.body = render_template('emails/welcome.txt', user=user_data, app_url=app_url)
 			
 			mail.send(msg)
+			print(f"✅ Welcome email sent to {email}")
 			return True
 			
 		except Exception as e:
 			print(f"❌ Welcome email error: {str(e)}")
+			import traceback
+			traceback.print_exc()
 			return False
 	
 	# Make email functions available to other modules
