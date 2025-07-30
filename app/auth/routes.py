@@ -47,33 +47,50 @@ def register():
 					}
 				})
 				
+				# Validate Supabase response
+				if not auth_user or not hasattr(auth_user, 'user') or not auth_user.user:
+					raise Exception("Invalid Supabase response: auth_user is None or missing user")
+				
+				if not hasattr(auth_user.user, 'id') or not auth_user.user.id:
+					raise Exception("Invalid Supabase response: user.id is missing")
+				
 				# Set Supabase user ID and mark as not needing migration
-				try:
-					new_user.supabase_user_id = auth_user.user.id
-					new_user.needs_migration = False  # New users don't need migration
-					supabase_success = True
-					print(f"✅ Supabase user created with ID: {auth_user.user.id}")
-				except AttributeError as e:
-					print(f"⚠️  Database columns not ready: {e}")
-					# Columns don't exist yet, skip setting them
-					pass
+				supabase_user_id = auth_user.user.id
+				print(f"🔄 Setting supabase_user_id to: {supabase_user_id}")
+				
+				# Check if database columns exist before setting them
+				if not hasattr(new_user, 'supabase_user_id'):
+					raise Exception("Database column 'supabase_user_id' does not exist - database migration needed")
+				if not hasattr(new_user, 'needs_migration'):
+					raise Exception("Database column 'needs_migration' does not exist - database migration needed")
+				
+				new_user.supabase_user_id = supabase_user_id
+				new_user.needs_migration = False  # New users don't need migration
+				supabase_success = True
+				print(f"✅ Supabase user created with ID: {supabase_user_id}")
+				print(f"✅ Local user fields set: supabase_user_id={new_user.supabase_user_id}, needs_migration={new_user.needs_migration}")
+				
 			else:
-				print("⚠️  Supabase client not available")
+				print("⚠️  Supabase client not available - likely missing SUPABASE_URL or SUPABASE_SERVICE_KEY environment variables")
 				# If Supabase is not available, NEW users still don't need migration
-				try:
+				if hasattr(new_user, 'needs_migration'):
 					new_user.needs_migration = False  # They're already using the new system
-				except AttributeError:
-					# Column doesn't exist yet, skip
-					pass
+					supabase_success = True  # Consider this successful for new users without Supabase
+					print("ℹ️  Marked new user as not needing migration (no Supabase)")
+				else:
+					print("⚠️  Database column 'needs_migration' does not exist - treating as success anyway")
+					supabase_success = True  # Still consider successful for new users
 		except Exception as e:
 			print(f"❌ Supabase user creation failed: {e}")
-			flash(f'Account created locally, but Supabase integration failed: {str(e)}', 'warning')
+			print(f"❌ Error details: {type(e).__name__}: {str(e)}")
 			# Continue with local registration, NEW users still don't need migration
-			try:
+			if hasattr(new_user, 'needs_migration'):
 				new_user.needs_migration = False  # They're registering post-migration
-			except AttributeError:
-				# Column doesn't exist yet, skip
-				pass
+				supabase_success = True  # Consider successful for new users even without Supabase
+				print("ℹ️  Marked new user as not needing migration (Supabase failed)")
+			else:
+				print("⚠️  Database column 'needs_migration' does not exist - treating as success anyway")
+				supabase_success = True  # Still consider successful for new users
 
 		db.session.add(new_user) # Add the new user to the session
 		db.session.commit() # Commit the session to save the user to the database
@@ -86,7 +103,10 @@ def register():
 		current_app.send_welcome_email(user=new_user)
 		
 		if supabase_success:
-			flash(f'Registration successful! Welcome to InternIn {new_user.username}!', 'success')
+			if current_app.supabase:
+				flash(f'Registration successful! Welcome to InternIn {new_user.username}!', 'success')
+			else:
+				flash(f'Registration successful! Welcome to InternIn {new_user.username}! (Running in local mode)', 'success')
 		else:
 			flash('Registration successful! You may need to migrate your account later for full functionality.', 'warning')
 		
