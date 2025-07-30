@@ -1509,3 +1509,298 @@ input[type="text"] {
     transition: all 0.5s;
     }
 }
+
+/* ===== MOBILE RESPONSIVE STYLES ===== */
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+
+.hamburger-line {
+  width: 100%;
+  height: 3px;
+  background: #e04aff;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-btn.active .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.mobile-menu-btn.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.active .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Mobile Navigation Overlay */
+.mobile-nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-nav-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background: linear-gradient(to bottom, #2d044d 0%, #432d7c 100%);
+  padding: 20px;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+}
+
+.mobile-nav-overlay.active .mobile-nav-content {
+  transform: translateX(0);
+}
+
+.mobile-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(224, 74, 255, 0.3);
+}
+
+.mobile-nav-header h2 {
+  color: #e04aff;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.mobile-nav-close {
+  background: none;
+  border: none;
+  color: #e04aff;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-nav-links {
+  margin-bottom: 30px;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #f5e8ff;
+  text-decoration: none;
+  padding: 15px 10px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
+  background: #a259ff;
+  color: #fff;
+}
+
+.mobile-nav-link i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Mobile Profile Section */
+.mobile-profile-section {
+  border-top: 1px solid rgba(224, 74, 255, 0.3);
+  padding-top: 20px;
+}
+
+.mobile-profile-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.mobile-profile-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #a259ff;
+  object-fit: cover;
+}
+
+.mobile-profile-initials {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #a259ff;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.mobile-profile-details h3 {
+  margin: 0 0 5px 0;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.mobile-profile-details p {
+  margin: 0;
+  color: #b8a4d9;
+  font-size: 0.9rem;
+}
+
+.mobile-profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-profile-btn {
+  padding: 12px;
+  border: 1px solid #a259ff;
+  border-radius: 8px;
+  color: #f5e8ff;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.mobile-profile-btn:hover {
+  background: #a259ff;
+  color: #fff;
+}
+
+.mobile-profile-btn.logout {
+  border-color: #ef4444;
+  color: #fecaca;
+}
+
+.mobile-profile-btn.logout:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* Mobile Responsive Breakpoints */
+@media (max-width: 768px) {
+  /* Hide desktop navigation */
+  .navbar-links {
+    display: none;
+  }
+  
+  /* Show mobile menu button */
+  .mobile-menu-btn {
+    display: flex;
+  }
+  
+  /* Adjust navbar padding on mobile */
+  .navbar {
+    padding: 0 20px;
+  }
+  
+  /* Hide username on very small screens */
+  .username {
+    display: none;
+  }
+  
+  /* Adjust profile card for mobile */
+  .profile-card {
+    display: none; /* Hide desktop profile card on mobile */
+  }
+  
+  /* Adjust main content padding */
+  main {
+    padding: 20px 15px;
+  }
+  
+  /* Make footer more compact on mobile */
+  .footer-content {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .footer-links {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Even smaller screens */
+  .navbar {
+    padding: 0 15px;
+  }
+  
+  .navbar-logo {
+    font-size: 1.5rem;
+  }
+  
+  .mobile-nav-content {
+    width: 280px;
+  }
+  
+  /* Reduce flash message padding */
+  .flash-content {
+    padding: 12px 15px;
+  }
+  
+  /* Adjust profile images on mobile */
+  .profile-img {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .profile-initials {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+}
+
+/* Landscape tablets */
+@media (max-width: 1024px) and (orientation: landscape) {
+  .mobile-nav-content {
+    width: 320px;
+  }
+}
