@@ -124,7 +124,31 @@ def create_app():
 
 	@app.route('/')
 	def landing():
-		return render_template('landing.html')
+		# Calculate real statistics from the database
+		from .models import User, Internship
+		
+		# Get total number of applications across all users
+		total_applications = Internship.query.count()
+		
+		# Get total number of users (students helped)
+		total_users = User.query.count()
+		
+		# Calculate success rate based on applications with offers/accepted status
+		successful_applications = Internship.query.filter(
+			Internship.application_status.in_(['offer', 'offered', 'accepted', 'hired'])
+		).count()
+		
+		success_rate = 0
+		if total_applications > 0:
+			success_rate = round((successful_applications / total_applications) * 100)
+		
+		landing_stats = {
+			'total_applications': total_applications,
+			'total_users': total_users,
+			'success_rate': success_rate
+		}
+		
+		return render_template('landing.html', landing_stats=landing_stats)
 	
 	@app.route('/home')
 	@app.route('/dashboard')
