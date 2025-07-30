@@ -38,7 +38,7 @@
 
 /* Card container */
 .friend-card {
-  background: linear-gradient(135deg, #4f2d7f 70%, #302044 100%);
+  background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
   border-radius: 24px;
   box-shadow: 0 6px 28px rgba(46, 16, 87, 0.18);
   padding: 32px 32px 22px 32px;
@@ -50,8 +50,7 @@
   transition: transform 0.18s, box-shadow 0.18s;
 }
 .friend-card:hover {
-  transform: translateY(-6px) scale(1.025);
-  box-shadow: 0 10px 40px 0 rgba(164, 89, 255, 0.14);
+  transform: scale(1.01);
 }
 
 /* Clickable card styles */
@@ -59,11 +58,6 @@
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-}
-
-.friend-card.clickable-card:hover {
-  transform: translateY(-8px) scale(1.03);
-  box-shadow: 0 12px 48px 0 rgba(164, 89, 255, 0.2);
 }
 
 /* Header section: avatar + name + status + privacy badge */
@@ -78,7 +72,7 @@
   width: 68px;
   height: 68px;
   border-radius: 50%;
-  border: 2.5px solid #a259ff;
+  border: 1px solid #a259ff;
   background: #fff;
   object-fit: cover;
   flex-shrink: 0;
@@ -182,9 +176,8 @@
   text-decoration: none;
   padding: 10px 24px;
   border-radius: 16px;
-  background: transparent;
-  color: #b993fd;
-  border: 1.7px solid #b993fd;
+  background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+  color: #ffffffc4;
   font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
@@ -197,9 +190,11 @@
 }
 
 .add-friend-btn:hover {
-  background: #b993fd;
-  color: #3b1366;
-  box-shadow: 0 0 8px 2px #b993fd44;
+  transform: scale(1.01);
+}
+
+.add-friend-btn:active{
+  transform: scale(0.99);
 }
 
 /* Profile button wrapper for clickable cards */
@@ -212,9 +207,7 @@
 .profile-btn-wrapper .profile-btn {
   background: transparent;
   color: #b993fd;
-  border: 1.7px solid #b993fd;
   padding: 8px 20px;
-  border-radius: 12px;
   font-size: 1.02rem;
   font-weight: 600;
   cursor: pointer;
@@ -223,19 +216,12 @@
   pointer-events: none; /* Prevent clicking on the button itself */
 }
 
-.friend-card.clickable-card:hover .profile-btn {
-  background: #b993fd;
-  color: #3b1366;
-  box-shadow: 0 0 8px 2px #b993fd44;
-}
-
 /* Regular profile button styles */
 .profile-btn {
+  border: 0px;
   background: transparent;
   color: #b993fd;
-  border: 1.7px solid #b993fd;
   padding: 8px 20px;
-  border-radius: 12px;
   font-size: 1.02rem;
   font-weight: 600;
   cursor: pointer;

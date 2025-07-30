@@ -84,6 +84,10 @@ nav > div:first-child {
 	display: none;
 }
 
+.tab-content {
+    background: linear-gradient(to bottom, #2d044d 0%, #432d7c 100%);
+    padding: 16px;
+}
 
 .settings-section {
     background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
@@ -680,10 +684,7 @@ input[type="password"]:focus {
     color: #059669;
 }
 
-.tab-content {
-    background: linear-gradient(to bottom, #2d044d 0%, #432d7c 100%);
-    padding: 16px;
-}
+
 /* Photo Cropper Styles */
 .crop-btn {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
@@ -825,4 +826,31 @@ input[type="password"]:focus {
 .btn-primary:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+@media (prefers-color-scheme: dark){
+    body{
+        background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+    }
+    .tab-content{
+        background: transparent;
+    }
+
+    nav {
+        background: transparent;
+        box-shadow: 0 4px 48px 0 rgb(20, 20, 20);
+    }
+    .settings-section{
+        background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
+    }
+    .settings-tabs .tab {
+    color: #ffffffaf;
+    transition: background 0.5s;
+    }
+    .settings-tabs .tab.active,
+    .settings-tabs .tab:hover {
+        background: rgb(71, 19, 116);
+        color: #fff;
+        transition: all 0.5s;
+    }
 }

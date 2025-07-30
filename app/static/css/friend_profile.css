@@ -4,6 +4,10 @@
             box-sizing: border-box;
         }
 
+        .username{
+            color: #ffffffaf;
+        }
+
         body {
             font-family: 'Segoe UI';
             background: linear-gradient(#1c052c 5%, #4c18bc 100%);;
@@ -15,7 +19,6 @@
             max-width: 1200px;
             margin: 0 auto;
             background: #370f7c;
-            border: 1px solid #9fd9e2;
             border-radius: 12px;
             overflow: hidden;
             margin-top: 20px;
@@ -141,6 +144,7 @@
             font-weight: 700;
             margin-bottom: 8px;
             text-shadow: 0 2px 4px #0000004d;
+            color: #ffffffaf;
         }
 
         .school-info {
@@ -532,7 +536,7 @@
     flex: 1;
     overflow-y: auto;
     max-height: 500px;
-    padding-right: 8px;
+    padding: 8px;
 }
  
 /* Custom scrollbar for applications grid */
@@ -555,7 +559,7 @@
 }
  
 .application-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
     border-radius: 16px;
     padding: 1.5rem;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
@@ -565,7 +569,7 @@
 }
  
 .application-card:hover {
-    transform: translateY(-4px);
+    transform: scale(1.01);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
  
@@ -616,18 +620,18 @@
 .company-name {
     font-size: 1.25rem;
     font-weight: bold;
-    color: #333;
+    color: #ffffff;
     margin: 0 0 0.5rem 0;
 }
  
 .position {
     font-size: 1.1rem;
-    color: #555;
+    color: #ffffffaf;
     margin: 0 0 0.5rem 0;
 }
  
 .location {
-    color: #777;
+    color: #ffffffc4;
     font-size: 0.95rem;
     margin: 0;
     display: flex;
@@ -644,7 +648,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #666;
+    color: #ffffff8f;
     font-size: 0.9rem;
     margin-bottom: 1rem;
 }
@@ -695,4 +699,18 @@
  
 .btn:hover {
     transform: translateY(-2px);
+}
+
+@media (prefers-color-scheme: dark){
+    body{
+        background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+    }
+
+    .profile-container{
+        background: #7c3aed1a;
+    }
+
+    .profile-section h2{
+        color: #ffffffaf;
+    }
 }

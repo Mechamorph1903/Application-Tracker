@@ -15,8 +15,7 @@
             max-width: 1200px;
             margin: 0 auto;
             background: #370f7c;
-            border: 1px solid #9fd9e2;
-            border-radius: 12px;
+            border-radius: 24px;
             overflow: hidden;
             margin-top: 20px;
             margin-bottom: 20px;
@@ -41,7 +40,6 @@
         }
 
         .bio-content{
-            
             width: 40em;
             background: linear-gradient(135deg, rgba(162, 89, 255, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -51,6 +49,11 @@
             -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 15px rgba(124, 58, 237, 0.1);
+        }
+
+        .bio h3{
+            margin-bottom: 8px;
+            padding: 8px;
         }
 
         .settings {
@@ -144,11 +147,11 @@
             width: 160px; /* or your desired size */
             height: 160px;
             border-radius: 50%;
-            border: 4px solid white;
+            border: 1px solid white;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             overflow: hidden;
             position: relative;
-            background: #f0f0f0; /* fallback background */
+            background: #ffffffaf; /* fallback background */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -171,14 +174,14 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            color: white;
+            color: #ffffffaf;
             font-size: 3rem;
             text-transform: uppercase;
         }
 
         .profile-details {
             flex: 1;
-            color: white;
+            color: #ffffffc4;
             margin-bottom: 20px;
         }
 
@@ -250,6 +253,7 @@
         }
 
         .right-column {
+            position: relative;
             display: flex;
             flex-direction: column;
             gap: 30px;
@@ -257,10 +261,13 @@
 
         /* Activity Section */
         .section {
+            position: relative;
             background: #070755;
             border-radius: 12px;
-            padding: 25px;
-            border: 1px solid #e2e8f0;
+            padding: 24px;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .section-title {
@@ -365,65 +372,13 @@
         .stat-number {
             font-size: 2rem;
             font-weight: 700;
-            color: #3b82f6;
+            color: #ffffffc4;
             margin-bottom: 5px;
         }
 
         .stat-label {
             font-size: 0.9rem;
-            color: #64748b;
-        }
-
-        /* Calendar Heatmap-ish*/
-        .heatmap-container {
-            background: #201177;
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .heatmap-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            color: #ffffff;
-        }
-
-        .heatmap-grid {
-            display: grid;
-            gap: 3px;
-            margin-bottom: 15px;
-        }
-
-        .heatmap-cell {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-            background: #ebedf0;
-            transition: all 0.2s ease;
-        }
-
-        .heatmap-cell:hover {
-            transform: scale(1.2);
-        }
-
-        .heatmap-cell.level-1 { background: #c6e48b; }
-        .heatmap-cell.level-2 { background: #7bc96f; }
-        .heatmap-cell.level-3 { background: #239a3b; }
-        .heatmap-cell.level-4 { background: #196127; }
-
-        .heatmap-legend {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            color: #ffffffaf;
         }
 
         /* Debug info styling */
@@ -444,14 +399,13 @@
             display: flex;
             align-items: center;
             padding: 1rem;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+            border-radius: 24px;
+            border-left: 3px solid #7c3aed;
             transition: all 0.3s ease;
         }
 
         .notification-item:hover {
-            background: rgba(255, 255, 255, 0.9);
             transform: translateX(2px);
         }
 
@@ -478,13 +432,13 @@
 
         .notification-title {
             font-weight: 600;
-            color: #333;
+            color: #ffffffc4;
             margin-bottom: 0.25rem;
             font-size: 0.95rem;
         }
 
         .notification-details {
-            color: #666;
+            color: #ffffffaf;
             font-size: 0.85rem;
             line-height: 1.4;
         }
@@ -495,11 +449,11 @@
         }
 
         .notification-item:first-child .notification-title {
-            color: #666;
+            color: #ffffffc4;
         }
 
         .notification-item:first-child .notification-details {
-            color: #999;
+            color: #ffffffaf;
         }
 
         /* Responsive Design */
@@ -770,3 +724,18 @@
         .clickable-notification:active {
             transform: translateX(2px);
         }
+
+        @media (prefers-color-scheme: dark){
+    body{
+        background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+        }
+        .profile-container{
+            background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
+        }
+        .section{
+            background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
+        }
+        .stat-card{
+            background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
+        }
+    }
