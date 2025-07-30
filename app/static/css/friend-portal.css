@@ -46,10 +46,9 @@ html, body {
 .searchbar-section {
     padding: 15px 20px;
     margin: 0 20px 20px 20px;
-    background: rgba(255, 255, 255, 0.7);
+    background: transparent;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    border: 1px solid #f3f4f6;
 }
 
 .searchbar-section form {
@@ -69,17 +68,16 @@ html, body {
 
 .search-section label {
     font-weight: 500;
-    color: #6b7280;
+    color: #ffffffaf;
     font-size: 13px;
 }
 
 .search-section input, .search-section select {
     padding: 8px 10px;
     color: black;
-    border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 14px;
-    background: rgba(255, 255, 255, 0.9);
+    background: #ffffff8d;
     transition: all 0.2s ease;
 }
 
@@ -104,6 +102,10 @@ html, body {
 
 .searchbar-section button[type="submit"]:hover {
     background: #6d28d9;
+}
+
+#major{
+    background: #ffffff8d;
 }
 
 /* Users container: prevent horizontal scroll */
@@ -169,10 +171,9 @@ html, body {
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    background: white;
+    background: linear-gradient(135deg, #7c3aed1a, #a855f71a);
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
     max-width: 100%;
     min-width: 0;
     width: 100%;
@@ -182,7 +183,7 @@ html, body {
 }
 
 .user-card:hover {
-    transform: translateY(-4px);
+    transform: scale(1.01);
     box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
     border-color: #7c3aed;
 }
@@ -211,13 +212,13 @@ html, body {
     margin: 0 0 4px 0;
     font-size: 18px;
     font-weight: 600;
-    color: #1f2937;
+    color: #ffffffaf;
 }
 
 .names p {
     margin: 0;
     font-size: 14px;
-    color: #6b7280;
+    color: #ffffff8f;
     font-weight: 500;
 }
 
@@ -232,10 +233,10 @@ html, body {
 .user-card-body p {
     margin: 0;
     padding: 8px 12px;
-    background: #f9fafb;
+    background: transparent;
     border-radius: 8px;
     font-size: 14px;
-    color: #374151;
+    color: #ffffff8d;
     border-left: 3px solid #7c3aed;
 }
 

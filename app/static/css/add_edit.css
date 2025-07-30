@@ -507,7 +507,7 @@ input[type="datetime-local"]:focus {
 }
 
 #submit{
-    position: sticky;
+    position: relative;
     bottom: 0;
     /* Only blur behind the button area */
     background: rgba(240, 237, 243, 0.1);/* or any semi-transparent color */
@@ -515,4 +515,10 @@ input[type="datetime-local"]:focus {
     backdrop-filter: blur(5px);
     z-index: 10;
     padding: 2rem;
+}
+
+@media (prefers-color-scheme: dark){
+    body{
+        background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
+    }
 }
