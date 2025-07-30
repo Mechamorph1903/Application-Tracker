@@ -7,7 +7,7 @@ Licensed under Apache 2.0 License
 import datetime
 import os
 import uuid
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_mail import Mail
@@ -67,13 +67,14 @@ def create_app():
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # Disable track modifications to save resources
 	app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'makenaijagreatgain')  # Change this to a secure key
 
-	# Flask-Mail configuration
-	app.config['MAIL_SERVER'] = 'smtp-mail.outlook.com'
-	app.config['MAIL_PORT'] = 587
-	app.config['MAIL_USE_TLS'] = True
-	app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')  # Set this environment variable
-	app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')  # Set this environment variable
-	app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')  # Use the same email as sender
+	# Flask-Mail configuration - using environment variables
+	app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+	app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+	app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True').lower() == 'true'
+	app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL', 'False').lower() == 'true'
+	app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+	app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+	app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', os.getenv('MAIL_USERNAME'))
 
 	# Initialize Supabase client for authentication
 	supabase_url = os.getenv('SUPABASE_URL')
@@ -305,6 +306,145 @@ def create_app():
 	def credits():
 		"""Render the credits page with attributions"""
 		return render_template('credits.html')
+	
+	def send_password_reset_email(user_email, reset_link):
+		"""Send password reset email to user"""
+		try:
+			from flask_mail import Message
+			
+			msg = Message(
+				subject='Password Reset - InternIn',
+				recipients=[user_email],
+				sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+			)
+			
+			msg.html = f"""
+			<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+				<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
+					<h1 style="color: white; margin: 0;">InternIn</h1>
+					<p style="color: white; margin: 5px 0;">Password Reset Request</p>
+				</div>
+				
+				<div style="padding: 30px; background-color: #f9f9f9;">
+					<h2 style="color: #333;">Reset Your Password</h2>
+					<p style="color: #666; line-height: 1.6;">
+						You requested a password reset for your InternIn account. Click the button below to reset your password:
+					</p>
+					
+					<div style="text-align: center; margin: 30px 0;">
+						<a href="{reset_link}" 
+						   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+								  color: white; padding: 12px 30px; text-decoration: none; 
+								  border-radius: 25px; display: inline-block; font-weight: bold;">
+							Reset Password
+						</a>
+					</div>
+					
+					<p style="color: #999; font-size: 14px; line-height: 1.6;">
+						If you didn't request this password reset, please ignore this email. This link will expire in 1 hour.
+					</p>
+					
+					<p style="color: #999; font-size: 14px;">
+						If the button doesn't work, copy and paste this link into your browser:<br>
+						<a href="{reset_link}" style="color: #667eea;">{reset_link}</a>
+					</p>
+				</div>
+				
+				<div style="background-color: #333; padding: 20px; text-align: center;">
+					<p style="color: #999; margin: 0; font-size: 14px;">
+						© 2025 InternIn. All rights reserved.
+					</p>
+				</div>
+			</div>
+			"""
+			
+			msg.body = f"""
+			Password Reset - InternIn
+			
+			You requested a password reset for your InternIn account.
+			
+			Click this link to reset your password: {reset_link}
+			
+			If you didn't request this password reset, please ignore this email.
+			This link will expire in 1 hour.
+			
+			© 2025 InternIn. All rights reserved.
+			"""
+			
+			mail.send(msg)
+			return True
+			
+		except Exception as e:
+			print(f"❌ Password reset email error: {str(e)}")
+			return False
+	
+	def send_welcome_email(user_email, user_name):
+		"""Send welcome email to new users"""
+		try:
+			from flask_mail import Message
+			
+			msg = Message(
+				subject='Welcome to InternIn! 🎉',
+				recipients=[user_email],
+				sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+			)
+			
+			msg.html = f"""
+			<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+				<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
+					<h1 style="color: white; margin: 0;">Welcome to InternIn!</h1>
+					<p style="color: white; margin: 5px 0;">Your Internship Tracking Journey Begins</p>
+				</div>
+				
+				<div style="padding: 30px; background-color: #f9f9f9;">
+					<h2 style="color: #333;">Hi {user_name}! 👋</h2>
+					<p style="color: #666; line-height: 1.6;">
+						Welcome to InternIn - your personal internship tracking hub! We're excited to help you organize and track your internship applications.
+					</p>
+					
+					<div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+						<h3 style="color: #333; margin-top: 0;">What you can do with InternIn:</h3>
+						<ul style="color: #666; line-height: 1.8;">
+							<li>📋 Track all your internship applications</li>
+							<li>📅 Set deadlines and reminders</li>
+							<li>👥 Connect with friends and share progress</li>
+							<li>📊 Visualize your application statistics</li>
+							<li>🎯 Set and achieve your goals</li>
+						</ul>
+					</div>
+					
+					<div style="text-align: center; margin: 30px 0;">
+						<a href="https://your-app-url.onrender.com/home" 
+						   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+								  color: white; padding: 12px 30px; text-decoration: none; 
+								  border-radius: 25px; display: inline-block; font-weight: bold;">
+							Get Started Now
+						</a>
+					</div>
+					
+					<p style="color: #999; font-size: 14px; text-align: center;">
+						Happy job hunting! 🚀
+					</p>
+				</div>
+				
+				<div style="background-color: #333; padding: 20px; text-align: center;">
+					<p style="color: #999; margin: 0; font-size: 14px;">
+						© 2025 InternIn. All rights reserved.
+					</p>
+				</div>
+			</div>
+			"""
+			
+			mail.send(msg)
+			return True
+			
+		except Exception as e:
+			print(f"❌ Welcome email error: {str(e)}")
+			return False
+	
+	# Make email functions available to other modules
+	app.send_password_reset_email = send_password_reset_email
+	app.send_welcome_email = send_welcome_email
 	
 	@app.route('/migrate-account', methods=['GET', 'POST'])
 	@login_required

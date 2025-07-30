@@ -78,7 +78,15 @@ def search_users():
 			users_query = users_query.filter(User.school.ilike(f'%{school}%'))
 		if major:
 			users_query = users_query.filter(User.major == major)
-	users = users_query.all()
+	
+	try:
+		users = users_query.all()
+	except Exception as e:
+		# Handle social_media field type errors gracefully
+		print(f"⚠️  Database error in user search: {e}")
+		flash('There was an issue loading user profiles. Please try again.', 'error')
+		users = []
+	
 	return render_template("friends-portal.html", users=users, majors=majors)
 
 #friend request logic

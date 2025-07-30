@@ -30,8 +30,10 @@ def register():
 		new_user.set_password(password)
 
 		# Try to create user in Supabase Auth for new registrations
+		supabase_success = False
 		try:
 			if current_app.supabase:
+				print(f"🔄 Creating Supabase Auth user for: {email}")
 				auth_user = current_app.supabase.auth.admin.create_user({
 					"email": email,
 					"password": password,
@@ -47,20 +49,23 @@ def register():
 				try:
 					new_user.supabase_user_id = auth_user.user.id
 					new_user.needs_migration = False  # New users don't need migration
-				except AttributeError:
+					supabase_success = True
+					print(f"✅ Supabase user created with ID: {auth_user.user.id}")
+				except AttributeError as e:
+					print(f"⚠️  Database columns not ready: {e}")
 					# Columns don't exist yet, skip setting them
 					pass
-				print("✅ New user created in Supabase Auth")
 			else:
+				print("⚠️  Supabase client not available")
 				# If Supabase is not available, NEW users still don't need migration
 				try:
 					new_user.needs_migration = False  # They're already using the new system
 				except AttributeError:
 					# Column doesn't exist yet, skip
 					pass
-				print("⚠️  Supabase unavailable, but new user doesn't need migration")
 		except Exception as e:
-			print(f"⚠️  Supabase user creation failed: {e}")
+			print(f"❌ Supabase user creation failed: {e}")
+			flash(f'Account created locally, but Supabase integration failed: {str(e)}', 'warning')
 			# Continue with local registration, NEW users still don't need migration
 			try:
 				new_user.needs_migration = False  # They're registering post-migration
@@ -70,8 +75,22 @@ def register():
 
 		db.session.add(new_user) # Add the new user to the session
 		db.session.commit() # Commit the session to save the user to the database
+		
+		# Debug: Check what actually got saved
+		saved_user = User.query.filter_by(email=email).first()
+		print(f"📋 User saved to database:")
+		print(f"   - ID: {saved_user.id}")
+		print(f"   - Email: {saved_user.email}")
+		print(f"   - Supabase ID: {getattr(saved_user, 'supabase_user_id', 'COLUMN_NOT_EXISTS')}")
+		print(f"   - Needs Migration: {getattr(saved_user, 'needs_migration', 'COLUMN_NOT_EXISTS')}")
+		
 		login_user(new_user) # Log in the user after registration
-		flash('Registration successful! You are now logged in.')
+		
+		if supabase_success:
+			flash('Registration successful! Your account is fully integrated with our secure system.', 'success')
+		else:
+			flash('Registration successful! You may need to migrate your account later for full functionality.', 'warning')
+		
 		import os
 		print("DB Path:", os.path.abspath("internships.db"))
 

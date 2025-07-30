@@ -4,8 +4,27 @@ from sqlalchemy.ext.mutable import MutableList
 from datetime import date, datetime, timezone # Import date for timestamping and datetime
 from flask_login import UserMixin	# Import UserMixin for user management
 from werkzeug.security import generate_password_hash, check_password_hash # Import generate_password_hash for password hashing and check_password_hash for password verification
+import json
 
 db = SQLAlchemy()  # Initialize the SQLAlchemy object
+
+class SafeMutableList(MutableList):
+    """Custom MutableList that handles string data gracefully"""
+    
+    @classmethod
+    def coerce(cls, key, value):
+        if isinstance(value, str):
+            try:
+                # Try to parse JSON string
+                if value.strip().startswith('[') or value.strip().startswith('{'):
+                    value = json.loads(value)
+                else:
+                    # If it's a plain string, convert to empty list
+                    value = []
+            except (json.JSONDecodeError, AttributeError):
+                # If parsing fails, use empty list
+                value = []
+        return super().coerce(key, value)
 
 class User(db.Model, UserMixin): # User model for managing user data
 	__tablename__ = 'users'  # Use plural table name to match existing Supabase data
@@ -18,10 +37,10 @@ class User(db.Model, UserMixin): # User model for managing user data
 	password_changed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # When password was last changed
 	is_admin = db.Column(db.Boolean, default=False) # Flag to indicate if the user is an admin
 	profile_picture = db.Column(db.String(150), default='default.jpg') # Path to the user's profile picture
-	goals = db.Column(MutableList.as_mutable(db.JSON), default=list) 
+	goals = db.Column(SafeMutableList.as_mutable(db.JSON), default=list) 
 	# contact fields for friends to see
 	phone = db.Column(db.String(20)) # Phone number for contact
-	social_media = db.Column(MutableList.as_mutable(db.JSON), default=list) # Social media profile URLs
+	social_media = db.Column(SafeMutableList.as_mutable(db.JSON), default=list) # Social media profile URLs
 	bio = db.Column(db.Text) # Personal bio/description
 	school = db.Column(db.String(100)) # University/school name
 	
@@ -44,6 +63,21 @@ class User(db.Model, UserMixin): # User model for managing user data
 
 	def check_password(self, password):
 		return check_password_hash(self.password_hash, password)
+	
+	@property
+	def safe_social_media(self):
+		"""Safely get social_media as a list, handling string data"""
+		if self.social_media is None:
+			return []
+		if isinstance(self.social_media, str):
+			try:
+				if self.social_media.strip().startswith('[') or self.social_media.strip().startswith('{'):
+					return json.loads(self.social_media)
+				else:
+					return []
+			except (json.JSONDecodeError, AttributeError):
+				return []
+		return self.social_media if isinstance(self.social_media, list) else []
 	
 	def __repr__(self):
 		return f'<User {self.username}>'
