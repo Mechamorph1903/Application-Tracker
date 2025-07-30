@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from flask import render_template, request, redirect, url_for, flash, Blueprint, current_app, session
 from flask_login import login_user, logout_user, current_user
 from itsdangerous import URLSafeTimedSerializer
@@ -165,8 +166,11 @@ def forgot_password():
 			try:
 				if current_app.supabase:
 					# Use Supabase's built-in password reset
-					app_url = current_app.config.get('APP_URL', 'http://localhost:5000')
+					app_url = current_app.config.get('APP_URL', 'http://localhost:5000').rstrip('/')
 					redirect_to = f"{app_url}/auth/reset-password-callback"
+					
+					print(f"🔄 Sending Supabase password reset to: {email}")
+					print(f"🔄 Redirect URL: {redirect_to}")
 					
 					supabase_response = current_app.supabase.auth.reset_password_email(
 						email, 
@@ -268,18 +272,45 @@ def reset_password(token):
 @auth.route('/reset-password-callback', methods=['GET'])
 def reset_password_callback():
 	"""Handle Supabase password reset callback"""
+	# Debug: Log all parameters received
+	print("=== SUPABASE CALLBACK DEBUG ===")
+	print("All URL parameters:")
+	for key, value in request.args.items():
+		print(f"  {key}: {value}")
+	print("================================")
+	
 	# Get the access token and type from URL parameters
 	access_token = request.args.get('access_token')
 	token_type = request.args.get('type')
+	error = request.args.get('error')
+	error_description = request.args.get('error_description')
 	
+	# Check for errors first
+	if error:
+		print(f"❌ Supabase error: {error} - {error_description}")
+		flash(f'Password reset error: {error_description or error}', 'danger')
+		return redirect(url_for('auth.forgot_password'))
+	
+	# Check for recovery token
 	if token_type == 'recovery' and access_token:
+		print(f"✅ Valid recovery token received: {access_token[:20]}...")
 		# Store the recovery token in session for the password update form
 		session['recovery_token'] = access_token
 		flash('Please enter your new password below.', 'info')
 		return render_template('reset_password.html', supabase_recovery=True)
-	else:
-		flash('Invalid password reset link.', 'danger')
-		return redirect(url_for('auth.forgot_password'))
+	
+	# Alternative parameter names that Supabase might use
+	refresh_token = request.args.get('refresh_token')
+	if refresh_token:
+		print(f"✅ Refresh token found: {refresh_token[:20]}...")
+		session['recovery_token'] = access_token or refresh_token
+		flash('Please enter your new password below.', 'info')
+		return render_template('reset_password.html', supabase_recovery=True)
+	
+	# If we get here, the link is invalid
+	print(f"❌ Invalid parameters - token_type: {token_type}, access_token: {access_token}")
+	flash('Invalid password reset link. Please request a new one.', 'danger')
+	return redirect(url_for('auth.forgot_password'))
 
 
 @auth.route('/update-password', methods=['POST'])
@@ -334,3 +365,22 @@ def update_password():
 		print(f"❌ Supabase password update error: {e}")
 		flash('Error updating password. Please try again.', 'danger')
 		return render_template('reset_password.html', supabase_recovery=True)
+
+
+@auth.route('/test-callback')
+def test_callback():
+	"""Test route to verify callback URL is working"""
+	app_url = os.getenv('APP_URL', 'http://localhost:5000').rstrip('/')
+	return f"""
+	<h2>Callback Test Route Working!</h2>
+	<p>APP_URL: {app_url}</p>
+	<p>Full callback URL: {app_url}/auth/reset-password-callback</p>
+	<p>This URL should be configured in your Supabase dashboard under Authentication > URL Configuration > Redirect URLs</p>
+	<hr>
+	<h3>Current Request Info:</h3>
+	<p>URL: {request.url}</p>
+	<p>Base URL: {request.base_url}</p>
+	<p>Host: {request.host}</p>
+	<hr>
+	<p><a href="{url_for('auth.forgot_password')}">Test Password Reset</a></p>
+	"""
