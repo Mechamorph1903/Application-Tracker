@@ -167,7 +167,7 @@ def forgot_password():
 				if current_app.supabase:
 					# Use Supabase's built-in password reset
 					app_url = current_app.config.get('APP_URL', 'http://localhost:5000').rstrip('/')
-					redirect_to = f"{app_url}/auth/reset-password-callback"
+					redirect_to = f"{app_url}/auth/debug-callback"  # Use debug callback first
 					
 					print(f"🔄 Sending Supabase password reset to: {email}")
 					print(f"🔄 Redirect URL: {redirect_to}")
@@ -279,11 +279,15 @@ def reset_password_callback():
 		print(f"  {key}: {value}")
 	print("================================")
 	
-	# Get the access token and type from URL parameters
+	# Get all possible parameters
 	access_token = request.args.get('access_token')
+	refresh_token = request.args.get('refresh_token')
 	token_type = request.args.get('type')
 	error = request.args.get('error')
 	error_description = request.args.get('error_description')
+	
+	# Also check for fragment parameters (sometimes sent after #)
+	fragment = request.args.get('fragment') or request.args.get('hash')
 	
 	# Check for errors first
 	if error:
@@ -291,24 +295,30 @@ def reset_password_callback():
 		flash(f'Password reset error: {error_description or error}', 'danger')
 		return redirect(url_for('auth.forgot_password'))
 	
-	# Check for recovery token
-	if token_type == 'recovery' and access_token:
-		print(f"✅ Valid recovery token received: {access_token[:20]}...")
+	# Try to find any token in the parameters
+	token = access_token or refresh_token
+	
+	if token:
+		print(f"✅ Token found: {token[:20]}... (type: {token_type})")
 		# Store the recovery token in session for the password update form
-		session['recovery_token'] = access_token
+		session['recovery_token'] = token
 		flash('Please enter your new password below.', 'info')
 		return render_template('reset_password.html', supabase_recovery=True)
 	
-	# Alternative parameter names that Supabase might use
-	refresh_token = request.args.get('refresh_token')
-	if refresh_token:
-		print(f"✅ Refresh token found: {refresh_token[:20]}...")
-		session['recovery_token'] = access_token or refresh_token
-		flash('Please enter your new password below.', 'info')
+	# If no token found, show what we got
+	print(f"❌ No valid token found in parameters")
+	print(f"   access_token: {access_token}")
+	print(f"   refresh_token: {refresh_token}")
+	print(f"   type: {token_type}")
+	
+	# Temporary: Accept ANY callback and show the reset form to test
+	if request.args:
+		print("⚠️ Accepting callback anyway for testing...")
+		session['recovery_token'] = 'test_token'
+		flash('Testing mode: Please enter your new password below.', 'warning')
 		return render_template('reset_password.html', supabase_recovery=True)
 	
 	# If we get here, the link is invalid
-	print(f"❌ Invalid parameters - token_type: {token_type}, access_token: {access_token}")
 	flash('Invalid password reset link. Please request a new one.', 'danger')
 	return redirect(url_for('auth.forgot_password'))
 
@@ -383,4 +393,26 @@ def test_callback():
 	<p>Host: {request.host}</p>
 	<hr>
 	<p><a href="{url_for('auth.forgot_password')}">Test Password Reset</a></p>
+	"""
+
+
+@auth.route('/debug-callback')
+def debug_callback():
+	"""Debug route to see exactly what parameters are received"""
+	params_html = "<h3>URL Parameters:</h3><ul>"
+	for key, value in request.args.items():
+		params_html += f"<li><strong>{key}:</strong> {value}</li>"
+	params_html += "</ul>"
+	
+	if not request.args:
+		params_html = "<p>No parameters received</p>"
+	
+	return f"""
+	<h2>Debug Callback Route</h2>
+	{params_html}
+	<hr>
+	<p>Full URL: {request.url}</p>
+	<p>If you got here from a Supabase reset link, we can see what parameters it sent!</p>
+	<hr>
+	<p><a href="{url_for('auth.reset_password_callback', **request.args)}">Try Real Callback</a></p>
 	"""
