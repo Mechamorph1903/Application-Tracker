@@ -18,7 +18,7 @@
                 </a> 
             </div>
             <div class="settings">
-                <a href="{{ url_for('settings.settings_page') }}" class="settings-link" onclick="storeCurrentPage(event)">
+                <a href="{{ url_for('settings.settings_page') }}" class="settings-link">
                     <img src="{{ url_for('static', filename='images/settings.png') }}" alt="Settings Icon" class="settings-icon">
                      <i class="settings-text">Settings</i>
                 </a>
@@ -210,53 +210,23 @@
             });
         });
 
-        // Navigation state management using stack
+        // Simple and reliable back button functionality  
         function goBackToLastPage() {
-            const lastPage = popFromNavigationStack();
+            // Check if there's a previous page in browser history
+            if (window.history.length > 1 && document.referrer) {
+                // Get the referrer URL and check if it's from our app
+                const referrer = new URL(document.referrer);
+                const currentHost = window.location.host;
+                
+                // If referrer is from our app, go back
+                if (referrer.host === currentHost) {
+                    window.history.back();
+                    return;
+                }
+            }
             
-            if (lastPage && lastPage !== window.location.href) {
-                window.location.href = lastPage;
-            } else {
-                window.location.href = '/home';
-            }
-        }
-        
-        // Store navigation when arriving at profile
-        document.addEventListener('DOMContentLoaded', function() {
-            // Push current page to navigation stack if coming from valid pages
-            if (document.referrer) {
-                const referrerPath = new URL(document.referrer).pathname;
-                if (['/home', '/friends', '/applications/applications-list', '/calendar'].includes(referrerPath)) {
-                    pushToNavigationStack(document.referrer);
-                }
-            }
-        });
-        
-        // Navigation stack functions (defined in layout.html)
-        function pushToNavigationStack(page) {
-            const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
-            if (stack.length === 0 || stack[stack.length - 1] !== page) {
-                stack.push(page);
-                if (stack.length > 5) {
-                    stack.shift();
-                }
-                sessionStorage.setItem('navigationStack', JSON.stringify(stack));
-            }
-        }
-        
-        function popFromNavigationStack() {
-            const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
-            if (stack.length > 0) {
-                stack.pop();
-                sessionStorage.setItem('navigationStack', JSON.stringify(stack));
-                return stack[stack.length - 1];
-            }
-            return null;
-        }
-        
-        // Store current page when navigating TO settings
-        function storeCurrentPage(event) {
-            pushToNavigationStack(window.location.href);
+            // Fallback based on likely previous pages
+            window.location.href = '/home';
         }
     </script>
 </body>

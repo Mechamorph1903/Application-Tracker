@@ -48,8 +48,8 @@
                     </div>
                 
                     <div class="profile-card-actions">
-                        <a href="{{ url_for('profile.profile') }}" class="profile-btn primary" onclick="storeCurrentPage(event)">View Profile</a>
-                        <a href="{{ url_for('settings.settings_page') }}" class="profile-btn secondary" onclick="storeCurrentPage(event)">Settings</a>
+                        <a href="{{ url_for('profile.profile') }}" class="profile-btn primary">View Profile</a>
+                        <a href="{{ url_for('settings.settings_page') }}" class="profile-btn secondary">Settings</a>
                         <button class="profile-btn logout" onclick="logout()">Logout</button>
                     </div>
                 </div>
@@ -121,43 +121,7 @@
       });
     });
     
-    // Smart navigation system
-    function initializeNavigation() {
-        if (!sessionStorage.getItem('navigationStack')) {
-            sessionStorage.setItem('navigationStack', JSON.stringify([]));
-        }
-    }
-    
-    function pushToNavigationStack(page) {
-        const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
-        // Don't add the same page twice in a row
-        if (stack.length === 0 || stack[stack.length - 1] !== page) {
-            stack.push(page);
-            // Keep only last 5 pages to prevent memory issues
-            if (stack.length > 5) {
-                stack.shift();
-            }
-            sessionStorage.setItem('navigationStack', JSON.stringify(stack));
-        }
-    }
-    
-    function popFromNavigationStack() {
-        const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
-        if (stack.length > 0) {
-            stack.pop(); // Remove current page
-            sessionStorage.setItem('navigationStack', JSON.stringify(stack));
-            return stack[stack.length - 1]; // Return previous page
-        }
-        return null;
-    }
-    
-    // Store current page when navigating TO settings or profile
-    function storeCurrentPage(event) {
-        pushToNavigationStack(window.location.href);
-    }
-    
-    // Initialize navigation on page load
-    initializeNavigation();
+    // Removed navigation stack system - now using simpler browser history approach
   </script>
   {% block extra_js %}{% endblock %}
 </body>

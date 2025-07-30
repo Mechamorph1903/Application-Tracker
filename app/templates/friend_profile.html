@@ -139,45 +139,27 @@
             });
         });
 
-        // Navigation state management using stack
+        // Simple and reliable back button functionality
         function goBackToLastPage() {
-            const lastPage = popFromNavigationStack();
+            // Check if there's a previous page in browser history
+            if (window.history.length > 1 && document.referrer) {
+                // Get the referrer URL and check if it's from our app
+                const referrer = new URL(document.referrer);
+                const currentHost = window.location.host;
+                
+                // If referrer is from our app, go back
+                if (referrer.host === currentHost) {
+                    window.history.back();
+                    return;
+                }
+            }
             
-            if (lastPage && lastPage !== window.location.href) {
-                window.location.href = lastPage;
+            // Fallback: redirect to friends list or home
+            if (document.referrer && document.referrer.includes('/friends')) {
+                window.location.href = '/friends';
             } else {
                 window.location.href = '/home';
             }
-        }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            pushToNavigationStack(window.location.href);
-        });
-        
-        // Navigation stack functions (defined in layout.html)
-        function pushToNavigationStack(page) {
-            const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
-            if (stack.length === 0 || stack[stack.length - 1] !== page) {
-                stack.push(page);
-                if (stack.length > 10) stack.shift();
-                sessionStorage.setItem('navigationStack', JSON.stringify(stack));
-            }
-        }
-        
-        function popFromNavigationStack() {
-            const stack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
-            if (stack.length > 1) {
-                stack.pop(); // Remove current page
-                const lastPage = stack[stack.length - 1];
-                sessionStorage.setItem('navigationStack', JSON.stringify(stack));
-                return lastPage;
-            }
-            return null;
-        }
-        
-        // Store current page when navigating TO settings
-        function storeCurrentPage(event) {
-            pushToNavigationStack(window.location.href);
         }
     </script>
 
