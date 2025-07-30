@@ -65,7 +65,12 @@ def create_app():
 		app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'internships.db')
 		app.config['USE_SUPABASE'] = False
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # Disable track modifications to save resources
-	app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'makenaijagreatgain')  # Change this to a secure key
+	
+	# Get SECRET_KEY from environment - REQUIRED for security
+	secret_key = os.getenv('SECRET_KEY')
+	if not secret_key:
+		raise ValueError("SECRET_KEY environment variable is required but not set. Please set it in your .env file or environment.")
+	app.config['SECRET_KEY'] = secret_key
 
 	# Flask-Mail configuration - using environment variables
 	app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
@@ -383,6 +388,9 @@ def create_app():
 		try:
 			from flask_mail import Message
 			
+			# Get app URL from environment variable
+			app_url = os.getenv('APP_URL', 'http://localhost:5000')
+			
 			msg = Message(
 				subject='Welcome to InternIn! 🎉',
 				recipients=[user_email],
@@ -414,7 +422,7 @@ def create_app():
 					</div>
 					
 					<div style="text-align: center; margin: 30px 0;">
-						<a href="https://your-app-url.onrender.com/home" 
+						<a href="{app_url}/home" 
 						   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
 								  color: white; padding: 12px 30px; text-decoration: none; 
 								  border-radius: 25px; display: inline-block; font-weight: bold;">
