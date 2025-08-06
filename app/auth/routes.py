@@ -36,7 +36,7 @@ def register():
 		try:
 			if current_app.supabase:
 				print(f"🔄 Creating Supabase Auth user for: {email}")
-				auth_user = current_app.supabase.auth.admin.create_user({
+				auth_user = current_app.supabase.auth.sign_up({
 					"email": email,
 					"password": password,
 					"email_confirm": True,
