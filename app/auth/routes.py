@@ -40,14 +40,12 @@ def register():
             auth_user = current_app.supabase.auth.sign_up({
                 "email": email,
                 "password": password,
-                "options": {
-                    "data": {
-                        "first_name": first_name,
-                        "last_name": last_name,
-                        "username": username,
-                        "display_name": f"{first_name} {last_name}"
-                    }
-                }
+                "user_metadata": {
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "username": username,
+                    "display_name": f"{first_name} {last_name}"
+				}
             })
             
             # Strict validation of Supabase response
@@ -191,7 +189,7 @@ def forgot_password():
 			try:
 				if current_app.supabase:
 					# Use Supabase's built-in password reset
-					app_url = current_app.config.get('APP_URL', 'http://localhost:5000').rstrip('/')
+					app_url = current_app.config.get('APP_URL', 'http://www.internin.onrender.com').rstrip('/')
 					redirect_to = f"{app_url}/auth/reset-password-callback"  # Use proper callback URL
 					
 					print(f"🔄 Sending Supabase password reset to: {email}")
@@ -234,7 +232,6 @@ def forgot_password():
 			# 	print(f"❌ Local password reset error: {e}")
 			# 	flash('Error processing password reset. Please try again later.', 'danger')
 		else:
-			# Don't reveal whether email exists or not for security
 			flash('If an account with that email exists, a password reset link has been sent.', 'info')
 		
 		return redirect(url_for('auth.forgot_password'))
