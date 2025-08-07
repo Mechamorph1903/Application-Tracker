@@ -332,17 +332,32 @@ def reset_password_callback():
 	if token_hash and token_type == 'recovery':
 		print(f"✅ Recovery token_hash found: {token_hash[:20]}...")
 		
-		# Store token and setup for password reset
-		# DON'T verify the token here to avoid using it up - save it for the actual password update
-		session['recovery_token'] = token_hash
-		session['recovery_token_type'] = 'token_hash'
-		
-		# For fallback purposes, we'll try to find the user by other means if needed
-		# This avoids consuming the one-time token prematurely
-		print(f"💾 Stored token_hash for password update (not verified yet)")
-		
-		flash('Please enter your new password below.', 'info')
-		return render_template('reset_password.html', supabase_recovery=True)
+		# Verify the token immediately to get user info (single use)
+		try:
+			if current_app.supabase:
+				response = current_app.supabase.auth.verify_otp({
+					'token_hash': token_hash,
+					'type': 'recovery'
+				})
+				
+				if response and hasattr(response, 'user') and response.user:
+					user_email = response.user.email
+					user_id = response.user.id
+					print(f"✅ Token verified for user: {user_email}")
+					
+					# Store verified user info in session (no need to store token anymore)
+					session['verified_reset_user_email'] = user_email
+					session['verified_reset_user_id'] = user_id
+					session['reset_verified'] = True
+					
+					flash('Please enter your new password below.', 'info')
+					return render_template('reset_password.html', supabase_recovery=True)
+				else:
+					raise Exception("Invalid token verification response")
+		except Exception as e:
+			print(f"❌ Token verification failed: {e}")
+			flash('Invalid or expired password reset link. Please request a new one.', 'danger')
+			return redirect(url_for('auth.forgot_password'))
 	
 	# Handle legacy access_token method (fallback)
 	token = access_token or refresh_token
@@ -363,11 +378,18 @@ def reset_password_callback():
 
 @auth.route('/update-password', methods=['POST'])
 def update_password():
-    """Handle Supabase password update from recovery token"""
-    recovery_token = session.get('recovery_token')
+    """Handle Supabase password update from verified session"""
     
-    if not recovery_token:
+    # Check if we have a verified reset session
+    if not session.get('reset_verified'):
         flash('Invalid session. Please request a new password reset.', 'danger')
+        return redirect(url_for('auth.forgot_password'))
+    
+    user_email = session.get('verified_reset_user_email')
+    user_id = session.get('verified_reset_user_id')
+    
+    if not user_email or not user_id:
+        flash('Session expired. Please request a new password reset.', 'danger')
         return redirect(url_for('auth.forgot_password'))
     
     new_password = request.form.get('password')
@@ -387,139 +409,59 @@ def update_password():
     
     try:
         if current_app.supabase:
-            # Check if this is a token_hash or legacy access_token
-            if session.get('recovery_token_type') == 'token_hash' or len(recovery_token) < 100:  # token_hash is shorter than JWT
-                print(f"🔍 Using token_hash method for password reset")
-                try:
-                    # Use verify_otp for token_hash - this is our ONE chance to verify it
-                    response = current_app.supabase.auth.verify_otp({
-                        'token_hash': recovery_token,
-                        'type': 'recovery'
-                    })
-                    
-                    if response and hasattr(response, 'user') and response.user:
-                        user_email = response.user.email
-                        user_id = response.user.id
-                        print(f"✅ Token verified for user: {user_email}")
-                        
-                        # IMMEDIATELY store user email for fallback before attempting password update
-                        session['reset_user_email'] = user_email
-                        
-                        # Now update password using admin API
-                        admin_response = current_app.supabase.auth.admin.update_user_by_id(
-                            user_id,
-                            {"password": new_password}
-                        )
-                        
-                        print(f"✅ Supabase password updated via token_hash method")
-                        
-                        # Update local database
-                        local_user = User.query.filter_by(email=user_email).first()
-                        if local_user:
-                            local_user.set_password(new_password)
-                            db.session.commit()
-                            print(f"✅ Local password updated for user {user_email}")
-                        
-                        # Clear recovery token from session
-                        session.pop('recovery_token', None)
-                        session.pop('recovery_token_type', None)
-                        session.pop('reset_user_email', None)
-                        
-                        flash('Your password has been updated successfully! You can now log in.', 'success')
-                        return redirect(url_for('auth.register') + '?tab=login')
-                    else:
-                        raise Exception("Invalid token verification response")
-                        
-                except Exception as token_error:
-                    print(f"❌ Token hash method failed: {token_error}")
-                    # For "User not allowed" errors, try to update local password only
-                    if "not allowed" in str(token_error).lower() or "unauthorized" in str(token_error).lower():
-                        print("🔄 Attempting local-only password update due to permission error")
-                        
-                        # Try to get user from token without verification (risky but needed for fallback)
-                        try:
-                            # If we have an email in session from previous steps, use it
-                            user_email = session.get('reset_user_email')
-                            if not user_email:
-                                # Try to extract from any previous context
-                                flash('Session expired. Please request a new password reset.', 'danger')
-                                return redirect(url_for('auth.forgot_password'))
-                            
-                            local_user = User.query.filter_by(email=user_email).first()
-                            if local_user:
-                                local_user.set_password(new_password)
-                                db.session.commit()
-                                print(f"✅ Local password updated for user {user_email} (Supabase failed)")
-                                
-                                # Clear recovery token from session
-                                session.pop('recovery_token', None)
-                                session.pop('recovery_token_type', None)
-                                session.pop('reset_user_email', None)
-                                
-                                flash('Your password has been updated! Note: You may need to use local login if cloud authentication is unavailable.', 'warning')
-                                return redirect(url_for('auth.register') + '?tab=login')
-                            else:
-                                raise Exception("Local user not found")
-                                
-                        except Exception as local_error:
-                            print(f"❌ Local fallback also failed: {local_error}")
-                            raise Exception(f"Both Supabase and local password update failed: {token_error}")
-                    else:
-                        raise Exception(f"Token verification failed: {token_error}")
+            print(f"🔍 Updating password for verified user: {user_email}")
             
-            else:
-                print(f"🔍 Using legacy JWT method for password reset")
-                # Legacy JWT method
-                import jwt
-                
-                try:
-                    # Decode the JWT token (without verification for now)
-                    decoded_token = jwt.decode(recovery_token, options={"verify_signature": False})
-                    user_email = decoded_token.get('email')
-                    user_id = decoded_token.get('sub')
-                    
-                    print(f"🔍 Recovery token contains: email={user_email}, user_id={user_id}")
-                    
-                    if not user_email or not user_id:
-                        raise Exception("Invalid recovery token: missing email or user_id")
-                    
-                    # Store email for potential fallback
-                    session['reset_user_email'] = user_email
-                    
-                    # Use admin API to update the user's password
-                    response = current_app.supabase.auth.admin.update_user_by_id(
-                        user_id,
-                        {"password": new_password}
-                    )
-                    
-                    print(f"✅ Supabase password updated via legacy JWT method")
-                    
-                    # Also update local database
-                    local_user = User.query.filter_by(email=user_email).first()
-                    if local_user:
-                        local_user.set_password(new_password)
-                        db.session.commit()
-                        print(f"✅ Local password updated for user {user_email}")
-                    
-                    # Clear recovery token from session
-                    session.pop('recovery_token', None)
-                    session.pop('reset_user_email', None)
-                    
-                    flash('Your password has been updated successfully! You can now log in.', 'success')
-                    return redirect(url_for('auth.register') + '?tab=login')
-                    
-                except jwt.InvalidTokenError as jwt_error:
-                    print(f"❌ JWT decode error: {jwt_error}")
-                    raise Exception("Invalid recovery token format")
-                
-        else:
-            flash('Password update service unavailable.', 'danger')
-            return render_template('reset_password.html', supabase_recovery=True)
+            # Update password using admin API (no token verification needed)
+            admin_response = current_app.supabase.auth.admin.update_user_by_id(
+                user_id,
+                {"password": new_password}
+            )
             
+            print(f"✅ Supabase password updated for user {user_email}")
+            
+            # Update local database
+            local_user = User.query.filter_by(email=user_email).first()
+            if local_user:
+                local_user.set_password(new_password)
+                db.session.commit()
+                print(f"✅ Local password updated for user {user_email}")
+            
+            # Clear all reset session variables
+            session.pop('verified_reset_user_email', None)
+            session.pop('verified_reset_user_id', None)
+            session.pop('reset_verified', None)
+            session.pop('recovery_token', None)  # Clean up any legacy tokens
+            session.pop('recovery_token_type', None)
+            session.pop('reset_user_email', None)
+            
+            flash('Your password has been updated successfully! You can now log in.', 'success')
+            return redirect(url_for('auth.register') + '?tab=login')
+                
     except Exception as e:
         print(f"❌ Supabase password update error: {e}")
-        flash('Error updating password. The reset link may have expired. Please request a new password reset.', 'danger')
-        return render_template('reset_password.html', supabase_recovery=True)
+        
+        # Fallback: try local-only password update
+        try:
+            local_user = User.query.filter_by(email=user_email).first()
+            if local_user:
+                local_user.set_password(new_password)
+                db.session.commit()
+                print(f"✅ Local password updated for user {user_email} (Supabase failed)")
+                
+                # Clear session variables
+                session.pop('verified_reset_user_email', None)
+                session.pop('verified_reset_user_id', None)
+                session.pop('reset_verified', None)
+                
+                flash('Your password has been updated! Note: You may need to use local login if cloud authentication is unavailable.', 'warning')
+                return redirect(url_for('auth.register') + '?tab=login')
+            else:
+                raise Exception("Local user not found")
+                
+        except Exception as local_error:
+            print(f"❌ Local fallback also failed: {local_error}")
+            flash('Error updating password. Please request a new password reset.', 'danger')
+            return render_template('reset_password.html', supabase_recovery=True)
 
 
 @auth.route('/confirm-email', methods=['GET'])
