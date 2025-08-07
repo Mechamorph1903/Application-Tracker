@@ -331,6 +331,20 @@ def reset_password_callback():
 	# Handle new token_hash method (preferred)
 	if token_hash and token_type == 'recovery':
 		print(f"✅ Recovery token_hash found: {token_hash[:20]}...")
+		
+		# Try to decode the token_hash to get user email for potential fallback
+		try:
+			# For token_hash, we need to try verification to get user info
+			temp_response = current_app.supabase.auth.verify_otp({
+				'token_hash': token_hash,
+				'type': 'recovery'
+			})
+			if temp_response and hasattr(temp_response, 'user') and temp_response.user:
+				session['reset_user_email'] = temp_response.user.email
+				print(f"✅ Stored user email for fallback: {temp_response.user.email}")
+		except Exception as email_error:
+			print(f"⚠️ Could not extract email from token: {email_error}")
+		
 		# Store the token_hash in session for the password update form
 		session['recovery_token'] = token_hash
 		flash('Please enter your new password below.', 'info')
@@ -423,7 +437,39 @@ def update_password():
                         
                 except Exception as token_error:
                     print(f"❌ Token hash method failed: {token_error}")
-                    raise Exception(f"Token verification failed: {token_error}")
+                    # For "User not allowed" errors, try to update local password only
+                    if "not allowed" in str(token_error).lower() or "unauthorized" in str(token_error).lower():
+                        print("🔄 Attempting local-only password update due to permission error")
+                        
+                        # Try to get user from token without verification (risky but needed for fallback)
+                        try:
+                            # If we have an email in session from previous steps, use it
+                            user_email = session.get('reset_user_email')
+                            if not user_email:
+                                # Try to extract from any previous context
+                                flash('Session expired. Please request a new password reset.', 'danger')
+                                return redirect(url_for('auth.forgot_password'))
+                            
+                            local_user = User.query.filter_by(email=user_email).first()
+                            if local_user:
+                                local_user.set_password(new_password)
+                                db.session.commit()
+                                print(f"✅ Local password updated for user {user_email} (Supabase failed)")
+                                
+                                # Clear recovery token from session
+                                session.pop('recovery_token', None)
+                                session.pop('reset_user_email', None)
+                                
+                                flash('Your password has been updated! Note: You may need to use local login if cloud authentication is unavailable.', 'warning')
+                                return redirect(url_for('auth.register') + '?tab=login')
+                            else:
+                                raise Exception("Local user not found")
+                                
+                        except Exception as local_error:
+                            print(f"❌ Local fallback also failed: {local_error}")
+                            raise Exception(f"Both Supabase and local password update failed: {token_error}")
+                    else:
+                        raise Exception(f"Token verification failed: {token_error}")
             
             else:
                 print(f"🔍 Using legacy JWT method for password reset")
@@ -440,6 +486,9 @@ def update_password():
                     
                     if not user_email or not user_id:
                         raise Exception("Invalid recovery token: missing email or user_id")
+                    
+                    # Store email for potential fallback
+                    session['reset_user_email'] = user_email
                     
                     # Use admin API to update the user's password
                     response = current_app.supabase.auth.admin.update_user_by_id(
@@ -458,6 +507,7 @@ def update_password():
                     
                     # Clear recovery token from session
                     session.pop('recovery_token', None)
+                    session.pop('reset_user_email', None)
                     
                     flash('Your password has been updated successfully! You can now log in.', 'success')
                     return redirect(url_for('auth.register') + '?tab=login')
@@ -472,7 +522,7 @@ def update_password():
             
     except Exception as e:
         print(f"❌ Supabase password update error: {e}")
-        flash('Error updating password. Please try again or contact support.', 'danger')
+        flash('Error updating password. The reset link may have expired. Please request a new password reset.', 'danger')
         return render_template('reset_password.html', supabase_recovery=True)
 
 
