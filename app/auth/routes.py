@@ -489,17 +489,18 @@ def confirm_email():
         flash(f'Email confirmation failed: {error_description or error}', 'danger')
         return redirect(url_for('auth.register') + '?tab=login')
     
-    # Handle new token_hash method (preferred)
-    if token_hash and token_type == 'email_confirmation':
-        print(f"✅ Email confirmation token_hash received: {token_hash[:20]}...")
+    # Handle new token_hash method (preferred) - check for both signup and email_confirmation types
+    if token_hash and (token_type == 'signup' or token_type == 'email_confirmation'):
+        print(f"✅ Email confirmation token_hash received: {token_hash[:20]}... (type: {token_type})")
         
         try:
             # For email confirmation, we can verify the token with Supabase
             if current_app.supabase:
-                # Use the token_hash to verify email
+                # Use the token_hash to verify email - use 'signup' for the verification type
+                verification_type = 'signup' if token_type == 'signup' else 'email'
                 response = current_app.supabase.auth.verify_otp({
                     'token_hash': token_hash,
-                    'type': 'email'
+                    'type': verification_type
                 })
                 
                 if response and hasattr(response, 'user') and response.user:
