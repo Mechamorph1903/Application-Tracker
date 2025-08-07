@@ -37,7 +37,7 @@ def register():
                 return redirect(url_for('auth.register') + '?tab=register')
             
             print(f"🔄 Creating mandatory Supabase Auth user for: {email}")
-            app_url = current_app.config.get('APP_URL', 'http://localhost:5000').rstrip('/')
+            app_url = current_app.config.get('APP_URL', 'https://internin.onrender.com').rstrip('/')
             confirm_url = f"{app_url}/auth/confirm-email"
 
             auth_user = current_app.supabase.auth.sign_up({
@@ -193,7 +193,7 @@ def forgot_password():
 			try:
 				if current_app.supabase:
 					# Use Supabase's built-in password reset
-					app_url = current_app.config.get('APP_URL', 'http://www.internin.onrender.com').rstrip('/')
+					app_url = current_app.config.get('APP_URL', 'https://internin.onrender.com').rstrip('/')
 					redirect_to = f"{app_url}/auth/reset-password-callback"  # Use proper callback URL
 					
 					print(f"🔄 Sending Supabase password reset to: {email}")
@@ -312,12 +312,15 @@ def reset_password_callback():
 		print(f"  {key}: {value}")
 	print("================================")
 	
-	# Get all possible parameters
-	access_token = request.args.get('access_token')
-	refresh_token = request.args.get('refresh_token')
+	# Get parameters from query string (new method)
+	token_hash = request.args.get('token_hash')
 	token_type = request.args.get('type')
 	error = request.args.get('error')
 	error_description = request.args.get('error_description')
+	
+	# Also check for legacy fragment parameters
+	access_token = request.args.get('access_token')
+	refresh_token = request.args.get('refresh_token')
 	
 	# Check for errors first
 	if error:
@@ -325,29 +328,31 @@ def reset_password_callback():
 		flash(f'Password reset error: {error_description or error}', 'danger')
 		return redirect(url_for('auth.forgot_password'))
 	
-	# Try to find any token in the parameters
-	token = access_token or refresh_token
+	# Handle new token_hash method (preferred)
+	if token_hash and token_type == 'recovery':
+		print(f"✅ Recovery token_hash found: {token_hash[:20]}...")
+		# Store the token_hash in session for the password update form
+		session['recovery_token'] = token_hash
+		flash('Please enter your new password below.', 'info')
+		return render_template('reset_password.html', supabase_recovery=True)
 	
-	if token and token_type == 'recovery':
-		print(f"✅ Recovery token found: {token[:20]}... (type: {token_type})")
-		# Store the recovery token in session for the password update form
+	# Handle legacy access_token method (fallback)
+	token = access_token or refresh_token
+	if token and (token_type == 'recovery' or not token_type):
+		print(f"✅ Legacy recovery token found: {token[:20]}... (type: {token_type})")
 		session['recovery_token'] = token
 		flash('Please enter your new password below.', 'info')
 		return render_template('reset_password.html', supabase_recovery=True)
 	
-	# If no token found, show what we got
-	print(f"❌ No valid recovery token found in parameters")
-	print(f"   access_token: {access_token}")
-	print(f"   refresh_token: {refresh_token}")
-	print(f"   type: {token_type}")
-	
-	# Check if this is coming from URL fragments (common with Supabase)
-	# Show a page that extracts fragment parameters using JavaScript
+	# If no query parameters, check for URL fragments (legacy support)
 	if not request.args:
-		print("⚠️ No query parameters - tokens might be in URL fragment")
+		print("⚠️ No query parameters - checking for URL fragments...")
 		return render_template('auth_callback.html')
 	
 	# If we get here, the link is invalid
+	print(f"❌ No valid recovery token found")
+	print(f"   token_hash: {token_hash}")
+	print(f"   type: {token_type}")
 	flash('Invalid password reset link. Please request a new one.', 'danger')
 	return redirect(url_for('auth.forgot_password'))
 
@@ -378,47 +383,88 @@ def update_password():
     
     try:
         if current_app.supabase:
-            # Decode the recovery token to get user info
-            import jwt
+            # Check if this is a token_hash or legacy access_token
+            if len(recovery_token) < 100:  # token_hash is shorter than JWT
+                print(f"🔍 Using token_hash method for password reset")
+                try:
+                    # Use verify_otp for token_hash
+                    response = current_app.supabase.auth.verify_otp({
+                        'token_hash': recovery_token,
+                        'type': 'recovery'
+                    })
+                    
+                    if response and hasattr(response, 'user') and response.user:
+                        user_email = response.user.email
+                        user_id = response.user.id
+                        print(f"✅ Token verified for user: {user_email}")
+                        
+                        # Now update password using admin API
+                        admin_response = current_app.supabase.auth.admin.update_user_by_id(
+                            user_id,
+                            {"password": new_password}
+                        )
+                        
+                        print(f"✅ Supabase password updated via token_hash method")
+                        
+                        # Update local database
+                        local_user = User.query.filter_by(email=user_email).first()
+                        if local_user:
+                            local_user.set_password(new_password)
+                            db.session.commit()
+                            print(f"✅ Local password updated for user {user_email}")
+                        
+                        # Clear recovery token from session
+                        session.pop('recovery_token', None)
+                        
+                        flash('Your password has been updated successfully! You can now log in.', 'success')
+                        return redirect(url_for('auth.register') + '?tab=login')
+                    else:
+                        raise Exception("Invalid token verification response")
+                        
+                except Exception as token_error:
+                    print(f"❌ Token hash method failed: {token_error}")
+                    raise Exception(f"Token verification failed: {token_error}")
             
-            try:
-                # Decode the JWT token (without verification for now)
-                decoded_token = jwt.decode(recovery_token, options={"verify_signature": False})
-                user_email = decoded_token.get('email')
-                user_id = decoded_token.get('sub')
+            else:
+                print(f"🔍 Using legacy JWT method for password reset")
+                # Legacy JWT method
+                import jwt
                 
-                print(f"🔍 Recovery token contains: email={user_email}, user_id={user_id}")
-                
-                if not user_email or not user_id:
-                    raise Exception("Invalid recovery token: missing email or user_id")
-                
-                # Use admin API to update the user's password
-                response = current_app.supabase.auth.admin.update_user_by_id(
-                    user_id,
-                    {"password": new_password}
-                )
-                
-                print(f"✅ Supabase password updated via admin API")
-                
-                # Also update local database
-                local_user = User.query.filter_by(email=user_email).first()
-                if local_user:
-                    local_user.set_password(new_password)
-                    db.session.commit()
-                    print(f"✅ Local password updated for user {user_email}")
-                
-                # Clear recovery token from session
-                session.pop('recovery_token', None)
-                
-                flash('Your password has been updated successfully! You can now log in.', 'success')
-                return redirect(url_for('auth.register') + '?tab=login')
-                
-            except jwt.InvalidTokenError as jwt_error:
-                print(f"❌ JWT decode error: {jwt_error}")
-                raise Exception("Invalid recovery token format")
-            except Exception as admin_error:
-                print(f"❌ Admin API error: {admin_error}")
-                raise Exception(f"Failed to update password: {admin_error}")
+                try:
+                    # Decode the JWT token (without verification for now)
+                    decoded_token = jwt.decode(recovery_token, options={"verify_signature": False})
+                    user_email = decoded_token.get('email')
+                    user_id = decoded_token.get('sub')
+                    
+                    print(f"🔍 Recovery token contains: email={user_email}, user_id={user_id}")
+                    
+                    if not user_email or not user_id:
+                        raise Exception("Invalid recovery token: missing email or user_id")
+                    
+                    # Use admin API to update the user's password
+                    response = current_app.supabase.auth.admin.update_user_by_id(
+                        user_id,
+                        {"password": new_password}
+                    )
+                    
+                    print(f"✅ Supabase password updated via legacy JWT method")
+                    
+                    # Also update local database
+                    local_user = User.query.filter_by(email=user_email).first()
+                    if local_user:
+                        local_user.set_password(new_password)
+                        db.session.commit()
+                        print(f"✅ Local password updated for user {user_email}")
+                    
+                    # Clear recovery token from session
+                    session.pop('recovery_token', None)
+                    
+                    flash('Your password has been updated successfully! You can now log in.', 'success')
+                    return redirect(url_for('auth.register') + '?tab=login')
+                    
+                except jwt.InvalidTokenError as jwt_error:
+                    print(f"❌ JWT decode error: {jwt_error}")
+                    raise Exception("Invalid recovery token format")
                 
         else:
             flash('Password update service unavailable.', 'danger')
@@ -439,12 +485,15 @@ def confirm_email():
         print(f"  {key}: {value}")
     print("================================")
     
-    # Get confirmation parameters
-    access_token = request.args.get('access_token')
-    refresh_token = request.args.get('refresh_token')
+    # Get parameters from query string (new method)
+    token_hash = request.args.get('token_hash')
     token_type = request.args.get('type')
     error = request.args.get('error')
     error_description = request.args.get('error_description')
+    
+    # Also check for legacy fragment parameters
+    access_token = request.args.get('access_token')
+    refresh_token = request.args.get('refresh_token')
     
     # Check for errors
     if error:
@@ -452,12 +501,47 @@ def confirm_email():
         flash(f'Email confirmation failed: {error_description or error}', 'danger')
         return redirect(url_for('auth.register') + '?tab=login')
     
-    # Check if this is an email confirmation
-    if token_type == 'signup' and access_token:
-        print(f"✅ Email confirmation token received")
+    # Handle new token_hash method (preferred)
+    if token_hash and token_type == 'email_confirmation':
+        print(f"✅ Email confirmation token_hash received: {token_hash[:20]}...")
         
         try:
-            # Decode token to get user info
+            # For email confirmation, we can verify the token with Supabase
+            if current_app.supabase:
+                # Use the token_hash to verify email
+                response = current_app.supabase.auth.verify_otp({
+                    'token_hash': token_hash,
+                    'type': 'email'
+                })
+                
+                if response and hasattr(response, 'user') and response.user:
+                    user_email = response.user.email
+                    print(f"✅ Email confirmed for user: {user_email}")
+                    
+                    # Update local user if needed
+                    local_user = User.query.filter_by(email=user_email).first()
+                    if local_user:
+                        # You might want to add an email_verified column
+                        # local_user.email_verified = True
+                        # db.session.commit()
+                        print(f"✅ Local user found for confirmation: {user_email}")
+                    
+                    flash('Email confirmed successfully! You can now log in.', 'success')
+                    return redirect(url_for('auth.register') + '?tab=login')
+                else:
+                    raise Exception("Invalid token verification response")
+            
+        except Exception as e:
+            print(f"❌ Email confirmation processing error: {e}")
+            flash('Email confirmation failed. Please try registering again.', 'danger')
+            return redirect(url_for('auth.register') + '?tab=register')
+    
+    # Handle legacy access_token method (fallback)
+    elif (token_type == 'signup' and access_token) or (access_token and not token_type):
+        print(f"✅ Legacy email confirmation token received")
+        
+        try:
+            # Decode legacy token to get user info
             import jwt
             decoded_token = jwt.decode(access_token, options={"verify_signature": False})
             user_email = decoded_token.get('email')
@@ -465,13 +549,9 @@ def confirm_email():
             
             print(f"🔍 Confirmed user: email={user_email}, user_id={user_id}")
             
-            # Update local user's email verification status
             if user_email:
                 local_user = User.query.filter_by(email=user_email).first()
                 if local_user:
-                    # You might want to add an email_verified column to your User model
-                    # local_user.email_verified = True
-                    # db.session.commit()
                     print(f"✅ Local user found for confirmation: {user_email}")
                 
             flash('Email confirmed successfully! You can now log in.', 'success')
@@ -482,14 +562,25 @@ def confirm_email():
             flash('Email confirmation completed, but there was an issue processing it. You can still try to log in.', 'warning')
             return redirect(url_for('auth.register') + '?tab=login')
     
-    # If no confirmation token, might be fragments
+    # If no query parameters, check for URL fragments (legacy support)
     if not request.args:
-        print("⚠️ No query parameters - tokens might be in URL fragment")
-        return render_template('auth_callback.html')  # Reuse your fragment handler
+        print("⚠️ No query parameters - checking for URL fragments...")
+        return render_template('auth_callback.html')
     
     # Invalid confirmation link
+    print(f"❌ No valid confirmation token found")
+    print(f"   token_hash: {token_hash}")
+    print(f"   type: {token_type}")
     flash('Invalid email confirmation link.', 'danger')
     return redirect(url_for('auth.register') + '?tab=login')
+
+@auth.route('/auth_callback', methods=['GET'])
+def auth_callback():
+    """Generic auth callback handler for tokens that end up on wrong URLs"""
+    print("=== GENERIC AUTH CALLBACK ===")
+    print("Redirecting to proper auth callback handler...")
+    return render_template('auth_callback.html')
+
 
 @auth.route('/test-callback')
 def test_callback():
