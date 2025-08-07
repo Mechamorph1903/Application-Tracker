@@ -332,21 +332,15 @@ def reset_password_callback():
 	if token_hash and token_type == 'recovery':
 		print(f"✅ Recovery token_hash found: {token_hash[:20]}...")
 		
-		# Try to decode the token_hash to get user email for potential fallback
-		try:
-			# For token_hash, we need to try verification to get user info
-			temp_response = current_app.supabase.auth.verify_otp({
-				'token_hash': token_hash,
-				'type': 'recovery'
-			})
-			if temp_response and hasattr(temp_response, 'user') and temp_response.user:
-				session['reset_user_email'] = temp_response.user.email
-				print(f"✅ Stored user email for fallback: {temp_response.user.email}")
-		except Exception as email_error:
-			print(f"⚠️ Could not extract email from token: {email_error}")
-		
-		# Store the token_hash in session for the password update form
+		# Store token and setup for password reset
+		# DON'T verify the token here to avoid using it up - save it for the actual password update
 		session['recovery_token'] = token_hash
+		session['recovery_token_type'] = 'token_hash'
+		
+		# For fallback purposes, we'll try to find the user by other means if needed
+		# This avoids consuming the one-time token prematurely
+		print(f"💾 Stored token_hash for password update (not verified yet)")
+		
 		flash('Please enter your new password below.', 'info')
 		return render_template('reset_password.html', supabase_recovery=True)
 	
@@ -358,15 +352,11 @@ def reset_password_callback():
 		flash('Please enter your new password below.', 'info')
 		return render_template('reset_password.html', supabase_recovery=True)
 	
-	# If no query parameters, check for URL fragments (legacy support)
-	if not request.args:
-		print("⚠️ No query parameters - checking for URL fragments...")
-		return render_template('auth_callback.html')
-	
-	# If we get here, the link is invalid
-	print(f"❌ No valid recovery token found")
+	# If we get here, no valid recovery token was found
+	print(f"❌ No valid recovery token found in URL parameters")
 	print(f"   token_hash: {token_hash}")
 	print(f"   type: {token_type}")
+	print(f"   access_token: {access_token}")
 	flash('Invalid password reset link. Please request a new one.', 'danger')
 	return redirect(url_for('auth.forgot_password'))
 
@@ -398,10 +388,10 @@ def update_password():
     try:
         if current_app.supabase:
             # Check if this is a token_hash or legacy access_token
-            if len(recovery_token) < 100:  # token_hash is shorter than JWT
+            if session.get('recovery_token_type') == 'token_hash' or len(recovery_token) < 100:  # token_hash is shorter than JWT
                 print(f"🔍 Using token_hash method for password reset")
                 try:
-                    # Use verify_otp for token_hash
+                    # Use verify_otp for token_hash - this is our ONE chance to verify it
                     response = current_app.supabase.auth.verify_otp({
                         'token_hash': recovery_token,
                         'type': 'recovery'
@@ -411,6 +401,9 @@ def update_password():
                         user_email = response.user.email
                         user_id = response.user.id
                         print(f"✅ Token verified for user: {user_email}")
+                        
+                        # IMMEDIATELY store user email for fallback before attempting password update
+                        session['reset_user_email'] = user_email
                         
                         # Now update password using admin API
                         admin_response = current_app.supabase.auth.admin.update_user_by_id(
@@ -429,6 +422,8 @@ def update_password():
                         
                         # Clear recovery token from session
                         session.pop('recovery_token', None)
+                        session.pop('recovery_token_type', None)
+                        session.pop('reset_user_email', None)
                         
                         flash('Your password has been updated successfully! You can now log in.', 'success')
                         return redirect(url_for('auth.register') + '?tab=login')
@@ -458,6 +453,7 @@ def update_password():
                                 
                                 # Clear recovery token from session
                                 session.pop('recovery_token', None)
+                                session.pop('recovery_token_type', None)
                                 session.pop('reset_user_email', None)
                                 
                                 flash('Your password has been updated! Note: You may need to use local login if cloud authentication is unavailable.', 'warning')
