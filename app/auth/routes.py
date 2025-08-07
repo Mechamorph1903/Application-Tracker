@@ -37,6 +37,9 @@ def register():
                 return redirect(url_for('auth.register') + '?tab=register')
             
             print(f"🔄 Creating mandatory Supabase Auth user for: {email}")
+            app_url = current_app.config.get('APP_URL', 'http://localhost:5000').rstrip('/')
+            confirm_url = f"{app_url}/auth/confirm-email"
+
             auth_user = current_app.supabase.auth.sign_up({
                 "email": email,
                 "password": password,
@@ -45,7 +48,8 @@ def register():
                     "last_name": last_name,
                     "username": username,
                     "display_name": f"{first_name} {last_name}"
-				}
+				},
+                "email_redirect_to": confirm_url
             })
             
             # Strict validation of Supabase response
@@ -425,6 +429,67 @@ def update_password():
         flash('Error updating password. Please try again or contact support.', 'danger')
         return render_template('reset_password.html', supabase_recovery=True)
 
+
+@auth.route('/confirm-email', methods=['GET'])
+def confirm_email():
+    """Handle Supabase email confirmation callback"""
+    print("=== EMAIL CONFIRMATION DEBUG ===")
+    print("All URL parameters:")
+    for key, value in request.args.items():
+        print(f"  {key}: {value}")
+    print("================================")
+    
+    # Get confirmation parameters
+    access_token = request.args.get('access_token')
+    refresh_token = request.args.get('refresh_token')
+    token_type = request.args.get('type')
+    error = request.args.get('error')
+    error_description = request.args.get('error_description')
+    
+    # Check for errors
+    if error:
+        print(f"❌ Email confirmation error: {error} - {error_description}")
+        flash(f'Email confirmation failed: {error_description or error}', 'danger')
+        return redirect(url_for('auth.register') + '?tab=login')
+    
+    # Check if this is an email confirmation
+    if token_type == 'signup' and access_token:
+        print(f"✅ Email confirmation token received")
+        
+        try:
+            # Decode token to get user info
+            import jwt
+            decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+            user_email = decoded_token.get('email')
+            user_id = decoded_token.get('sub')
+            
+            print(f"🔍 Confirmed user: email={user_email}, user_id={user_id}")
+            
+            # Update local user's email verification status
+            if user_email:
+                local_user = User.query.filter_by(email=user_email).first()
+                if local_user:
+                    # You might want to add an email_verified column to your User model
+                    # local_user.email_verified = True
+                    # db.session.commit()
+                    print(f"✅ Local user found for confirmation: {user_email}")
+                
+            flash('Email confirmed successfully! You can now log in.', 'success')
+            return redirect(url_for('auth.register') + '?tab=login')
+            
+        except Exception as e:
+            print(f"❌ Email confirmation processing error: {e}")
+            flash('Email confirmation completed, but there was an issue processing it. You can still try to log in.', 'warning')
+            return redirect(url_for('auth.register') + '?tab=login')
+    
+    # If no confirmation token, might be fragments
+    if not request.args:
+        print("⚠️ No query parameters - tokens might be in URL fragment")
+        return render_template('auth_callback.html')  # Reuse your fragment handler
+    
+    # Invalid confirmation link
+    flash('Invalid email confirmation link.', 'danger')
+    return redirect(url_for('auth.register') + '?tab=login')
 
 @auth.route('/test-callback')
 def test_callback():

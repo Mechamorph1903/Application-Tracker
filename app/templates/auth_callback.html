@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processing Password Reset...</title>
+    <title>Processing Authentication...</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,7 +53,7 @@
 <body>
     <div class="container">
         <div class="spinner"></div>
-        <div class="loading">Processing your password reset link...</div>
+        <div class="loading">Processing your authentication link...</div>
         <div id="debug" class="debug">
             <strong>Debug Info:</strong><br>
             <div id="debug-content"></div>
@@ -64,7 +64,7 @@
         function parseUrlFragment() {
             // Get the URL fragment (everything after #)
             const fragment = window.location.hash.substring(1);
-            console.log('URL Fragment:', fragment);
+            console.log('URL Fragment found:', fragment ? 'Yes' : 'No');
             
             if (!fragment) {
                 console.log('No fragment found');
@@ -77,18 +77,32 @@
             
             for (const [key, value] of params) {
                 result[key] = value;
-                console.log(`Fragment param: ${key} = ${value}`);
+                // Only log non-sensitive parameter names
+                if (key === 'type' || key === 'expires_at' || key === 'expires_in' || key === 'token_type') {
+                    console.log(`Fragment param: ${key} = ${value}`);
+                } else {
+                    console.log(`Fragment param: ${key} = [HIDDEN]`);
+                }
             }
             
             return result;
         }
         
-        function redirectToCallback(params) {
+        function redirectToPasswordReset(params) {
             // Build query string from fragment parameters
             const queryParams = new URLSearchParams(params);
             const callbackUrl = `${window.location.origin}/auth/reset-password-callback?${queryParams.toString()}`;
             
-            console.log('Redirecting to:', callbackUrl);
+            console.log('Redirecting to password reset callback');
+            window.location.href = callbackUrl;
+        }
+        
+        function redirectToEmailConfirmation(params) {
+            // Build query string from fragment parameters
+            const queryParams = new URLSearchParams(params);
+            const callbackUrl = `${window.location.origin}/auth/confirm-email?${queryParams.toString()}`;
+            
+            console.log('Redirecting to email confirmation callback');
             window.location.href = callbackUrl;
         }
         
@@ -101,35 +115,44 @@
         
         // Main logic
         try {
-            // showDebug(`Full URL: ${window.location.href}`);
-            // showDebug(`Fragment: ${window.location.hash}`);
+            showDebug(`Processing authentication callback...`);
             
             const fragmentParams = parseUrlFragment();
             
             if (fragmentParams && Object.keys(fragmentParams).length > 0) {
-                showDebug(`Found ${Object.keys(fragmentParams).length} fragment parameters`);
+                showDebug(`Found ${Object.keys(fragmentParams).length} parameters`);
                 
-                // Check if we have the expected Supabase tokens
-                if (fragmentParams.access_token || fragmentParams.type) {
-                    showDebug('Valid Supabase tokens found, redirecting...');
-                    setTimeout(() => redirectToCallback(fragmentParams), 1000);
+                // Determine the type of callback based on token type
+                const tokenType = fragmentParams.type;
+                const hasAccessToken = !!fragmentParams.access_token;
+                
+                if (tokenType === 'recovery' && hasAccessToken) {
+                    showDebug('Password recovery link detected');
+                    setTimeout(() => redirectToPasswordReset(fragmentParams), 1000);
+                } else if (tokenType === 'signup' && hasAccessToken) {
+                    showDebug('Email confirmation link detected');
+                    setTimeout(() => redirectToEmailConfirmation(fragmentParams), 1000);
+                } else if (hasAccessToken) {
+                    // Fallback: assume password reset if we have an access token but unclear type
+                    showDebug('Authentication token detected (assuming password reset)');
+                    setTimeout(() => redirectToPasswordReset(fragmentParams), 1000);
                 } else {
-                    showDebug('No valid tokens found in fragment');
+                    showDebug('No valid authentication tokens found');
                     setTimeout(() => {
-                        window.location.href = '/auth/forgot-password';
+                        window.location.href = '/auth/register?tab=login';
                     }, 3000);
                 }
             } else {
-                showDebug('No fragment parameters found');
+                showDebug('No authentication parameters found');
                 setTimeout(() => {
-                    window.location.href = '/auth/forgot-password';
+                    window.location.href = '/auth/register?tab=login';
                 }, 3000);
             }
         } catch (error) {
             console.error('Error processing callback:', error);
-            showDebug(`Error: ${error.message}`);
+            showDebug(`Processing error occurred`);
             setTimeout(() => {
-                window.location.href = '/auth/forgot-password';
+                window.location.href = '/auth/register?tab=login';
             }, 3000);
         }
     </script>
