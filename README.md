@@ -302,7 +302,7 @@ Contact me(daniel.anorue@usm.edu), elyon (elyon.aganah@usm.edu) or neville(nevil
 
 **Built with ❤️ by students, for students**
 
-*A Tinubu Special ™*
+  *A DEN Special ™*
 
 [⭐ Star this repo](https://github.com/YOUR_USERNAME/internship-tracker) if you found it helpful!
 
