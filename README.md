@@ -275,46 +275,6 @@ InternIn is fully responsive and works seamlessly across:
 
 ---
 
-## 🚀 Deployment
-
-### Local Development
-```bash
-python run.py
-```
-
-### Production Deployment
-1. Set environment variables:
-   ```bash
-   export FLASK_ENV=production
-   export SECRET_KEY=your-secret-key-here
-   ```
-
-2. Use a production WSGI server:
-   ```bash
-   pip install gunicorn
-   gunicorn -w 4 run:app
-   ```
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how to get started:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow PEP 8 style guidelines
-- Write clear, descriptive commit messages
-- Add comments for complex logic
-- Test your changes thoroughly
-
----
-
 ## 📝 License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
@@ -342,7 +302,7 @@ Contact me(daniel.anorue@usm.edu), elyon (elyon.aganah@usm.edu) or neville(nevil
 
 **Built with ❤️ by students, for students**
 
-*A Tinubu Special ™*
+  *A DEN Special ™*
 
 [⭐ Star this repo](https://github.com/YOUR_USERNAME/internship-tracker) if you found it helpful!
 
