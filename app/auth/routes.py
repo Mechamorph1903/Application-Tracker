@@ -43,13 +43,15 @@ def register():
             auth_user = current_app.supabase.auth.sign_up({
                 "email": email,
                 "password": password,
-                "user_metadata": {
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "username": username,
-                    "display_name": f"{first_name} {last_name}"
-				},
+                "options": {
+                    "data": {
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "username": username,
+                        "display_name": f"{first_name} {last_name}"
+                },
                 "email_redirect_to": confirm_url
+                }
             })
             
             # Strict validation of Supabase response
