@@ -71,7 +71,7 @@ def register():
         except Exception as e:
             print(f"❌ MANDATORY Supabase user creation failed: {e}")
             print(f"❌ Error type: {type(e).__name__}")
-            flash('Account creation failed. Please try again or contact support if the problem persists.', 'danger')
+            flash('Account creation failed. Please try again or contact support if the problem persists. Error type: {type(e).__name__}', 'danger')
             return redirect(url_for('auth.register') + '?tab=register')
 
         # Only create local user if Supabase succeeded
