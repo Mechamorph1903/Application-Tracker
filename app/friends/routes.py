@@ -47,7 +47,7 @@ def limited_profile(username):
 		flash('User not found.', 'error')
 		return redirect(url_for('friends.friendsList'))
 	if username == current_user.username:
-		flash("Thats's you silly, 😂", 'info')
+		flash("Thats's you silly, 😂. (Please, report this to us)", 'info')
 		return redirect(url_for('profile.profile'))
 	isFriends = user.is_friend_with(current_user)
 	if isFriends:
