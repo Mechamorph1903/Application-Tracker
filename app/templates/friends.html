@@ -57,10 +57,10 @@
     </div>
     {% endfor %}
     {% else %}
-      <div class="centralized-message">
-        <h1>It's pretty lonely in here</h1>
-        <p>Don't Miss Out. Add Friends Now!⬇️</p>
-        <a href="{{ url_for('friends.search_users')}}">Find Friends</a>
+      <div class="no-friends">
+        <h2>It's pretty lonely in here</h2>
+        <p>Don't Miss Out. Add Friends Now! ⬇️</p>
+        <a href="{{ url_for('friends.search_users') }}" class="add-friend-btn-main">Find Friends</a>
       </div>
     {%endif%}
 </div>

@@ -1,3 +1,34 @@
+/* Make mutual friends initials brighter for dark mode */
+.mutual-friends .friend-avatar {
+  color: #fff !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #764ba2 100%);
+  border: 2px solid #b993fd;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.10);
+}
+/* Bio Panel Styles for Limited Profile */
+.bio-panel {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0 1.25rem 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border-left: 4px solid #4e7cff;
+}
+.bio-label {
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+  color: #4e7cff;
+  letter-spacing: 0.5px;
+  font-size: 1.05em;
+}
+.bio-content {
+  color: #333;
+  font-size: 1em;
+  line-height: 1.5;
+  word-break: break-word;
+}
 /* Style for 'No mutual friends' message in mutual friends section */
 .no-mutuals {
   display: inline-block;

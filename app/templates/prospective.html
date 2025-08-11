@@ -29,6 +29,10 @@
       <div class="user-header">
         <h2>{{user.firstName}} {{user.lastName}}</h2>
         <p class="user-details">Class of {{user.year}} <strong>@</strong> {{user.school}} <i><strong>studying</strong></i> {{user.major}}</p>
+        <div class="bio-panel">
+          <p class="bio-label">Bio</p>
+          <div class="bio-content">{{ user.bio or 'No bio provided.' }}</div>
+        </div>
         <p class="friendship-status">
           {% if current_user.has_sent_request_to(user) %}
             Friend request sent

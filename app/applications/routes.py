@@ -105,7 +105,7 @@ def copy_application():
         flag_modified(current_user, "goals")
         db.session.commit()
 
-        flash('Added to your applications successfully')
+        flash('Added to your applications successfully', 'success')
         if friend_username:
             return redirect(url_for('friends.friend_profile', username=friend_username))
         return redirect(url_for('applications.applicationsList'))
