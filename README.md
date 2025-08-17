@@ -9,6 +9,16 @@ A modern, feature-rich Flask web application designed to help students and job s
 
 > **⚠️ Copyright Notice:** This project is the original work of DEN and is protected under Apache 2.0 License. While the code is open source for educational purposes, please respect the license terms and provide proper attribution if you use any part of this codebase.
 
+## 🎥 Project Videos
+
+### 📊 Project Presentation
+[🎬 Watch the Project Presentation](https://youtu.be/y5siuMMNSmY)
+
+### 🖥️ Project Demo
+[🎬 Watch the Project Demo](https://youtu.be/EBCv_hKtwQA)
+
+---
+
 ## 📸 Application Screenshots
 
 ### 🏠 Landing Page

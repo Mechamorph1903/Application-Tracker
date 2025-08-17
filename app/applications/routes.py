@@ -13,7 +13,7 @@ applications = Blueprint('applications', __name__)
 def applicationsList():
     """Display user's internship applications"""
     # Get all internships for the current user
-    internships = Internship.query.filter_by(user_id=current_user.id).all()
+    internships = Internship.query.filter_by(user_id=current_user.id).order_by(Internship.applied_date.desc()).all()
     return render_template('applications.html', internships=internships)
 
 @applications.route('/application-details/<int:internship_id>')
