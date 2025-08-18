@@ -507,14 +507,21 @@ input[type="datetime-local"]:focus {
 }
 
 #submit{
-    position: fixed;
+    position: sticky;
     bottom: 0;
-    /* Only blur behind the button area */
-    background: rgba(240, 237, 243, 0.1);/* or any semi-transparent color */
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
+    /* Extend beyond form padding to span full width and cover bottom corners */
+    margin: 0 -2rem -2rem -2rem;
+    /* Transparent blur background */
+    background: rgba(255, 255, 255, 0.05);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     z-index: 10;
     padding: 2rem;
+    /* Add subtle border for glass effect */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    /* Match the container's bottom border radius */
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
 }
 
 @media (prefers-color-scheme: dark){
