@@ -42,10 +42,10 @@
       <!--Login-->
       <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm" class="active">
         <h2>Login</h2>
-        <label>Email:</label>
-        <input type="email" name="email" placeholder="delusion@gunners.com" required><br>
+        <label>Email/Username:</label>
+        <input type="input" name="email" placeholder="intern@jobs.com/intern007" required><br>
         <label>Password:</label>
-        <input type="password" name="password" placeholder="2nd_aG@!n" required><br><br>
+        <input type="password" name="password" placeholder="p@55w0rd" required><br><br>
         <button type="submit">Login</button>
         <div class="forgot-password-link">
             <a href="{{ url_for('auth.forgot_password') }}">Forgot your password?</a>
@@ -73,31 +73,19 @@
         <input type="email" name="email" required title="Enter your email address" placeholder="Email address"><br><br>
 
         <label>Password:</label>
-        <input type="password" name="password" required title="Enter your password" placeholder="Password"><br><br>
-
+        <input type="password" name="password" id="password" required placeholder="Password" title="Please use a combination of Capital and Lowercase letters, numbers, and symbols. Length cannot be less than 6 characters! else User creation will fail"><br><br>
+        <div id="password-requirements" class="password-requirements">
+            <div class="requirement invalid" id="length">At least 6 characters</div>
+            <div class="requirement invalid" id="uppercase">One uppercase letter</div>
+            <div class="requirement invalid" id="lowercase">One lowercase letter</div>
+            <div class="requirement invalid" id="number">One number</div>
+            <div class="requirement invalid" id="symbol">One symbol</div>
+        </div><br>
         <button type="submit">Register</button>
     </form>
     </div>
     </div>
     
-    <script src="{{ url_for('static', filename='js/tabs.js') }}"></script>
-    
-    <!-- Flash Message Auto-Dismiss -->
-    <script>
-      // Auto-dismiss flash messages after 5 seconds
-      document.addEventListener('DOMContentLoaded', function() {
-        const flashMessages = document.querySelectorAll('.flash-message');
-        
-        flashMessages.forEach(function(message) {
-          // Auto-dismiss after 5 seconds
-          setTimeout(function() {
-            message.classList.add('flash-dismissing');
-            setTimeout(function() {
-              message.remove();
-            }, 300);
-          }, 5000);
-        });
-      });
-    </script>
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
 </body>
 </html>

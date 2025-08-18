@@ -6,6 +6,8 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from app.models import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
+import re
+from sqlalchemy import or_
 
 
 auth = Blueprint('auth', __name__)
@@ -28,6 +30,31 @@ def register():
         if User.query.filter_by(email=email).first():
             flash('Email already registered. Please log in.', 'danger')
             return redirect(url_for('auth.register') + '?tab=login')
+        
+        if len(password) < 6:
+            flash('Password must be at least 6 characters long.', 'danger')
+            return redirect(url_for('auth.register') + '?tab=register')
+        
+        if not re.search(r'[A-Z]', password):
+            flash('Password must contain at least one uppercase letter.', 'danger')
+            return redirect(url_for('auth.register') + '?tab=register')
+        
+        if not re.search(r'[a-z]', password):
+            flash('Password must contain at least one lowercase letter.', 'danger')
+            return redirect(url_for('auth.register') + '?tab=register')
+        
+        if not re.search(r'\d', password):
+            flash('Password must contain at least one number.', 'danger')
+            return redirect(url_for('auth.register') + '?tab=register')
+        
+        if not re.search(r'[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]', password):
+            flash('Password must contain at least one symbol (!@#$%^&*()_+-=[]{};\':"|,.<>?/).', 'danger')
+            return redirect(url_for('auth.register') + '?tab=register')
+        
+        if User.query.filter_by(email=email).first():
+            flash('Email already registered. Please log in.', 'danger')
+            return redirect(url_for('auth.register') + '?tab=login')
+
 
         # Create Supabase user FIRST (mandatory)
         supabase_user_id = None
@@ -129,50 +156,51 @@ def register():
 
 @auth.route('/login', methods=['POST'])
 def login():
-	email = request.form.get('email')
-	password = request.form.get('password')
+    identifier = request.form.get('email')
+    password = request.form.get('password')
 
-	currentUser = User.query.filter_by(email=email).first()  # Find user by email
-	if currentUser and currentUser.check_password(password):
-		# Check if user needs migration (handle missing column gracefully)
-		try:
-			needs_migration = getattr(currentUser, 'needs_migration', True)
-		except AttributeError:
-			# Column doesn't exist yet, assume user needs migration
-			needs_migration = True
-		
-		if needs_migration:
-			login_user(currentUser)  # Log them in temporarily
-			flash('Please set a new password to complete account migration.', 'info')
-			return redirect(url_for('migrate_account'))
-		
-		# Normal login flow for migrated users
-		try:
-			# Try to authenticate with Supabase to get token
-			if current_app.supabase:
-				auth_response = current_app.supabase.auth.sign_in_with_password({
-					"email": email,
-					"password": password
-				})
-				
-				# Store Supabase token in session
-				session['supabase_access_token'] = auth_response.session.access_token
-				print("✅ Supabase token stored in session")
-			
-		except Exception as e:
-			print(f"⚠️  Supabase auth error: {e}")
-			# Continue with local login if Supabase fails
-		
-		login_user(currentUser)
-		# Send welcome email for first-time login (if this is intended)
-		
-		currentUser.last_seen = datetime.now()
-		db.session.commit()  # Commit the changes to the database
-		flash('Login successful!', 'success')
-		return redirect(url_for('home'))  # Redirect to dashboard after login
-	else:
-		flash('Invalid email or password.', 'danger')
-		return redirect(url_for('auth.register') + '?tab=login')  # Stay on login tab
+    currentUser = User.query.filter(or_(User.email == identifier, User.username == identifier)).first()  # Find user by email or username
+    if currentUser and currentUser.check_password(password):
+        user_email = currentUser.email
+
+        try:
+            needs_migration = getattr(currentUser, 'needs_migration', True)
+        except AttributeError:
+            # Column doesn't exist yet, assume user needs migration
+            needs_migration = True
+        
+        if needs_migration:
+            login_user(currentUser)  # Log them in temporarily
+            flash('Please set a new password to complete account migration.', 'info')
+            return redirect(url_for('migrate_account'))
+        
+        # Normal login flow for migrated users
+        try:
+            # Try to authenticate with Supabase to get token
+            if current_app.supabase:
+                auth_response = current_app.supabase.auth.sign_in_with_password({
+                    "email": user_email,
+                    "password": password
+                })
+                
+                # Store Supabase token in session
+                session['supabase_access_token'] = auth_response.session.access_token
+                print("✅ Supabase token stored in session")
+            
+        except Exception as e:
+            print(f"⚠️  Supabase auth error: {e}")
+            # Continue with local login if Supabase fails
+        
+        login_user(currentUser)
+        # Send welcome email for first-time login (if this is intended)
+        
+        currentUser.last_seen = datetime.now()
+        db.session.commit()  # Commit the changes to the database
+        flash('Login successful!', 'success')
+        return redirect(url_for('home'))  # Redirect to dashboard after login
+    else:
+        flash('Invalid email or password.', 'danger')
+        return redirect(url_for('auth.register') + '?tab=login')  # Stay on login tab
 	
 @auth.route('/logout')
 def logout():

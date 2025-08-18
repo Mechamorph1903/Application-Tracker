@@ -319,3 +319,29 @@ form button:hover {
 	text-decoration: underline;
 	transform: translateY(-1px);
 }
+
+.password-requirements {
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.requirement {
+    margin: 2px 0;
+    transition: color 0.3s ease;
+}
+
+.requirement.valid {
+    color: #22c55e;
+}
+
+.requirement.invalid {
+    color: #ef4444;
+}
+
+.requirement.valid::before {
+    content: "✓ ";
+}
+
+.requirement.invalid::before {
+    content: "✗ ";
+}
