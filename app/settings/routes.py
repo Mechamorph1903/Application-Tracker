@@ -8,6 +8,7 @@ import os
 import uuid
 import base64
 from datetime import datetime, timezone
+from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from PIL import Image
 
@@ -77,13 +78,32 @@ def update_user_settings():
         current_user.firstName = request.form.get('firstName', current_user.firstName)
         current_user.lastName = request.form.get('lastName', current_user.lastName)
         current_user.username = request.form.get('username', current_user.username)
-        current_user.email = request.form.get('email', current_user.email)
         current_user.phone = request.form.get('phone', current_user.phone)
         current_user.bio = request.form.get('bio', current_user.bio)
         current_user.school = request.form.get('school', current_user.school)
         current_user.year = request.form.get('year', current_user.year)
         current_user.major = request.form.get('major', current_user.major)
+
+        #Update Email logic to also reflectyin supabaseAuth
+        new_email = request.form.get('email') 
         
+        if new_email and new_email != current_user.email:
+            try:
+                
+                response = supabase.auth.update_user(
+                    {"email": new_email}
+                )
+                current_user.email = new_email
+                current_app.send_welcome_email(user=current_user)
+
+                if not response or getattr(response, "error", None):
+                    raise Exception(f"Supabase update failed: {getattr(response, 'error', 'Unknown error')}")
+            except Exception as e:
+                print(f"⚠️ Update email failed: {e}")
+               
+
+
+
         # Handle social media JSON
         if 'social_media' in request.form:
             try:
@@ -91,7 +111,7 @@ def update_user_settings():
                 current_user.social_media = json.loads(social_media_json)
             except json.JSONDecodeError:
                 current_user.social_media = []
-        
+
         # Ensure user has settings
         if not current_user.settings:
             current_user.create_user_settings()
