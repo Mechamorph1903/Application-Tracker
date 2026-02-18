@@ -3,7 +3,6 @@ InternIn - Personal Internship Tracking Hub
 Copyright © 2025 DEN. All rights reserved.
 Licensed under Apache 2.0 License
 """
-# "This folder is a package — and you can import from it."
 import datetime
 import os
 import uuid
@@ -22,6 +21,8 @@ from .profile.routes import userprofile
 from .settings.routes import settings
 from .applications.routes import applications
 from .friends.routes import friends
+from app.auth.supabase_auth import get_user_id_from_token, supabase_login_required
+from app.auth.compatibility import get_db_user, require_supabase_user
 
 
 # Load environment variables
@@ -152,10 +153,14 @@ def create_app():
 	
 	@app.route('/home')
 	@app.route('/dashboard')
-	@login_required
-	def home():
+	@require_supabase_user
+	def home(user):
+		"""Displays User dashboard with recent applications, goals and quick actions"""
+		if not user:
+			flash('User not found in database', 'danger')
+			return redirect(url_for('auth.login'))
 		# Get user's applications for dashboard
-		applications = current_user.internships
+		applications = user.internships
 		
 		# Get recent applications (5 most recent)
 		recent_applications = []
@@ -232,14 +237,14 @@ def create_app():
 			return MOTIVATIONALS[index]
 		
 		motivation = getDailyMotivation()
-		goals = current_user.goals
+		goals = user.goals
 
 
 		return render_template('home.html', stats=stats, recent_applications=recent_applications, motivation=motivation, goals=goals)
 	
 	@app.route('/goal', methods=['POST'])
-	@login_required
-	def add_goal():
+	@require_supabase_user
+	def add_goal(user):
 		try:
 			regular_goal = request.form.get("regular_goal")
 			app_count_goal = request.form.get("app_count_goal")
@@ -253,9 +258,9 @@ def create_app():
 					'completed_at': None
 				}
 				# Ensure goals is a list
-				if current_user.goals is None:
-					current_user.goals = []
-				current_user.goals.append(goal_obj)
+				if user.goals is None:
+					user.goals = []
+				user.goals.append(goal_obj)
 				db.session.commit()
 				flash('Successfully added regular goal', 'success')
 			elif app_count_goal:
@@ -270,11 +275,11 @@ def create_app():
 					'completed_at': None
 				}
 				
-				if current_user.goals is None:
-					current_user.goals = []
-				current_user.goals.append(goal_obj)
+				if user.goals is None:
+					user.goals = []
+				user.goals.append(goal_obj)
 				db.session.commit()
-				flash("Let's hit that goal of 1!", 'success')
+				flash(f"Let's hit that goal of {app_count_goal}!", 'success')
 			else:
 				flash('Error: No goal data submitted.', 'error')
 		except Exception as e:
@@ -284,20 +289,20 @@ def create_app():
 		return redirect(url_for('home'))
 
 	@app.route('/complete_goal', methods=['POST'])
-	@login_required
-	def complete_goal():
+	@require_supabase_user
+	def complete_goal(user):
 		try:
 			goal_id = request.form.get('goal_id')
-			if not goal_id or not current_user.goals:
+			if not goal_id or not user.goals:
 				return {'success': False, 'error': 'Goal ID not provided or no goals found'}, 400
 			
-			for goal in current_user.goals:
+			for goal in user.goals:
 				if goal.get('goal_id') == goal_id:
 					goal['goal-status'] = 'completed'
 					goal['completed_at'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 					break
 			
-			flag_modified(current_user, "goals")
+			flag_modified(user, "goals")
 			db.session.commit()
 			return {'success': True}, 200
 		except Exception as e:
@@ -305,16 +310,16 @@ def create_app():
 			return {'success': False, 'error': str(e)}, 500
 
 	@app.route('/remove_goal', methods=['POST'])
-	@login_required
-	def remove_goal():
+	@require_supabase_user
+	def remove_goal(user):
 		try:
 			goal_id = request.form.get('goal_id')
-			if not goal_id or not current_user.goals:
+			if not goal_id or not user.goals:
 				return {'success': False, 'error': 'Goal ID not provided or no goals found'}, 400
 			
-			current_user.goals = [goal for goal in current_user.goals if goal.get('goal_id') != goal_id]
+			user.goals = [goal for goal in user.goals if goal.get('goal_id') != goal_id]
 			
-			flag_modified(current_user, "goals")
+			flag_modified(user, "goals")
 			db.session.commit()
 			return {'success': True}, 200
 		except Exception as e:
@@ -322,8 +327,8 @@ def create_app():
 			return {'success': False, 'error': str(e)}, 500
 
 	@app.route('/calendar')
-	@login_required
-	def calendar():
+	@require_supabase_user
+	def calendar(user):
 		return render_template('calendar.html')
 	
 
@@ -332,30 +337,6 @@ def create_app():
 	def credits():
 		"""Render the credits page with attributions"""
 		return render_template('credits.html')
-	
-	# Test route for welcome email (remove in production)
-	@app.route('/test-welcome-email')
-	@login_required
-	def test_welcome_email():
-		"""Test route to send welcome email to current user"""
-		try:
-			success = app.send_welcome_email(user=current_user)
-			if success:
-				flash(f'Test welcome email sent to {current_user.email}! Check your inbox.', 'success')
-			else:
-				flash('Failed to send welcome email. Check console for errors.', 'error')
-		except Exception as e:
-			flash(f'Error sending welcome email: {str(e)}', 'error')
-		
-		return redirect(url_for('home'))
-	
-	# Preview route for welcome email (remove in production)
-	@app.route('/preview-welcome-email')
-	@login_required
-	def preview_welcome_email():
-		"""Preview the welcome email HTML template"""
-		app_url = os.getenv('APP_URL', 'http://localhost:5000')
-		return render_template('emails/welcome.html', user=current_user, app_url=app_url)
 	
 	def send_password_reset_email(user_email, reset_link):
 		"""Send password reset email to user"""
@@ -485,68 +466,6 @@ def create_app():
 	app.send_password_reset_email = send_password_reset_email
 	app.send_welcome_email = send_welcome_email
 	
-	@app.route('/migrate-account', methods=['GET', 'POST'])
-	@login_required
-	def migrate_account():
-		"""Handle Supabase Auth migration for existing users"""
-		# Check if user needs migration (handle missing column gracefully)
-		try:
-			needs_migration = getattr(current_user, 'needs_migration', True)
-		except AttributeError:
-			needs_migration = True
-		
-		if not needs_migration:
-			return redirect(url_for('home'))
-		
-		if request.method == 'POST':
-			new_password = request.form.get('password')
-			confirm_password = request.form.get('confirm_password')
-			
-			if not new_password or len(new_password) < 6:
-				flash('Password must be at least 6 characters long', 'error')
-				return render_template('migrate_account.html')
-				
-			if new_password != confirm_password:
-				flash('Passwords do not match', 'error')
-				return render_template('migrate_account.html')
-			
-			try:
-				if app.supabase:
-					# Create user in Supabase Auth
-					auth_user = app.supabase.auth.admin.create_user({
-						"email": current_user.email,
-						"password": new_password,
-						"email_confirm": True,
-						"user_metadata": {
-							"first_name": current_user.firstName,
-							"last_name": current_user.lastName,
-							"username": current_user.username
-						}
-					})
-					
-					# Update local user record
-					try:
-						current_user.supabase_user_id = auth_user.user.id
-						current_user.needs_migration = False
-					except AttributeError:
-						# Columns don't exist yet, just update password
-						pass
-					
-					current_user.password_hash = generate_password_hash(new_password)
-					db.session.commit()
-					
-					flash('Account migrated successfully! Please log in with your new password.', 'success')
-					logout_user()
-					return redirect(url_for('auth.register') + '?tab=login')
-				else:
-					flash('Migration service unavailable. Please try again later.', 'error')
-					return render_template('migrate_account.html')
-					
-			except Exception as e:
-				flash(f'Migration failed: {str(e)}', 'error')
-				return render_template('migrate_account.html')
-		
-		return render_template('migrate_account.html')
 	
 	def get_supabase_headers():
 		"""Get headers for authenticated Supabase requests"""
