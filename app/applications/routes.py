@@ -5,37 +5,39 @@ from sqlalchemy.orm.attributes import flag_modified
 import json
 from ..models import db, Internship, User
 from . import applications
+from app.auth.compatibility import require_supabase_user
+
 
 applications = Blueprint('applications', __name__)
 
 @applications.route('/applications-list')
-@login_required
-def applicationsList():
+@require_supabase_user
+def applicationsList(user):
     """Display user's internship applications"""
     # Get all internships for the current user
-    internships = Internship.query.filter_by(user_id=current_user.id).order_by(Internship.applied_date.desc()).all()
-    return render_template('applications.html', internships=internships)
+    internships = Internship.query.filter_by(user_id=user.id).order_by(Internship.applied_date.desc()).all()
+    return render_template('applications.html', internships=internships, user=user)
 
 @applications.route('/application-details/<int:internship_id>')
-@login_required
-def application_details(internship_id):
+@require_supabase_user
+def application_details(user, internship_id):
     """Display detailed view of a specific internship application"""
     # Get the internship for the current user
-    internship = Internship.query.filter_by(id=internship_id, user_id=current_user.id).first()
+    internship = Internship.query.filter_by(id=internship_id, user_id=user.id).first()
     
     if not internship:
         flash('Internship not found or you do not have permission to view it.', 'error')
         return redirect(url_for('applications.applicationsList'))
     
-    return render_template('application-details.html', internship=internship)
+    return render_template('application-details.html', internship=internship, user=user)
 
 @applications.route('/friend/<username>/application-details/<int:internship_id>')
-@login_required
-def friend_application_details(username,internship_id):
+@require_supabase_user
+def friend_application_details(user, username,internship_id):
     """Display detailed view of a friend's internship application"""
     # Get the internship for the user
-    user =  User.query.filter_by(username=username).first()
-    internship = Internship.query.filter_by(id=internship_id, user_id=user.id).first()
+    friend_user =  User.query.filter_by(username=username).first()
+    internship = Internship.query.filter_by(id=internship_id, user_id=friend_user.id).first()
     
     if not internship:
         flash('Internship not found or you do not have permission to view it.', 'error')
@@ -47,11 +49,11 @@ def friend_application_details(username,internship_id):
         flash('You do not have permission to view this internship.', 'error')
         return 
     
-    return render_template('friend-application-details.html', user=user, internship=internship)
+    return render_template('friend-application-details.html', user=user,friend_user=friend_user, internship=internship)
 
 @applications.route('/copy-application')
-@login_required
-def copy_application():
+@require_supabase_user
+def copy_application(user):
     try:
         internship_id = request.args.get('internship_id', type=int)
         if not internship_id:
@@ -70,7 +72,7 @@ def copy_application():
 
         # Check if current user already has this internship (by company and job name)
         existing = Internship.query.filter_by(
-            user_id=current_user.id,
+            user_id=user.id,
             company_name=friendInternship.company_name,
             job_name=friendInternship.job_name
         ).first()
@@ -89,20 +91,20 @@ def copy_application():
             location=friendInternship.location,
             applied_date=date.today(),
             deadline_date=friendInternship.deadline_date,
-            user_id=current_user.id,
+            user_id=user.id,
             application_status='copied'
         )
         db.session.add(internship)
 
-        for goal in current_user.goals:
+        for goal in user.goals:
             if goal['goal-type'] == 'count' and goal['goal-status'] == 'active':
                 goal['count'] += 1
                 if int(goal['count']) >= int(goal['target']):
                     goal['goal-status'] = 'completed'
                     goal['completed_at'] = datetime.now(timezone.utc).isoformat()
 
-        print(current_user.goals)
-        flag_modified(current_user, "goals")
+        print(user.goals)
+        flag_modified(user, "goals")
         db.session.commit()
 
         flash('Added to your applications successfully', 'success')
@@ -117,8 +119,8 @@ def copy_application():
 
 
 @applications.route('/add', methods=['GET', 'POST'])
-@login_required
-def add_application():
+@require_supabase_user
+def add_application(user):
     """Add a new internship application"""
     if request.method == 'POST':
         try:
@@ -182,7 +184,7 @@ def add_application():
                 applied_date=applied_date,
                 deadline_date=deadline_date,
                 contacts=contacts,
-                user_id=current_user.id
+                user_id=user.id
             )
             
             # Set next action if provided
@@ -190,7 +192,7 @@ def add_application():
                 internship.set_next_action(next_action, next_action_date)
             
             db.session.add(internship)
-            for goal in current_user.goals:
+            for goal in user.goals:
                 if goal['goal-type'] == 'count' and goal['goal-status'] == 'active':
                     goal['count'] += 1
                     if int(goal['count']) >= int(goal['target']):
@@ -198,8 +200,7 @@ def add_application():
                         goal['completed_at'] = datetime.now(timezone.utc).isoformat()
 
             
-            print(current_user.goals)
-            flag_modified(current_user, "goals")
+            flag_modified(user, "goals")
             db.session.commit()
             
             flash(f'Successfully added internship application for {company_name}!', 'success')
@@ -211,13 +212,13 @@ def add_application():
     
     # GET request - show the form
     today = date.today().strftime('%Y-%m-%d')
-    return render_template('add.html', today=today)
+    return render_template('add.html', today=today, user=user)
 
 @applications.route('/edit/<int:internship_id>', methods=['GET', 'POST'])
-@login_required
-def edit_application(internship_id):
+@require_supabase_user
+def edit_application(user, internship_id):
     """Edit an existing internship application"""
-    internship = Internship.query.filter_by(id=internship_id, user_id=current_user.id).first()
+    internship = Internship.query.filter_by(id=internship_id, user_id=user.id).first()
     
     if not internship:
         flash('Internship not found or you do not have permission to edit it.', 'error')
@@ -274,7 +275,7 @@ def edit_application(internship_id):
             
             # Parse contacts JSON
             contacts_json = request.form.get('contacts', '[]')
-            print(f"DEBUG: Received contacts JSON: {contacts_json}")
+            # print(f"DEBUG: Received contacts JSON: {contacts_json}")
             try:
                 contacts = json.loads(contacts_json) if contacts_json else []
                 print(f"DEBUG: Parsed contacts: {contacts}")
@@ -322,13 +323,13 @@ def edit_application(internship_id):
         except Exception as e:
             flash(f'Error updating internship: {str(e)}', 'error')
     
-    return render_template('edit.html', internship=internship)
+    return render_template('edit.html', internship=internship, user=user)
 
 @applications.route('/delete/<int:internship_id>', methods=['POST'])
-@login_required
-def delete_internship(internship_id):
+@require_supabase_user
+def delete_internship(user, internship_id):
     """Delete an internship application"""
-    internship = Internship.query.filter_by(id=internship_id, user_id=current_user.id).first()
+    internship = Internship.query.filter_by(id=internship_id, user_id=user.id).first()
     
     if not internship:
         flash('Internship not found or you do not have permission to edit it.', 'error')
@@ -343,10 +344,10 @@ def delete_internship(internship_id):
 
 
 @applications.route('/application-details/<int:internship_id>', methods=['POST'])
-@login_required
-def editNotes(internship_id):
+@require_supabase_user
+def editNotes(user,internship_id):
     """Edit Notes"""
-    internship = Internship.query.filter_by(id=internship_id, user_id=current_user.id).first()
+    internship = Internship.query.filter_by(id=internship_id, user_id=user.id).first()
 
     if not internship:
          return {'error': 'Internship not found'}, 404
