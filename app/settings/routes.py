@@ -1,5 +1,4 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint, jsonify, send_file, current_app
-from flask_login import current_user, login_required
 from app.models import db, User, UserSettings, Internship
 import json
 import csv
@@ -11,15 +10,13 @@ from datetime import datetime, timezone
 from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from PIL import Image
-
+from app.auth.compatibility import require_supabase_user
 from supabase import create_client
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 SUPABASE_BUCKET = os.getenv('SUPABASE_BUCKET', 'profile-pics')
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
+
 
 # Try to import pandas for Excel export, fallback to CSV if not available
 try:
@@ -35,17 +32,17 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 settings = Blueprint('settings', __name__)
 
 @settings.route('/', methods=['GET', 'POST'])
-@login_required
-def settings_page():
+@require_supabase_user
+def settings_page(user):
     # Ensure user has settings
-    if not current_user.settings:
-        current_user.create_user_settings()
+    if not user.settings:
+        user.create_user_settings()
     
-    return render_template('settings.html', user=current_user, pandas_available=PANDAS_AVAILABLE)
+    return render_template('settings.html', user=user, pandas_available=PANDAS_AVAILABLE)
 
 @settings.route('/update-user-settings', methods=['POST'])
-@login_required
-def update_user_settings():
+@require_supabase_user
+def update_user_settings(user):
     """Update user personal information"""
     try:
         # Handle profile picture upload (Supabase)
@@ -64,37 +61,37 @@ def update_user_settings():
                 
                 # Save to Supabase
                 print("[DEBUG] Calling upload_profile_picture_to_supabase...")
-                supa_url = upload_profile_picture_to_supabase(file, current_user.id, current_user.username)
+                supa_url = upload_profile_picture_to_supabase(file, user.id, user.username)
                 print(f"[DEBUG] supa_url returned: {supa_url}")
                 if supa_url:
                     # Update user's profile picture
-                    current_user.profile_picture = supa_url
+                    user.profile_picture = supa_url
                     print(f"[DEBUG] Updated profile_picture to: {supa_url}")
                 else:
                     print("[DEBUG] Failed to upload to Supabase or invalid file type.")
                     return jsonify({'success': False, 'error': 'Failed to upload to Supabase or invalid file type.'}), 400
         
         # Update User model fields
-        current_user.firstName = request.form.get('firstName', current_user.firstName)
-        current_user.lastName = request.form.get('lastName', current_user.lastName)
-        current_user.username = request.form.get('username', current_user.username)
-        current_user.phone = request.form.get('phone', current_user.phone)
-        current_user.bio = request.form.get('bio', current_user.bio)
-        current_user.school = request.form.get('school', current_user.school)
-        current_user.year = request.form.get('year', current_user.year)
-        current_user.major = request.form.get('major', current_user.major)
+        user.firstName = request.form.get('firstName', user.firstName)
+        user.lastName = request.form.get('lastName', user.lastName)
+        user.username = request.form.get('username', user.username)
+        user.phone = request.form.get('phone', user.phone)
+        user.bio = request.form.get('bio', user.bio)
+        user.school = request.form.get('school', user.school)
+        user.year = request.form.get('year', user.year)
+        user.major = request.form.get('major', user.major)
 
         #Update Email logic to also reflectyin supabaseAuth
         new_email = request.form.get('email') 
         
-        if new_email and new_email != current_user.email:
+        if new_email and new_email != user.email:
             try:
                 
-                response = supabase.auth.update_user(
+                response = current_app.supabase.auth.update_user(
                     {"email": new_email}
                 )
-                current_user.email = new_email
-                current_app.send_welcome_email(user=current_user)
+                user.email = new_email
+                current_app.send_welcome_email(user=user)
 
                 if not response or getattr(response, "error", None):
                     raise Exception(f"Supabase update failed: {getattr(response, 'error', 'Unknown error')}")
@@ -108,20 +105,20 @@ def update_user_settings():
         if 'social_media' in request.form:
             try:
                 social_media_json = request.form.get('social_media', '[]')
-                current_user.social_media = json.loads(social_media_json)
+                user.social_media = json.loads(social_media_json)
             except json.JSONDecodeError:
-                current_user.social_media = []
+                user.social_media = []
 
         # Ensure user has settings
-        if not current_user.settings:
-            current_user.create_user_settings()
+        if not user.settings:
+            user.create_user_settings()
         
         # Update UserSettings model fields
-        current_user.settings.profile_visibility = request.form.get('profile_visibility', current_user.settings.profile_visibility)
-        current_user.settings.show_application_stats = request.form.get('show_application_stats') == 'true'
-        current_user.settings.timezone = request.form.get('timezone', current_user.settings.timezone)
-        current_user.settings.two_factor_enabled = request.form.get('two_factor_enabled') == 'true'
-        current_user.settings.login_notifications = request.form.get('login_notifications') == 'true'
+        user.settings.profile_visibility = request.form.get('profile_visibility', user.settings.profile_visibility)
+        user.settings.show_application_stats = request.form.get('show_application_stats') == 'true'
+        user.settings.timezone = request.form.get('timezone', user.settings.timezone)
+        user.settings.two_factor_enabled = request.form.get('two_factor_enabled') == 'true'
+        user.settings.login_notifications = request.form.get('login_notifications') == 'true'
         
         db.session.commit()
         
@@ -132,8 +129,8 @@ def update_user_settings():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @settings.route('/upload-cropped-profile-picture', methods=['POST'])
-@login_required
-def upload_cropped_profile_picture():
+@require_supabase_user
+def upload_cropped_profile_picture(user):
     """Handle cropped profile picture upload"""
     try:
         data = request.get_json()
@@ -157,11 +154,11 @@ def upload_cropped_profile_picture():
             return jsonify({'success': False, 'error': 'Image too large after cropping'}), 400
         
         # Use username with jpg extension for cropped images
-        filename = f"{current_user.username}.jpg"
+        filename = f"{user.username}.jpg"
         
         # Upload to Supabase
         try:
-            res = supabase.storage.from_(SUPABASE_BUCKET).upload(
+            res = current_app.supabase.storage.from_(SUPABASE_BUCKET).upload(
                 filename, 
                 image_bytes, 
                 {
@@ -175,7 +172,7 @@ def upload_cropped_profile_picture():
                 return jsonify({'success': False, 'error': 'Failed to upload cropped image'}), 500
             
             # Get public URL (bucket should now be public)
-            public_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(filename)
+            public_url = current_app.supabase.storage.from_(SUPABASE_BUCKET).get_public_url(filename)
             
             # Clean up any trailing ? characters
             if public_url.endswith('?'):
@@ -188,7 +185,7 @@ def upload_cropped_profile_picture():
                 print(f"[DEBUG] WARNING: Bucket may not be public! URL: {public_url}")
             
             # Update user's profile picture
-            current_user.profile_picture = public_url
+            user.profile_picture = public_url
             db.session.commit()
             
             return jsonify({
@@ -206,35 +203,35 @@ def upload_cropped_profile_picture():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @settings.route('/update-app-settings', methods=['POST'])
-@login_required
-def update_app_settings():
+@require_supabase_user
+def update_app_settings(user):
     """Update application preferences"""
     try:
         # Ensure user has settings
-        if not current_user.settings:
-            current_user.create_user_settings()
+        if not user.settings:
+            user.create_user_settings()
         
         # Update app settings
-        current_user.settings.theme = request.form.get('theme', current_user.settings.theme)
-        current_user.settings.dashboard_layout = request.form.get('dashboard_layout', current_user.settings.dashboard_layout)
-        current_user.settings.items_per_page = int(request.form.get('items_per_page', current_user.settings.items_per_page))
-        current_user.settings.date_format = request.form.get('date_format', current_user.settings.date_format)
-        current_user.settings.time_format = request.form.get('time_format', current_user.settings.time_format)
+        user.settings.theme = request.form.get('theme', user.settings.theme)
+        user.settings.dashboard_layout = request.form.get('dashboard_layout', user.settings.dashboard_layout)
+        user.settings.items_per_page = int(request.form.get('items_per_page', user.settings.items_per_page))
+        user.settings.date_format = request.form.get('date_format', user.settings.date_format)
+        user.settings.time_format = request.form.get('time_format', user.settings.time_format)
         
         # Notification settings
-        current_user.settings.email_notifications = request.form.get('email_notifications') == 'true'
-        current_user.settings.friend_request_notifications = request.form.get('friend_request_notifications') == 'true'
-        current_user.settings.application_reminders = request.form.get('application_reminders') == 'true'
-        current_user.settings.interview_reminders = request.form.get('interview_reminders') == 'true'
-        current_user.settings.reminder_days_before_followup = int(request.form.get('reminder_days_before_followup', current_user.settings.reminder_days_before_followup))
+        user.settings.email_notifications = request.form.get('email_notifications') == 'true'
+        user.settings.friend_request_notifications = request.form.get('friend_request_notifications') == 'true'
+        user.settings.application_reminders = request.form.get('application_reminders') == 'true'
+        user.settings.interview_reminders = request.form.get('interview_reminders') == 'true'
+        user.settings.reminder_days_before_followup = int(request.form.get('reminder_days_before_followup', user.settings.reminder_days_before_followup))
         
         # Application tracking settings
-        current_user.settings.auto_archive_rejected = request.form.get('auto_archive_rejected') == 'true'
-        current_user.settings.default_application_status = request.form.get('default_application_status', current_user.settings.default_application_status)
+        user.settings.auto_archive_rejected = request.form.get('auto_archive_rejected') == 'true'
+        user.settings.default_application_status = request.form.get('default_application_status', user.settings.default_application_status)
         
         # Data settings
-        current_user.settings.auto_backup = request.form.get('auto_backup') == 'true'
-        current_user.settings.export_format = request.form.get('export_format', current_user.settings.export_format)
+        user.settings.auto_backup = request.form.get('auto_backup') == 'true'
+        user.settings.export_format = request.form.get('export_format', user.settings.export_format)
         
         db.session.commit()
         
@@ -245,15 +242,15 @@ def update_app_settings():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @settings.route('/export-internships')
-@login_required
-def export_internships():
+@require_supabase_user
+def export_internships(user):
     """Export user's internships based on their preferred format"""
     try:
         # Get user's internships
-        internships = Internship.query.filter_by(user_id=current_user.id).all()
+        internships = Internship.query.filter_by(user_id=user.id).all()
         
         # Get export format preference
-        export_format = current_user.settings.export_format if current_user.settings else 'csv'
+        export_format = user.settings.export_format if user.settings else 'csv'
         
         # If Excel is requested but pandas is not available, fallback to CSV
         if export_format == 'excel' and not PANDAS_AVAILABLE:
@@ -315,8 +312,8 @@ def export_internships():
         return jsonify({'error': str(e)}), 500
 
 @settings.route('/change-password', methods=['POST'])
-@login_required
-def change_password():
+@require_supabase_user
+def change_password(user):
     """Change user's password"""
     try:
         current_password = request.form.get('current_password')
@@ -328,7 +325,7 @@ def change_password():
             return jsonify({'success': False, 'error': 'All fields are required'}), 400
         
         # Check if current password is correct
-        if not current_user.check_password(current_password):
+        if not user.check_password(current_password):
             return jsonify({'success': False, 'error': 'Current password is incorrect'}), 400
         
         # Check if new passwords match
@@ -340,11 +337,11 @@ def change_password():
             return jsonify({'success': False, 'error': 'Password must be at least 8 characters long'}), 400
         
         # Check if new password is different from current
-        if current_user.check_password(new_password):
+        if user.check_password(new_password):
             return jsonify({'success': False, 'error': 'New password must be different from current password'}), 400
         
         # Update password
-        current_user.set_password(new_password)
+        user.set_password(new_password)
         
         db.session.commit()
         
@@ -355,14 +352,14 @@ def change_password():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @settings.route('/cleanup-profile-url', methods=['GET', 'POST'])
-@login_required
-def cleanup_profile_url():
+@require_supabase_user
+def cleanup_profile_url(user):
     """Clean up profile picture URL by removing trailing ? and updating to new format"""
     try:
-        if current_user.profile_picture:
+        if user.profile_picture:
             # Remove trailing ?
-            clean_url = current_user.profile_picture.rstrip('?')
-            current_user.profile_picture = clean_url
+            clean_url = user.profile_picture.rstrip('?')
+            user.profile_picture = clean_url
             db.session.commit()
             
             return jsonify({
@@ -378,15 +375,15 @@ def cleanup_profile_url():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @settings.route('/debug-profile-pic')
-@login_required
-def debug_profile_pic():
+@require_supabase_user
+def debug_profile_pic(user):
     """Debug profile picture issues"""
     return jsonify({
-        'user_id': current_user.id,
-        'username': current_user.username,
-        'profile_picture': current_user.profile_picture,
-        'profile_picture_length': len(current_user.profile_picture) if current_user.profile_picture else 0,
-        'has_trailing_question': current_user.profile_picture.endswith('?') if current_user.profile_picture else False
+        'user_id': user.id,
+        'username': user.username,
+        'profile_picture': user.profile_picture,
+        'profile_picture_length': len(user.profile_picture) if user.profile_picture else 0,
+        'has_trailing_question': user.profile_picture.endswith('?') if user.profile_picture else False
     })
 
 # Helper functions for file upload
@@ -398,11 +395,11 @@ def allowed_file(filename):
 def upload_profile_picture_to_supabase(file, user_id, username):
     """Upload profile picture to Supabase Storage and return public URL"""
     print("[DEBUG] upload_profile_picture_to_supabase called")
-    print(f"[DEBUG] supabase is None: {supabase is None}")
+    print(f"[DEBUG] supabase is None: {current_app.supabase is None}")
     print(f"[DEBUG] file: {file}")
     print(f"[DEBUG] username: {username}")
     
-    if not supabase:
+    if not hasattr(current_app, 'supabase') or not current_app.supabase:
         print("[DEBUG] Supabase client is not initialized!")
         return None
         
@@ -421,7 +418,7 @@ def upload_profile_picture_to_supabase(file, user_id, username):
             print(f"[DEBUG] Uploading to bucket: {SUPABASE_BUCKET}")
             
             # Upload with upsert=True to replace existing file
-            res = supabase.storage.from_(SUPABASE_BUCKET).upload(
+            res = current_app.supabase.storage.from_(SUPABASE_BUCKET).upload(
                 filename, 
                 file_bytes, 
                 {
@@ -437,7 +434,7 @@ def upload_profile_picture_to_supabase(file, user_id, username):
                 return None
                 
             # Get public URL (bucket should now be public)
-            public_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(filename)
+            public_url = current_app.supabase.storage.from_(SUPABASE_BUCKET).get_public_url(filename)
             
             # Clean up any trailing ? characters  
             if public_url.endswith('?'):
