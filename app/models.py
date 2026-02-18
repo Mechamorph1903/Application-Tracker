@@ -44,7 +44,6 @@ class User(db.Model, UserMixin): # User model for managing user data
 	school = db.Column(db.String(100)) # University/school name
 	
 	# Supabase Auth migration fields
-	needs_migration = db.Column(db.Boolean, default=True)  # Flag for users needing migration
 	supabase_user_id = db.Column(db.String(36))  # Store Supabase UUID
 	year = db.Column(db.String(100)) # Graduation year
 	major = db.Column(db.String(100)) # Field of study

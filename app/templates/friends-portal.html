@@ -40,29 +40,29 @@
 <section class="users">
 	<div class="users-grid">
 		{% if users %}
-		{% for user in users%}
+		{% for displayed_user in users%}
 			<div class="user-card">
 				<div class="user-card-head">
 					<div class="name-logo">
-						{{user | initials}}
+						{{displayed_user | initials}}
 					</div>
 					<div class="names">
-						<h3>{{user.firstName}} {{user.lastName}}</h3>
-						<p>{{user.username}}</p>
+						<h3>{{displayed_user.firstName}} {{displayed_user.lastName}}</h3>
+						<p>{{displayed_user.username}}</p>
 					</div>
-					{%if current_user.is_friend_with(user)%}
+					{%if user.is_friend_with(displayed_user)%}
 					<div class="isfriends">
 						Friends
 					</div>
 					{%endif%}
 				</div>
 				<div class="user-card-body">
-					<p>School: {{user.school or 'Not Assigned'}}</p><hr>
-					<p>Major: {{user.major or 'Not Assigned'}}</p><hr>
-					<p>Year: {{user.year or  'Not Assigned'}}</p>
+					<p>School: {{displayed_user.school or 'Not Assigned'}}</p><hr>
+					<p>Major: {{displayed_user.major or 'Not Assigned'}}</p><hr>
+					<p>Year: {{displayed_user.year or  'Not Assigned'}}</p>
 				</div>
 				<div class="view-profile">
-					<a href="{{url_for('friends.limited_profile', username=user.username)}}">View Profile</a>
+					<a href="{{url_for('friends.limited_profile', username=displayed_user.username)}}">View Profile</a>
 				</div>
 			</div>
 		{%endfor%}

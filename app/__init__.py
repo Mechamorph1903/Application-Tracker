@@ -8,7 +8,6 @@ import os
 import uuid
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, current_app
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_required, current_user, logout_user
 from flask_mail import Mail
 from datetime import date
 from dotenv import load_dotenv
@@ -100,17 +99,10 @@ def create_app():
 
 	# Initialize extensions
 	db.init_app(app)
-	login_manager = LoginManager()
-	login_manager.login_view = 'auth.register'  # Redirect to login/register page if not authenticated
-	login_manager.login_message = 'Please log in to access this page.'
-	login_manager.login_message_category = 'info'
-	login_manager.init_app(app)
+	
 	mail.init_app(app)
 
-	@login_manager.user_loader
-	def load_user(user_id):
-		return User.query.get(int(user_id))  # Load user by ID for session management
-	
+
 	# Create database tables
 	with app.app_context():
 		db.create_all()
@@ -240,7 +232,7 @@ def create_app():
 		goals = user.goals
 
 
-		return render_template('home.html', stats=stats, recent_applications=recent_applications, motivation=motivation, goals=goals)
+		return render_template('home.html', stats=stats, recent_applications=recent_applications, motivation=motivation, goals=goals, user=user)
 	
 	@app.route('/goal', methods=['POST'])
 	@require_supabase_user
@@ -329,7 +321,7 @@ def create_app():
 	@app.route('/calendar')
 	@require_supabase_user
 	def calendar(user):
-		return render_template('calendar.html')
+		return render_template('calendar.html', user=user)
 	
 
 
@@ -525,15 +517,7 @@ def create_app():
 		if text:
 			return text.replace('\n', '<br>\n').replace('\r\n', '<br>\n')
 		return text
-	
 
-	# user statuses
-	@app.before_request
-	def track_user_activity():
-		"""Update user's last_seen on every request"""
-		if current_user.is_authenticated:
-			current_user.last_seen = datetime.datetime.now(datetime.timezone.utc)
-			db.session.commit()  # Commit the changes to the database
 
 	return app
 # This function creates and configures the Flask application

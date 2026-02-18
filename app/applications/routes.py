@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
-from flask_login import login_required, current_user
 from datetime import datetime, timezone, date
 from sqlalchemy.orm.attributes import flag_modified
 import json

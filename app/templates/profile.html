@@ -36,10 +36,10 @@
         <div class="profile-header">
             <div class="profile-info">
                 <div class="profile-picture">
-                    {% if current_user.get_profile_picture_url() %}
-                        <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-img">
+                    {% if user.get_profile_picture_url() %}
+                        <img src="{{ user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-img">
                     {% else %}
-                        <div class="profile-initials">{{ current_user | initials }}</div>
+                        <div class="profile-initials">{{ user | initials }}</div>
                     {% endif %}
                 </div>
                 <div class="profile-details">
@@ -181,7 +181,7 @@
                     </h2>
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-number">{{ stats.total_applications if stats else current_user.internships|length }}</div>
+                            <div class="stat-number">{{ stats.total_applications if stats else user.internships|length }}</div>
                             <div class="stat-label">Total Applications</div>
                         </div>
                         <div class="stat-card">

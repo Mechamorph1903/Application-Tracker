@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 from flask import render_template, request, redirect, url_for, flash, Blueprint, current_app, session
-from flask_login import login_user, logout_user, current_user
+
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from app.models import db, User
@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import re
 from sqlalchemy import or_
 from app.auth.supabase_auth import store_supabase_tokens, clear_supabase_tokens
+from app.auth.compatibility import get_db_user
 
 
 auth = Blueprint('auth', __name__)
@@ -143,8 +144,9 @@ def register():
 			flash('Account creation failed. Please try again.', 'danger')
 			return redirect(url_for('auth.register') + '?tab=register')
 
-		# Login the user
-		login_user(new_user)
+		new_user.last_seen = datetime.now()
+		db.session.commit()
+	
 
 		# Send welcome email
 		try:
@@ -183,24 +185,19 @@ def login():
 				
 				next_page = session.pop('next', None)
 				if next_page:
-					login_user(currentUser)
+					
 					currentUser.last_seen = datetime.now()
 					db.session.commit()
 					flash('Login successful!', 'success')
 					return redirect(next_page)
+				return redirect(url_for('home'))  # Redirect to dashboard after login
+
 		   
 			
 		except Exception as e:
 			print(f"⚠️  Supabase auth error: {e}")
 			# Continue with local login if Supabase fails
 		
-		login_user(currentUser)
-		# Send welcome email for first-time login (if this is intended)
-		
-		currentUser.last_seen = datetime.now()
-		db.session.commit()  # Commit the changes to the database
-		flash('Login successful!', 'success')
-		return redirect(url_for('home'))  # Redirect to dashboard after login
 	else:
 		flash('Invalid email or password.', 'danger')
 		return redirect(url_for('auth.register') + '?tab=login')  # Stay on login tab
@@ -208,8 +205,10 @@ def login():
 @auth.route('/logout')
 def logout():
 	"""Log out the current user and redirect to landing page."""
-	if current_user.is_authenticated:
-		current_user.last_seen = datetime.now()  # Update last seen time
+	user = get_db_user()
+
+	if user:
+		user.last_seen = datetime.now()
 		db.session.commit()
 		  
 	try:
@@ -221,7 +220,7 @@ def logout():
 	except Exception as e:
 		print(f"⚠️ Supabase logout error: {e}")
 		
-	logout_user()
+	
 	return redirect(url_for('landing'))  # Redirect to landing page after logout
 
 

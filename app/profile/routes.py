@@ -1,14 +1,15 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint, jsonify
-from flask_login import current_user, login_required
 from app.models import db, User, FriendRequest, Internship
+from app.auth.compatibility import require_supabase_user  # ADDED
+
 
 userprofile = Blueprint('profile', __name__)	
 
 @userprofile.route('/', methods=['GET', 'POST'])
-@login_required
-def profile():
+@require_supabase_user
+def profile(user):
     # Get user's applications with stats
-    applications = current_user.internships
+    applications = user.internships
     
     # Calculate real stats
     total_applications = len(applications)
@@ -42,17 +43,17 @@ def profile():
         'response_rate': f"{response_rate}%"
     }
 
-    pending = current_user.get_pending_friend_requests()
+    pending = user.get_pending_friend_requests()
 
     pending_list = []
 
     for request in pending:
-        user = User.query.filter_by(id=request.sender_id).first()
-        pending_list.append(user)
+        pending_user = User.query.filter_by(id=request.sender_id).first()
+        pending_list.append(pending_user)
     
     # Get notifications for the user
-    notifications = current_user.get_unread_notifications()
+    notifications = user.get_unread_notifications()
     
-    return render_template('profile.html', user=current_user, stats=stats, pending=pending_list, notifications=notifications)
+    return render_template('profile.html', user=user, stats=stats, pending=pending_list, notifications=notifications)
 
 

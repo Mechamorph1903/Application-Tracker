@@ -7,6 +7,7 @@ from flask import current_app, session, g
 from requests import request
 from app.models import User
 from app.auth.supabase_auth import get_user_id_from_token
+from datetime import timezone, datetime
 
 def get_db_user():
     """
@@ -72,6 +73,14 @@ def require_supabase_user(f):
             flash('Please log in to access this page.', 'warning')
             session['next'] = request.url
             return redirect(url_for('auth.register') + '?tab=login')
+
+        try:
+            user.last_seen = datetime.now(timezone.utc)
+            from app.models import db
+            db.session.commit()
+        except Exception as e:
+            print(f"⚠️ Error updating last_seen: {e}")
+            # Don't fail the request if last_seen update fails
         
         # Pass user as first argument to the route
         return f(user, *args, **kwargs)

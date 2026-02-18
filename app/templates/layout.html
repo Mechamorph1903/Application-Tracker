@@ -41,23 +41,23 @@
     </div>
     
     <div class="navbar-user">
-      {% if current_user.is_authenticated %}
-        {% if current_user.get_profile_picture_url() %}
-          <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-img" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+      {% if user is defined and user %}
+        {% if user.get_profile_picture_url() %}
+          <img src="{{ user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-img" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
         {% else %}
-          <div class="profile-initials">{{ current_user | initials }}</div>
+          <div class="profile-initials">{{ user | initials }}</div>
         {% endif %}
-        <span class="username">{{ current_user.username }}</span>
+        <span class="username">{{ user.username }}</span>
         <div class="profile-card">
                     <div class="profile-card-header">
-                        {% if current_user.get_profile_picture_url() %}
-                        <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-card-avatar" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+                        {% if user.get_profile_picture_url() %}
+                        <img src="{{ user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-card-avatar" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
                         {% else %}
-                          <div class="profile-card-initials">{{ current_user | initials }}</div>
+                          <div class="profile-card-initials">{{ user | initials }}</div>
                         {% endif %}
                         <div class="profile-card-info">
-                            <h3 class="profile-card-name">{{ current_user.username }}</h3>
-                            <p class="profile-card-email">{{ current_user.email }}</p>
+                            <h3 class="profile-card-name">{{ user.username }}</h3>
+                            <p class="profile-card-email">{{ user.email }}</p>
                         </div>
                     </div>
                 
@@ -96,17 +96,17 @@
           <span>Applications</span>
         </a>
       </div>
-      {% if current_user.is_authenticated %}
+      {% if user.is_authenticated %}
       <div class="mobile-profile-section">
         <div class="mobile-profile-info">
-          {% if current_user.get_profile_picture_url() %}
-            <img src="{{ current_user.get_profile_picture_url() }}" alt="Profile Picture" class="mobile-profile-img">
+          {% if user.get_profile_picture_url() %}
+            <img src="{{ user.get_profile_picture_url() }}" alt="Profile Picture" class="mobile-profile-img">
           {% else %}
-            <div class="mobile-profile-initials">{{ current_user | initials }}</div>
+            <div class="mobile-profile-initials">{{ user | initials }}</div>
           {% endif %}
           <div class="mobile-profile-details">
-            <h3>{{ current_user.username }}</h3>
-            <p>{{ current_user.email }}</p>
+            <h3>{{ user.username }}</h3>
+            <p>{{ user.email }}</p>
           </div>
         </div>
         <div class="mobile-profile-actions">

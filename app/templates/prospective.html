@@ -14,9 +14,9 @@
   
     <!-- Left: Avatar -->
     <div class="avatar-section">
-      {% if user.get_profile_picture_url() %}
+      {% if prospective_user.get_profile_picture_url() %}
         <div class="profile-avatar">
-          <img src="{{ user.get_profile_picture_url() }}" alt="Profile Picture" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+          <img src="{{ prospective_user.get_profile_picture_url() }}" alt="Profile Picture" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
         </div>
       {% else %}
         <div class="profile-avatar">
@@ -27,17 +27,17 @@
     <!-- Right: Info Column -->
     <div class="user-info">
       <div class="user-header">
-        <h2>{{user.firstName}} {{user.lastName}}</h2>
-        <p class="user-details">Class of {{user.year}} <strong>@</strong> {{user.school}} <i><strong>studying</strong></i> {{user.major}}</p>
+        <h2>{{prospective_user.firstName}} {{prospective_user.lastName}}</h2>
+        <p class="user-details">Class of {{prospective_user.year}} <strong>@</strong> {{prospective_user.school}} <i><strong>studying</strong></i> {{prospective_user.major}}</p>
         <div class="bio-panel">
           <p class="bio-label">Bio</p>
-          <div class="bio-content">{{ user.bio or 'No bio provided.' }}</div>
+          <div class="bio-content">{{ prospective_user.bio or 'No bio provided.' }}</div>
         </div>
         <p class="friendship-status">
-          {% if current_user.has_sent_request_to(user) %}
+          {% if user.has_sent_request_to(prospective_user) %}
             Friend request sent
-          {% elif current_user.has_pending_request_from(user) %}
-            {{ user.firstName }} sent you a friend request
+          {% elif user.has_pending_request_from(prospective_user) %}
+            {{ prospective_user.firstName }} sent you a friend request
           {% else %}
             You're not yet friends
           {% endif %}
@@ -45,9 +45,9 @@
 
         <!-- ✅ Friend Buttons placed directly under status -->
         <div class="button-container">
-          {% if not current_user.has_sent_request_to(user) and not current_user.has_pending_request_from(user) %}
+          {% if not user.has_sent_request_to(prospective_user) and not user.has_pending_request_from(prospective_user) %}
             <form action="{{ url_for('friends.addFriend') }}" method="POST" style="display: inline;">
-              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <input type="hidden" name="user_id" value="{{ prospective_user.id }}">
               <button type="submit" class="action-btn add-friend-btn">
                 <i class="fa-solid fa-user-plus"></i>
                 <span class="btn-text">Add Friend</span>
@@ -55,20 +55,20 @@
             </form>
           {% endif %}
 
-          {% if current_user.has_pending_request_from(user) %}
-            <a href="{{ url_for('friends.acceptFriendRequest', user_id=user.id) }}" class="action-btn accept-friend-btn">
+          {% if user.has_pending_request_from(prospective_user) %}
+            <a href="{{ url_for('friends.acceptFriendRequest', user_id=prospective_user.id) }}" class="action-btn accept-friend-btn">
               <i class="fa-solid fa-user-check"></i>
               <span class="btn-text">Accept Friend Request</span>
             </a>
-            <a href="{{ url_for('friends.declineFriendRequest', user_id=user.id) }}" class="action-btn decline-friend-btn">
+            <a href="{{ url_for('friends.declineFriendRequest', user_id=prospective_user.id) }}" class="action-btn decline-friend-btn">
               <i class="fa-solid fa-user-xmark"></i>
               <span class="btn-text">Decline Request</span>
             </a>
           {% endif %}
 
-          {% if current_user.has_sent_request_to(user) %}
+          {% if user.has_sent_request_to(prospective_user) %}
             <form action="{{ url_for('friends.cancelRequest') }}" method="POST" style="display: inline;">
-              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <input type="hidden" name="user_id" value="{{ prospective_user.id }}">
               <button type="submit" class="action-btn cancel-request-btn">
                 <i class="fa-solid fa-user-minus"></i>
                 <span class="btn-text">Cancel Request</span>
@@ -93,7 +93,7 @@
       </div>
       <p class="info-message">
         <i class="fa-solid fa-info-circle"></i>
-        Add {{user.firstName}} as a friend to view their internship applications
+        Add {{prospective_user.firstName}} as a friend to view their internship applications
       </p>
     </div>
   </div>
