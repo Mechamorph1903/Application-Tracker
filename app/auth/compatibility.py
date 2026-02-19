@@ -2,9 +2,7 @@
 Compatibility layer for gradual Supabase migration.
 Provides helpers to work with both Flask-Login and Supabase auth.
 """
-
-from flask import current_app, session, g
-from requests import request
+from flask import current_app, session, g, request
 from app.models import User
 from app.auth.supabase_auth import get_user_id_from_token
 from datetime import timezone, datetime
@@ -42,11 +40,6 @@ def get_authenticated_user():
     db_user = get_db_user()
     if db_user:
         return db_user
-    
-    # Fallback to Flask-Login (old method)
-    from flask_login import current_user
-    if current_user.is_authenticated:
-        return current_user
     
     return None
 
