@@ -3,10 +3,12 @@ services:
     name: internin-app
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn --bind 0.0.0.0:$PORT run:app"
+    startCommand: "gunicorn --bind 0.0.0.0:$PORT --worker-class gthread --threads 4 --workers 1 --timeout 90 --graceful-timeout 30 --max-requests 1000 --max-requests-jitter 100 run:app"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: WEB_CONCURRENCY
+        value: "1"
       - key: SUPABASE_DATABASE_URL
         sync: false
       - key: MAIL_USERNAME
