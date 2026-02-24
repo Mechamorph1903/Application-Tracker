@@ -10,7 +10,7 @@ services:
       - key: WEB_CONCURRENCY
         value: "1"
       - key: SUPABASE_DATABASE_URL
-        sync: false
+        sync: true
       - key: MAIL_USERNAME
         sync: false
       - key: MAIL_PASSWORD
