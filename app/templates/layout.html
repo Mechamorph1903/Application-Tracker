@@ -26,13 +26,6 @@
   <div class="navbar">
     <div class="navbar-logo">InternIn</div>
     
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Open navigation menu" title="Menu">
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    </button>
-    
     <div class="navbar-links">
       <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
       <a href="{{ url_for('calendar') }}" class="{% if request.endpoint == 'calendar' %}active{% endif %}">Calendar</a>
@@ -43,9 +36,9 @@
     <div class="navbar-user">
       {% if user is defined and user %}
         {% if user.get_profile_picture_url() %}
-          <img src="{{ user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-img" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">
+          <img src="{{ user.get_profile_picture_url() }}" alt="Profile Picture" class="profile-img mobile-menu-trigger" onclick="toggleMobileMenu()" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover; cursor: pointer;">
         {% else %}
-          <div class="profile-initials">{{ user | initials }}</div>
+          <div class="profile-initials mobile-menu-trigger" onclick="toggleMobileMenu()" style="cursor: pointer;">{{ user | initials }}</div>
         {% endif %}
         <span class="username">{{ user.username }}</span>
         <div class="profile-card">

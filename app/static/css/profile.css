@@ -40,7 +40,7 @@
         }
 
         .bio-content{
-            width: 40em;
+            width: 100%;
             background: linear-gradient(135deg, rgba(162, 89, 255, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
@@ -725,7 +725,139 @@
             transform: translateX(2px);
         }
 
-        @media (prefers-color-scheme: dark){
+        
+/* ===== RESPONSIVE: PROFILE PAGE ===== */
+@media (max-width: 900px) {
+    .main-content {
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    .left-column,
+    .right-column {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 10px;
+        border-radius: 16px;
+    }
+
+    .cover-section {
+        height: 160px;
+    }
+
+    .profile-header {
+        padding: 0 16px 16px 16px;
+    }
+
+    .profile-info {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center;
+        gap: 12px !important;
+    }
+
+    .profile-picture {
+        /* Push picture up to overlap cover like a real profile */
+        margin-top: -50px !important;
+        width: 90px !important;
+        height: 90px !important;
+    }
+
+    .profile-img,
+    .profile-initials {
+        width: 90px !important;
+        height: 90px !important;
+        font-size: 2rem !important;
+    }
+
+    .profile-name {
+        font-size: 1.5rem !important;
+    }
+
+    .school-info {
+        flex-direction: column !important;
+        gap: 4px !important;
+        text-align: center;
+    }
+
+    .social-links {
+        justify-content: center !important;
+        flex-wrap: wrap;
+    }
+
+    .bio {
+        padding: 16px !important;
+    }
+
+    .bio-content {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    .stat-card {
+        padding: 0.85rem !important;
+    }
+
+    /* Notifications stack properly */
+    .notification-item {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .notification-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .notification-buttons {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .notification-btn {
+        flex: 1;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    /* Section headers */
+    .section-title {
+        font-size: 1rem !important;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .profile-name {
+        font-size: 1.3rem !important;
+    }
+
+    .section {
+        padding: 12px !important;
+    }
+}
+
+@media (prefers-color-scheme: dark){
     body{
         background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
         }

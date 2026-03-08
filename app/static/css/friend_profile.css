@@ -41,15 +41,6 @@
         }
 
 
-        @keyframes pulse-glow {
-            0%, 100% { 
-                box-shadow: 0 0 20px rgba(144, 3, 3, 0.8); 
-            }
-            50% { 
-                box-shadow: 0 0 30px rgba(144, 3, 3, 1); 
-            }
-        }
-
 
         .options{
             color: white;
@@ -221,98 +212,9 @@
         .friend-profile-content{
             width: 100%;
         }
-  
-        /* Activity Section */
-        .section {
-            background: #070755;
-            border-radius: 12px;
-            padding: 25px;
-            border: 1px solid #e2e8f0;
-        }
+      
 
-        .section-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Activity Items */
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .activity-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.2);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #7c3aed, #a855f7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            flex-shrink: 0;
-        }
-
-        .activity-icon i {
-            color: white;
-            font-size: 1.1rem;
-        }
-
-        .activity-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .activity-title {
-            font-weight: 600;
-            color: white;
-            margin-bottom: 0.25rem;
-            font-size: 1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .activity-details {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.875rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .activity-status {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-transform: capitalize;
-            white-space: nowrap;
-            flex-shrink: 0;
-            margin-left: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            color: white;
-            background-color: #6b7280; /* Default gray color */
-        }
+     
 
         /* Stats Cards */
         .stats-grid {
@@ -341,133 +243,6 @@
             color: #64748b;
         }
 
-        /* Calendar Heatmap-ish*/
-        .heatmap-container {
-            background: #201177;
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .heatmap-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            color: #ffffff;
-        }
-
-        .heatmap-grid {
-            display: grid;
-            gap: 3px;
-            margin-bottom: 15px;
-        }
-
-        .heatmap-cell {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-            background: #ebedf0;
-            transition: all 0.2s ease;
-        }
-
-        .heatmap-cell:hover {
-            transform: scale(1.2);
-        }
-
-        .heatmap-cell.level-1 { background: #c6e48b; }
-        .heatmap-cell.level-2 { background: #7bc96f; }
-        .heatmap-cell.level-3 { background: #239a3b; }
-        .heatmap-cell.level-4 { background: #196127; }
-
-        .heatmap-legend {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Debug info styling */
-        .debug-info {
-            color: #c4b5fd;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        /* Notification Panel Styles */
-        .notifications-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .notification-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .notification-item:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateX(2px);
-        }
-
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            flex-shrink: 0;
-        }
-
-        .notification-icon i {
-            color: white;
-            font-size: 1rem;
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 0.25rem;
-            font-size: 0.95rem;
-        }
-
-        .notification-details {
-            color: #666;
-            font-size: 0.85rem;
-            line-height: 1.4;
-        }
-
-        /* Empty notification state */
-        .notification-item .notification-icon i.fa-info-circle {
-            opacity: 0.7;
-        }
-
-        .notification-item:first-child .notification-title {
-            color: #666;
-        }
-
-        .notification-item:first-child .notification-details {
-            color: #999;
-        }
 
         /* Responsive Design */
         @media (max-width: 1024px) {
@@ -755,6 +530,77 @@
     margin-bottom: 1rem;
 }
 
+
+/* ===== RESPONSIVE: FRIEND PROFILE ===== */
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 8px;
+        border-radius: 14px;
+    }
+    .bio-content {
+        width: 26em;
+        height: 200px;
+        color: white;
+    }
+
+    .cover-section {
+        height: 140px;
+    }
+
+    .profile-header {
+        padding: 0 12px 12px 12px;
+    }
+
+    .profile-info {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center;
+    }
+
+    .profile-picture {
+        margin-top: -45px !important;
+        width: 85px !important;
+        height: 85px !important;
+    }
+
+    .friend-profile-img,
+    .profile-initials {
+        width: 85px !important;
+        height: 85px !important;
+    }
+
+    .profile-name {
+        font-size: 1.4rem !important;
+    }
+
+    .school-info {
+        flex-direction: column !important;
+        gap: 4px !important;
+        align-items: center;
+    }
+
+    .social-links {
+        justify-content: center !important;
+        flex-wrap: wrap;
+    }
+
+    .applications-grid {
+        grid-template-columns: 1fr !important;
+        max-height: 400px;
+        overflow-y: scroll;
+    }
+
+    .applications-search-bar {
+        padding: 0 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-name {
+        font-size: 1.2rem !important;
+    }
+}
+
 @media (prefers-color-scheme: dark){
     body{
         background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);
@@ -768,4 +614,3 @@
         color: #ffffffaf;
     }
 }
-

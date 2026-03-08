@@ -83,7 +83,7 @@
 .home-page-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: auto;
     align-items: stretch;
     justify-items: stretch;
     gap: 16px;
@@ -638,5 +638,166 @@ progress {
     
     .action-card p {
         font-size: 0.9rem;
+    }
+}
+/* ===== RESPONSIVE: HOME / DASHBOARD ===== */
+
+/* Tablet: 2-col layout */
+@media (max-width: 1024px) {
+    .home-page-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .recent-applications-section {
+        grid-column: 1 / 3;
+        grid-row: auto;
+    }
+    .motivation-section {
+        grid-column: 1;
+        grid-row: auto;
+    }
+    .goals-section {
+        grid-column: 2;
+        grid-row: auto;
+    }
+    .quick-actions-section {
+        grid-column: 1 / 3;
+        grid-row: auto;
+    }
+}
+
+/* Mobile: single column, natural stacking order */
+@media (max-width: 768px) {
+    .home-page-container {
+        padding: 12px;
+    }
+
+    .welcome-user {
+        font-size: 1.6rem;
+    }
+
+    .welcome-question {
+        font-size: 1rem;
+    }
+
+    /* Stats: 2 per row on mobile */
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .stat-card {
+        padding: 0.85rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .stat-icon {
+        width: 38px;
+        height: 38px;
+        margin-right: 0;
+        margin-bottom: 4px;
+    }
+
+    .stat-icon i {
+        font-size: 1.1rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    /* Dashboard grid goes single column */
+    .home-page-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .recent-applications-section,
+    .motivation-section,
+    .goals-section,
+    .quick-actions-section {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    /* Recent applications list: no sideways scroll */
+    .recent-applications {
+        overflow-x: hidden;
+    }
+
+    .application-item {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .application-status {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    /* Quick actions: 2 per row */
+    .actions-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .action-btn {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+    }
+
+    .action-btn i {
+        margin-right: 0;
+        font-size: 1.2rem;
+    }
+
+    /* Goals section */
+    .goal-item {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    /* Goals modal */
+    #goals-back {
+        padding: 10px;
+    }
+
+    #goals-form {
+        max-width: 95vw;
+        padding: 1.2rem;
+    }
+
+    .goal-type-container {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .goal-type {
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .welcome-user {
+        font-size: 1.4rem;
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        font-size: 1rem;
     }
 }

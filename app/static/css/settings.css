@@ -834,6 +834,97 @@ input[type="password"]:focus {
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
+
+/* ===== RESPONSIVE: SETTINGS PAGE ===== */
+@media (max-width: 768px) {
+    nav {
+        padding: 0 12px;
+        height: auto;
+        min-height: 60px;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    /* Settings tabs move below the back button */
+    .settings-tabs {
+        position: static;
+        transform: none;
+        left: auto;
+        top: auto;
+        width: 100%;
+        justify-content: center;
+        gap: 16px;
+        order: 3;
+    }
+
+    .settings-tabs .tab {
+        font-size: 0.95rem;
+        padding: 6px 14px;
+    }
+
+    /* Settings content becomes single column */
+    .settings-container,
+    .settings-layout,
+    .settings-grid {
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .settings-section,
+    .settings-card {
+        width: 100% !important;
+        padding: 1rem !important;
+    }
+
+    /* Form rows become single column */
+    .form-row,
+    .settings-row {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    .settings-form input,
+    .settings-form select,
+    .settings-form textarea {
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    /* Social media grid: 1 col */
+    .social-media-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Profile picture section */
+    .profile-picture-section {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center;
+    }
+
+    /* Save button full width */
+    .save-btn,
+    button[type="submit"] {
+        width: 100%;
+    }
+
+    /* Tabs inside the settings body (not nav) */
+    .tab-buttons {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .settings-tabs .tab {
+        font-size: 0.85rem;
+        padding: 5px 10px;
+    }
+}
+
 @media (prefers-color-scheme: dark){
     body{
         background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);

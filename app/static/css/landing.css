@@ -566,6 +566,244 @@ body {
     }
 }
 
+
+/* ===== RESPONSIVE: LANDING PAGE ===== */
+
+/* --- Mobile nav: show a hamburger --- */
+@media (max-width: 768px) {
+    /* Navbar */
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+
+    .nav-container {
+        padding: 0 1rem;
+    }
+
+    .nav-links {
+        display: none; /* already hidden, keep consistent */
+    }
+
+    /* Add a basic mobile nav toggle if needed in JS */
+
+    /* ---- Hero ---- */
+    .hero {
+        padding: 6rem 0 2rem;
+        min-height: auto;
+    }
+
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+        padding: 0 1rem;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-stats {
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    /* Dashboard preview: horizontal scroll strip */
+    .hero-visual {
+        justify-content: flex-start;
+    }
+
+    .dashboard-preview {
+        width: 100%;
+        max-width: 100%;
+        padding: 1.25rem;
+        border-radius: 14px;
+    }
+
+    .preview-content {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.75rem;
+        padding-bottom: 0.5rem;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .preview-content::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .preview-content::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.05);
+        border-radius: 2px;
+    }
+
+    .preview-content::-webkit-scrollbar-thumb {
+        background: rgba(168, 85, 247, 0.5);
+        border-radius: 2px;
+    }
+
+    .preview-card {
+        min-width: 200px;
+        scroll-snap-align: start;
+        flex-shrink: 0;
+    }
+
+    /* ---- Features: horizontal scroll on mobile ---- */
+    .features {
+        padding: 3rem 0;
+    }
+
+    .features > .container {
+        padding: 0; /* let scroll strip go full width */
+    }
+
+    .section-header {
+        padding: 0 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .features-grid {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto;
+        gap: 1rem;
+        padding: 0 1rem 1rem 1rem;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        /* No wrapping - keeps it as a scroll strip */
+    }
+
+    .features-grid::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .features-grid::-webkit-scrollbar-thumb {
+        background: rgba(168, 85, 247, 0.5);
+        border-radius: 2px;
+    }
+
+    .feature-card {
+        min-width: 220px;
+        max-width: 260px;
+        scroll-snap-align: start;
+        flex-shrink: 0;
+        padding: 1.5rem;
+    }
+
+    /* ---- About ---- */
+    .about {
+        padding: 3rem 0;
+    }
+
+    .about-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        text-align: center;
+        padding: 0 1rem;
+    }
+
+    .about-text h2 {
+        font-size: 1.7rem;
+    }
+
+    .about-text p {
+        font-size: 1rem;
+    }
+
+    .about-visual {
+        order: -1; /* show icon above text on mobile */
+    }
+
+    .about-image {
+        width: 150px;
+        height: 150px;
+        font-size: 4rem;
+    }
+
+    .about-features {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    /* ---- CTA ---- */
+    .cta {
+        padding: 3rem 1rem;
+    }
+
+    .cta-content h2 {
+        font-size: 1.7rem;
+    }
+
+    .cta-content p {
+        font-size: 1rem;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .cta-buttons .btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    /* ---- Footer ---- */
+    .footer {
+        padding: 2rem 1rem 1rem;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.7rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 260px;
+        justify-content: center;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-number {
+        font-size: 1.6rem;
+    }
+}
+
 @media (prefers-color-scheme: dark){
     body{
         background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);

@@ -818,6 +818,121 @@ body {
     }
 }
 
+
+/* ===== RESPONSIVE: APPLICATION DETAILS ===== */
+@media (max-width: 768px) {
+    body {
+        padding: 0 8px;
+    }
+
+    .details-nav {
+        grid-template-columns: auto 1fr auto;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        border-radius: 10px;
+        gap: 0.5rem;
+    }
+
+    .details-nav h1 {
+        font-size: 1rem;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 300px;
+    }
+
+    
+
+    .details-nav .back {
+        padding: 5px 8px;
+        font-size: 0.85rem;
+        gap: 5px;
+    }
+
+    .details-nav .back p {
+        display: none; /* just show arrow icon on mobile */
+    }
+
+    .details-nav .actions {
+        gap: 0.75rem;
+    }
+
+    .edit a {
+        font-size: 1.8em;
+    }
+
+    .delete button i{
+        font-size: 0.72em;
+    }
+
+    .details-card {
+        padding: 1rem !important;
+        margin: 0 !important;
+        border-radius: 12px !important;
+    }
+
+    /* Details grid: single column */
+    .details-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    /* Contacts grid: single column */
+    .contact-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    /* Notes section */
+    .notes-content {
+        font-size: 0.95rem;
+    }
+
+    textarea#notes {
+        font-size: 0.95rem;
+    }
+
+    /* Modal: full screen on mobile */
+    .modal-content {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        margin: 10px auto !important;
+        max-height: 85vh !important;
+    }
+
+    .modal-body {
+        max-height: 55vh !important;
+        overflow-y: auto;
+    }
+
+    /* Description button */
+    .description-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Action buttons row */
+    .action-buttons {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .details-nav h1 {
+        font-size: 0.9rem;
+    }
+
+    .details-card {
+        padding: 0.75rem !important;
+    }
+
+    .details-nav .actions {
+        gap: 0.5rem;
+    }
+}
+
 @media (prefers-color-scheme: dark){
     body{
         background: radial-gradient( ellipse at top, rgb(44, 12, 70) 50%, rgb(20, 20, 20) 100%);

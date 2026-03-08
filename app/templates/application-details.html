@@ -18,7 +18,7 @@
 			<i class="fa-solid fa-arrow-left"></i>
 			<p>Back</p>
 		</div>
-		<h1>{{ internship.job_name }}</h1>
+		<h1 id="title-head">{{ internship.job_name }}</h1>
 			<div class="actions">
 				<div class="edit" title="Edit Application">
 				<a title="Edit Application" href="{{ url_for('applications.edit_application', internship_id=internship.id) }}">

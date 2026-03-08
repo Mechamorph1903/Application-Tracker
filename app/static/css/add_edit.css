@@ -77,10 +77,7 @@ body {
     margin-top: 3rem; /* Space for header */
     overflow-y: auto;
 	box-sizing: border-box;
-    /* Custom scrollbars for WebKit browsers are handled below */
     transition: all 0.3s ease;
-    
-    /* Glass border effect */
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
@@ -522,6 +519,103 @@ input[type="datetime-local"]:focus {
     /* Match the container's bottom border radius */
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
+}
+
+
+/* ===== RESPONSIVE: ADD / EDIT FORM ===== */
+@media (max-width: 768px) {
+    body {
+        /* Allow normal scroll instead of centering */
+        padding-top: 80px; /* space for fixed header */
+        padding-bottom: 2rem;
+    }
+
+    .top-section {
+        padding: 0.75rem 1rem;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.5rem;
+    }
+
+    .top-section > h1 {
+        font-size: 0.95rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Switch from absolute centering to normal flow */
+    .add-form {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        width: calc(100% - 2rem);
+        max-width: 600px;
+        max-height: none; /* let it grow naturally */
+        margin: 1rem auto 2rem auto;
+        padding: 1.25rem;
+        overflow-y: visible;
+    }
+
+    /* Form rows become single column */
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    /* Contact form buttons row */
+    .contact-form-actions {
+        flex-direction: column;
+    }
+
+    /* Submit button */
+    #submit {
+        margin: 0 -1.25rem -1.25rem -1.25rem;
+        padding: 1rem 1.25rem;
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+    }
+
+    /* Pop-up buttons */
+    .pop-up-buttons {
+        gap: 2rem;
+    }
+
+    .confirmation-buttons {
+        width: 80px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-section {
+        padding: 0.6rem 0.75rem;
+        height: auto;
+        min-height: 50px;
+    }
+
+    #back-btn {
+        width: 80px;
+        height: 36px;
+        font-size: 0.85rem;
+    }
+
+    .add-form {
+        width: calc(100% - 1rem);
+        padding: 1rem;
+        margin: 0.75rem auto 2rem auto;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        font-size: 0.95rem;
+        padding: 0.6rem;
+    }
 }
 
 @media (prefers-color-scheme: dark){

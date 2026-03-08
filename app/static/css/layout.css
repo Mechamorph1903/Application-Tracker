@@ -1803,3 +1803,50 @@ input[type="text"] {
     width: 320px;
   }
 }
+/* Ensure content never hides behind the 70px navbar */
+@media (max-width: 768px) {
+    main {
+        padding-top: 0; /* layout already handles this via navbar height */
+    }
+
+    /* Footer stacks gracefully */
+    .main-footer .footer-content {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+
+    .main-footer .footer-links {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .footer-container {
+        padding: 1rem;
+    }
+}
+
+/* ===== PROFILE PIC AS MOBILE MENU TRIGGER ===== */
+
+/* Hide the old hamburger button entirely */
+.mobile-menu-btn {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-trigger {
+    box-shadow: 0 0 0 2px #a259ff;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .mobile-menu-trigger:active {
+    transform: scale(0.92);
+    box-shadow: 0 0 0 3px #e04aff;
+  }
+
+  
+  .profile-card {
+    display: none !important;
+  }
+}

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ user.firstName }} {{ user.lastName }} - Profile{% endblock %}
+{% block title %}{{ friend_user.firstName }} {{ friend_user.lastName }} - Profile{% endblock %}
 
 {% block extra_css %} 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/friend_profile.css') }}">
@@ -123,7 +123,7 @@
         {% else %}
         <div class="no-applications">
             <h2>No applications yet</h2>
-            <p>User hasn't applied to anything yet!</p>
+            <p>{{friend_user.firstName}} hasn't applied to anything yet!</p>
         </div>
         {% endif %}
     </div>

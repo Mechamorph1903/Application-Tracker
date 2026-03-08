@@ -289,3 +289,58 @@
   font-size: 2rem;
   color: #ffe3fa;
 }
+
+/* ===== RESPONSIVE: FRIENDS LIST ===== */
+@media (max-width: 768px) {
+    .friends-container {
+        margin: 16px auto 0 auto;
+        padding: 0 12px;
+    }
+
+    .friends-actions-bar {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .friends-actions-bar .page-title {
+        font-size: 1.5rem;
+    }
+
+    /* Single column on mobile */
+    .friends-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+
+    .friend-card {
+        min-width: 0;
+        padding: 20px 16px 16px 16px;
+    }
+
+    .friend-avatar {
+        width: 52px;
+        height: 52px;
+    }
+
+    .friend-name {
+        font-size: 1.1rem;
+    }
+
+    .stat-number {
+        font-size: 1.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .friends-container {
+        padding: 0 8px;
+    }
+
+    .friend-card {
+        padding: 16px 12px 12px 12px;
+    }
+}

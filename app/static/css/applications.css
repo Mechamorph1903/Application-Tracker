@@ -255,7 +255,8 @@
     .applications-grid {
         grid-template-columns: 1fr;
         gap: 12px;
-        max-height: none;
+        max-height: 400px;
+        overflow-y: scroll;
     }
     
     .application-card {
