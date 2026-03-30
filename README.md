@@ -84,9 +84,10 @@ InternIn is a full-stack Flask web application that helps students and job seeke
 | Backend | Flask 2.3+, SQLAlchemy, Flask-Login |
 | Frontend | HTML5, CSS3, JavaScript (ES6+) |
 | Templating | Jinja2 |
-| Database | SQLite with JSON fields |
+| Database | Supabase (PostgreSQL) |
+| Auth | Supabase Auth |
 | Libraries | Select2, Font Awesome, Pandas (optional) |
-| Security | Werkzeug hashing, CSRF protection |
+| Security | CSRF protection |
 
 ---
 
