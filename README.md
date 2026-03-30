@@ -132,4 +132,4 @@ For questions or support, reach out to the team:
 
 ---
 
-<p align="center">Built with purpose · A DEN Special ™</p>
+<p align="center">A DEN Special ™</p>
