@@ -2,7 +2,7 @@ services:
   - type: web
     name: internin-app
     env: python
-    buildCommand: "apt-get update && apt-get install -y chromium-driver chromium && pip install -r requirements.txt"
+    buildCommand: "pip install -r requirements.txt && python -m playwright install chromium && python -m playwright install-deps chromium"
     startCommand: "gunicorn --bind 0.0.0.0:$PORT --worker-class gthread --threads 4 --workers 1 --timeout 90 --graceful-timeout 30 --max-requests 1000 --max-requests-jitter 100 run:app"
     envVars:
       - key: PYTHON_VERSION
