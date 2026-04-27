@@ -14,11 +14,15 @@
 </head>
 <body>
 	<header class="top-section">
-		<button id="back-btn">
+		<button id="back-btn" class="app-btns">
 			<i class="fa-solid fa-arrow-left"></i><span>Back</span>
 		</button>
 
 		<h1>New Application</h1>
+
+        <button class="app-btns" id="auto-btn">
+            Auto
+        </button>
 	</header>
 
 	<main class="add-form">
@@ -157,6 +161,7 @@
 		</form>
 	</main>
 
+    <!-- Pop up for deleting application, contacts or leaving pages -->
 	<div id="pop-up-back">
 		<div id="pop-up">
 			<i class="fa-solid fa-xmark" id="pop-up-cancel"></i>
@@ -167,6 +172,53 @@
 			</div>
 		</div>
 	</div>
+
+    <!-- Pop Up for auto form Filling -->
+    <div id="maduka-overlay">
+        <div id="maduka-card">
+            <i class="fa-solid fa-xmark" id="maduka-cancel"></i>
+            <div></div>
+            <div id="maduka-screen1">
+                <h2>New Application</h2>
+                <p>What would you like to do?</p>
+                <div id="url-choice">
+                    <button class="choices" id="maduka-auto-btn">Auto Fill with URL</button>
+                    <button class="choices" id="maduka-manual-entry-btn">Manual Form Fill</button>
+                </div>
+            </div>
+            <div id="maduka-screen2">
+                <div id="screen2_main">
+                    <h2>Paste Link</h2>
+                    <div id="screen2_url">
+                        <h5>Paste the Application's Link into the textbox</h5>
+                        <input type="text" id="maduka-url-input" placeholder="https://...">
+                        <button type="button" id="maduka-fetch-btn" title="Fetch info from url provided.">Get Details🚀</button>
+                    </div>
+                    <p id="warn"></p>
+                </div>
+                <div id="loading_screen">
+                    <div class="elements">
+                        <div class="elements_div">
+                            <p class="dot" id="dot1">💼</p>
+                            <p class="dot" id="dot2">💼</p>
+                            <p class="dot" id="dot3">💼</p>
+                            <p class="dot" id="heart">💔</p>
+                        </div>
+                        <p id="fetch-text">Fetching details<span>.</span><span>.</span><span>.</span></p>
+                    </div>
+                </div>
+            </div>
+            <div id="maduka-screen3">
+                <h3>Oops!</h3>
+                <p>Couldn't get details from the link provided.</p>
+                <p id="maduka-error-reason"></p>
+                <div>
+                        <button class="choices" type="button" id="maduka-retry-btn">Try Another URL</button>
+                        <button class="choices" type="button" id="maduka-fallback-btn">Fill Manually</button>
+                </div>
+            </div>
+        </div>
+    </div>
 	
 	<script src="{{ url_for('static', filename="js/applications.js")}}"></script>
 </body>

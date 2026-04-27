@@ -5,6 +5,7 @@ import json
 from ..models import db, Internship, User
 from . import applications
 from app.auth.compatibility import require_supabase_user
+from app.maduka import getFormData
 
 
 applications = Blueprint('applications', __name__)
@@ -114,6 +115,42 @@ def copy_application(user):
         flash(f'Error copying internship: {str(e)}', 'error')
         return redirect(url_for('home'))
 
+
+
+@applications.route('/parse-job', methods=['POST'])
+@require_supabase_user
+def parse_job(user):
+    """
+    Receives a job posting URL from the frontend.
+    Scrapes the page with Selenium, validates content,
+    sends to Claude AI, returns structured JSON.
+    Called via fetch() from add.html — not a page load.
+    """
+    try:
+        data = request.get_json()
+        url = data.get('url', '').strip()
+ 
+        if not url:
+            return jsonify({ 'status': False, 'reason': 'No URL provided' }), 400
+ 
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+ 
+
+        result = getFormData(url)
+ 
+        if not result['status']:
+            return jsonify({
+                'status': False,
+                'reason': result.get('reason', 'Could not extract job data from this page.')
+            }), 200
+ 
+        # Return the structured data to the frontend
+        return jsonify(result), 200
+ 
+    except Exception as e:
+        return jsonify({ 'status': False, 'reason': str(e) }), 500
+ 
 
 
 
