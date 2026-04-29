@@ -7,10 +7,16 @@ from dotenv import load_dotenv
 import os
 import requests
 import json
-from playwright.sync_api import sync_playwright
 load_dotenv()
 api_key = os.getenv("CLAUDE_KEY")
 
+
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+options.add_argument("--no-sandbox") 
+options.add_argument("--disable-dev-shm-usage") 
+options.add_argument("--disable-gpu")
+options.add_argument("--remote-debugging-port=9222")
 
 
 def scrapeJob(url):
@@ -23,18 +29,14 @@ def scrapeJob(url):
 	driver = None
 
 	try:
-		with sync_playwright() as p:
-			browser = p.chromium.launch(
-				headless=True,
-				args=["--no-sandbox", "--disable-dev-shm-usage"]
-)
-			page = browser.new_page()
-			page.goto(url, timeout=30000)
-			page.wait_for_load_state("networkidle", timeout=15000)
-			
-			content = page.content()
-			browser.close()
-		soup = BeautifulSoup(content, "html.parser")
+		driver = webdriver.Chrome(
+		service=Service(ChromeDriverManager().install()),
+		options=options
+		)
+		
+		driver.get(url)
+
+		soup = BeautifulSoup(driver.page_source, "html.parser")
 		jusText = soup.get_text()
 
 		keywords = keywords = [
